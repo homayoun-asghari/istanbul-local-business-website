@@ -1,6 +1,6 @@
 # Plan: first-demo
 
-- [ ] 1. Content schema and the real fixture — files: `lib/content/schema.ts`,
+- [x] 1. Content schema and the real fixture — files: `lib/content/schema.ts`,
       `lib/content/schema.test.ts`, `lib/content/fixtures/melike.ts` — verified by:
       `vitest lib/content`
 - [ ] 2. Opening-hours logic in Europe/Istanbul — files: `lib/content/hours.ts`,
