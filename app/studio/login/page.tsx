@@ -10,9 +10,9 @@ export default function LoginPage() {
     <form action={action} style={{ maxWidth: 320, marginTop: "18vh" }}>
       <h1>Vitrin Studio</h1>
       <p className="note" style={{ marginTop: 0, marginBottom: 20 }}>
-        Devam etmek için parolayı girin.
+        Enter the password to continue.
       </p>
-      <label htmlFor="password">Parola</label>
+      <label htmlFor="password">Password</label>
       <input
         id="password"
         name="password"
@@ -26,7 +26,7 @@ export default function LoginPage() {
         </p>
       ) : null}
       <button type="submit" disabled={pending} style={{ marginTop: 16 }}>
-        {pending ? "Kontrol ediliyor…" : "Giriş yap"}
+        {pending ? "Checking…" : "Sign in"}
       </button>
     </form>
   );

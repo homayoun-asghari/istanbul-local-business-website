@@ -12,24 +12,25 @@ export default async function LeadsPage() {
   return (
     <>
       <p className="note">
-        <Link href="/studio">← İşletmeler</Link>
+        <Link href="/studio">← Businesses</Link>
       </p>
-      <h1>Aday işletmeler</h1>
+      <h1>Leads</h1>
       <p className="note">
-        {leads.length} kayıt · {buildable.length} tanesi için hazır sektör paketi var
+        {leads.length} leads · {buildable.length} have an industry pack
       </p>
 
       <LeadsTools />
+      <LeadsTools.AddLead />
 
       {leads.length > 0 ? (
         <table style={{ marginTop: 24 }}>
           <thead>
             <tr>
-              <th>İşletme</th>
-              <th>Sektör</th>
-              <th>Semt</th>
-              <th>Puan</th>
-              <th>Görüntülenme</th>
+              <th>Business</th>
+              <th>Industry</th>
+              <th>Area</th>
+              <th>Rating</th>
+              <th>Views</th>
               <th>Demo</th>
             </tr>
           </thead>
@@ -40,7 +41,7 @@ export default async function LeadsPage() {
                 <tr key={lead.id}>
                   <td>
                     {lead.business}
-                    {lead.taps > 0 ? <span className="badge live">{lead.taps} tıklama</span> : null}
+                    {lead.taps > 0 ? <span className="badge live">{lead.taps} taps</span> : null}
                   </td>
                   <td>{INDUSTRY_LABELS_TR[lead.industry as Industry] ?? lead.industry}</td>
                   <td className="note">
@@ -52,7 +53,7 @@ export default async function LeadsPage() {
                   <td>{lead.views}</td>
                   <td>
                     {lead.hasSite ? (
-                      <Link href={`/studio/${lead.slug}`}>düzenle →</Link>
+                      <Link href={`/studio/${lead.slug}`}>edit →</Link>
                     ) : (
                       <LeadsTools.BuildButton leadId={lead.id} />
                     )}

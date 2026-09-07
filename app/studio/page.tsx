@@ -13,30 +13,30 @@ export default async function StudioIndex() {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <h1>İşletmeler</h1>
+        <h1>Businesses</h1>
         <form action={signOut}>
           <button className="ghost" type="submit">
-            Çıkış
+            Sign out
           </button>
         </form>
       </div>
       <p className="note">
-        {sites.length} kayıt · <Link href="/studio/leads">aday işletmeler →</Link>
+        {sites.length} live · <Link href="/studio/leads">leads →</Link>
       </p>
 
       {sites.length === 0 ? (
         <p className="msg" style={{ marginTop: 20 }}>
-          Henüz kayıt yok. <code>npm run db:seed</code> çalıştırın.
+          Nothing here yet. <code>npm run db:seed</code> to add one, or import your sheet.
         </p>
       ) : (
         <table style={{ marginTop: 18 }}>
           <thead>
             <tr>
-              <th>İşletme</th>
-              <th>Sektör</th>
-              <th>Tasarım</th>
-              <th>Durum</th>
-              <th>Demo</th>
+              <th>Business</th>
+              <th>Industry</th>
+              <th>Design</th>
+              <th>Status</th>
+              <th>Live URL</th>
             </tr>
           </thead>
           <tbody>
@@ -47,14 +47,14 @@ export default async function StudioIndex() {
                     {site.content?.business.name ?? site.slug}
                   </Link>
                   {placeholders(site) > 0 ? (
-                    <span className="badge">{placeholders(site)} bölüm taslak</span>
+                    <span className="badge">{placeholders(site)} draft sections</span>
                   ) : null}
                 </td>
                 <td>{site.pack}</td>
                 <td>{site.preset}</td>
                 <td>
                   {site.status === "published" ? (
-                    <span className="badge live">yayında</span>
+                    <span className="badge live">live</span>
                   ) : (
                     <span className="badge">{site.status}</span>
                   )}
