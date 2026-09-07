@@ -36,14 +36,14 @@ float smin(float a, float b, float k) {
 // rather than modelled — slow, uneven, never repeating on an obvious beat.
 float map(vec3 p) {
   float t = uTime * 0.28;
-  vec3 a = vec3(sin(t * 0.9) * 0.30, cos(t * 0.7) * 0.24, sin(t * 0.5) * 0.16);
-  vec3 b = vec3(cos(t * 0.6) * 0.42 + 0.20, sin(t * 1.1) * 0.30 - 0.16, cos(t * 0.8) * 0.20);
-  vec3 c = vec3(sin(t * 0.4) * 0.34 - 0.26, cos(t * 0.5) * 0.34 + 0.22, sin(t * 0.9) * 0.22);
+  vec3 a = vec3(sin(t * 0.9) * 0.26 - 0.10, cos(t * 0.7) * 0.20 + 0.24, sin(t * 0.5) * 0.14);
+  vec3 b = vec3(cos(t * 0.6) * 0.26 + 0.34, sin(t * 1.1) * 0.24 - 0.30, cos(t * 0.8) * 0.18);
+  vec3 c = vec3(sin(t * 0.4) * 0.28 - 0.40, cos(t * 0.5) * 0.26 + 0.02, sin(t * 0.9) * 0.20);
   a.xy += uPointer * 0.30;
   b.xy += uPointer * 0.16;
   float d = length(p - a) - 0.72;
-  d = smin(d, length(p - b) - 0.56, 0.52);
-  d = smin(d, length(p - c) - 0.50, 0.48);
+  d = smin(d, length(p - b) - 0.52, 0.34);
+  d = smin(d, length(p - c) - 0.46, 0.30);
   return d;
 }
 
@@ -61,21 +61,48 @@ vec3 normalAt(vec3 p) {
  * floor, crossed by softbox strips. The strips are what the eye reads as polish — a
  * smooth gradient alone looks like plastic.
  */
-vec3 studio(vec3 r) {
-  float v = r.y * 0.5 + 0.5;
-  vec3 col = mix(vec3(0.030, 0.010, 0.026), vec3(0.34, 0.07, 0.16), smoothstep(0.00, 0.34, v));
-  col = mix(col, vec3(0.98, 0.72, 0.44), smoothstep(0.34, 0.60, v));
-  col = mix(col, vec3(1.00, 0.95, 0.88), smoothstep(0.66, 0.94, v));
+/**
+ * A matcap rather than an environment lookup.
+ *
+ * Reflecting the view ray into a spherical environment is physically right and
+ * practically undirectable: on a convex blob the reflection vectors crowd into a narrow
+ * band, so lights placed by azimuth and elevation land nowhere near where intended. A
+ * matcap is indexed by the screen-space normal, so a light drawn at the top-left of the
+ * disc appears at the top-left of the object.
+ *
+ * One copper albedo multiplied by light, rather than several bright colours mixed
+ * together. Mixing colours drifts the hue — the previous pass went from copper to sand
+ * to mustard chasing saturation. Multiplying keeps one metal and varies only its tone,
+ * which is what a real surface does.
+ */
+vec3 matcap(vec2 m) {
+  float r = length(m);
+  vec3 copper = vec3(1.00, 0.47, 0.19);
 
-  float ang = atan(r.z, r.x);
-  float strip = sin(ang * 2.0 + r.y * 5.2);
-  col += vec3(1.00, 0.95, 0.90) * smoothstep(0.80, 1.0, strip) * 0.70;
+  // Each light is a hard-edged zone that still brightens toward its own centre. The hard
+  // outer edge is what reads as polish; the gradient inside is what stops it reading flat.
+  float dKey = distance(m, vec2(-0.34, 0.40));
+  float key = smoothstep(0.36, 0.27, dKey) * (0.42 + 0.58 * smoothstep(0.36, 0.04, dKey));
 
-  float strip2 = sin(ang * 3.0 - r.y * 3.4 + 1.7);
-  col += vec3(1.00, 0.82, 0.58) * smoothstep(0.90, 1.0, strip2) * 0.40;
+  float dFill = distance(m, vec2(0.40, -0.34));
+  float fill = smoothstep(0.50, 0.36, dFill) * (0.36 + 0.64 * smoothstep(0.50, 0.06, dFill));
 
-  // A hard horizon: the single most metallic cue there is.
-  col += vec3(1.0, 0.93, 0.84) * smoothstep(0.015, 0.0, abs(r.y - 0.06)) * 0.55;
+  float dSide = distance(m, vec2(0.54, 0.32));
+  float side = smoothstep(0.24, 0.15, dSide) * (0.45 + 0.55 * smoothstep(0.24, 0.02, dSide));
+
+  float horizon = smoothstep(0.040, 0.0, abs(m.y + 0.04 + 0.16 * m.x));
+  float rim = smoothstep(0.91, 1.0, r);
+
+  // A dark band above the seam: the seam only reads as a seam against darkness.
+  float shade = 1.0 - smoothstep(0.19, 0.03, abs(m.y - 0.22 - 0.18 * m.x)) * 0.72;
+
+  // Deliberately sparse: the zones cover well under half the disc so most of the
+  // surface stays near-black. Large dark areas are where the drama comes from.
+  float lum = 0.022 + key * 1.55 + fill * 1.20 + side * 0.70 + horizon * 1.15 + rim * 0.48;
+  vec3 col = copper * lum * shade;
+
+  // Only the key goes to true white — a metal has one place the light source itself shows.
+  col += vec3(1.0) * smoothstep(0.20, 0.03, dKey) * 0.95;
   return col;
 }
 
@@ -99,24 +126,28 @@ void main() {
   vec3 p = ro + rd * t;
   vec3 n = normalAt(p);
   vec3 refl = reflect(rd, n);
-  vec3 col = studio(refl);
+  vec3 col = matcap(n.xy);
 
   // Fresnel: grazing angles reflect almost everything, which builds the rim.
-  float fres = pow(1.0 - max(dot(n, -rd), 0.0), 3.4);
-  col += vec3(1.0, 0.88, 0.72) * fres * 0.85;
+  float fres = pow(1.0 - max(dot(n, -rd), 0.0), 5.0);
+  col += vec3(1.0, 0.72, 0.42) * fres * 0.30;
 
   // One hard specular so there is a point of true white to anchor the eye.
   vec3 lightDir = normalize(vec3(-0.45, 0.80, 0.62));
   col += vec3(1.0) * pow(max(dot(refl, lightDir), 0.0), 46.0) * 1.5;
 
   // Contact darkening in the concavities where the spheres fuse.
-  float occ = smoothstep(0.0, 0.30, map(p + n * 0.16));
-  col *= 0.42 + 0.58 * occ;
+  float occ = smoothstep(0.0, 0.22, map(p + n * 0.13));
+  col *= 0.74 + 0.26 * occ;
 
-  col = col / (col + 0.72);            // filmic rolloff so highlights do not clip flat
+  col = col / (col + 0.55);            // gentle rolloff: the blacks have to stay black
+  // The rolloff desaturates as it compresses, which turned copper into sand. Push the
+  // chroma back afterwards rather than shouting louder in the light colours.
+  col = mix(vec3(dot(col, vec3(0.299, 0.587, 0.114))), col, 1.28);
+  col = max(col, vec3(0.0));
   col = pow(col, vec3(0.4545));        // to sRGB
 
-  float edge = smoothstep(0.0, 0.02, 1.0 - fres * 0.35);
+  float edge = 1.0;
   outColor = vec4(col, edge);
 }`;
 
