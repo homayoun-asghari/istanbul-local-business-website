@@ -105,4 +105,15 @@ describe("openStateLabel", () => {
       "Şu an kapalı · Pazartesi 09:00’da açılıyor",
     );
   });
+
+  // The bug this guards: hardcoding 'a/'da looks right for a 09:00–19:00 salon and is
+  // wrong for the 08:00–20:00 clinic hours the veteriner pack will use.
+  it("harmonises front-vowel times correctly, not as 'a/'da", () => {
+    expect(openStateLabel({ open: true, closesAt: "08:00" }, "mon")).toBe(
+      "Şu an açık · 08:00’e kadar",
+    );
+    expect(openStateLabel({ open: false, opensAt: "20:00", opensDay: "mon" }, "mon")).toBe(
+      "Şu an kapalı · 20:00’de açılıyor",
+    );
+  });
 });

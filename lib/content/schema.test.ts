@@ -19,6 +19,12 @@ describe("SiteContent", () => {
     expect(() => parseSiteContent(bad)).toThrow(/E.164/);
   });
 
+  it("rejects content with no slug at all", () => {
+    const content: Record<string, unknown> = { ...melike };
+    delete content.slug;
+    expect(() => parseSiteContent(content)).toThrow();
+  });
+
   it("rejects a slug with spaces or capitals", () => {
     expect(() => parseSiteContent({ ...melike, slug: "Melike Guzellik" })).toThrow(/slug/);
   });

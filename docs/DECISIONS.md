@@ -23,3 +23,9 @@ Append-only. One line per decision, newest last.
 2026-09-07 — Leads are imported by pasting CSV, not via the Google Sheets API — avoids OAuth setup and a paid quota, and the sheet stays the operator's own pipeline tracker.
 2026-09-07 — Lead contact data is never committed to git — it is real contact information for businesses that have consented to nothing.
 2026-09-07 — Assumption recorded in place of a sixth question: the operator writes and edits Turkish copy in the studio; AI drafting is a later convenience slice, not a dependency.
+2026-09-07 — Turkish time suffixes are derived from the spoken form of the number, not hardcoded — "19:00’a" is right only because nineteen ends in "dokuz"; the 08:00–20:00 hours of the veteriner pack would have rendered "08:00’a kadar", which a Turkish reader reads instantly as machine-written.
+2026-09-07 — Gallery images already used in the hero are dropped, and an empty gallery is skipped — most leads arrive with exactly one Google photo, so the same picture would otherwise appear twice on nearly every demo.
+2026-09-07 — Images are served with a plain <img> from Google's CDN rather than next/image — Vercel's Hobby plan meters image transformations and 40 demos would exhaust the quota; eject downloads images locally.
+2026-09-07 — The site has no dark mode — these are real business websites that commit to one look, not documents that follow the reader's theme.
+2026-09-07 — The Next.js agent-rules block in CLAUDE.md is committed deliberately, not stripped — `next dev` rewrites it on every run, so removing it only produces a permanently dirty tree.
+2026-09-07 — scripts/check-boundary.sh also greps for next/headers and server-only — the spec audit found the rule was claimed in the proof but enforced only by ESLint.

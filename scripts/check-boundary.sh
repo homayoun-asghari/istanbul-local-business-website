@@ -28,6 +28,9 @@ check() {
 check "import a database driver" "from ['\"](drizzle-orm|@neondatabase|pg|postgres)"
 check "read environment variables" "process\.env"
 check "import the db or studio layer" "from ['\"][^'\"]*(lib/db|app/studio)"
+# The spec audit found this rule was claimed but never checked here — it lived only
+# in ESLint. An ejected site renders from a static object with no request context.
+check "depend on request context" "from ['\"](next/headers|server-only)['\"]"
 
 [ $FAIL -eq 0 ] && echo "  render layer is free of db, env and studio references"
 exit $FAIL

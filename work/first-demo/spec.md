@@ -8,7 +8,7 @@ rating and review count, and reaches the salon in one tap by WhatsApp or phone.
 ## Acceptance criteria
 
 - [x] `SiteContent` accepts the Melike Adıgüzel fixture and rejects content missing a phone,
-      → `vitest lib/content/schema.test.ts` — 11 passed, incl. rejection of a missing phone, a non-E.164 phone, a capitalised slug and an unknown section type
+      → `vitest lib/content/schema.test.ts` — rejects a missing phone, a non-E.164 phone, a **missing** slug, a capitalised slug, an unknown section type and a rating above five
       missing a slug, or carrying an unknown section type. — `vitest`
 - [x] Rendering the page from the fixture produces HTML containing the business name, the
       → `vitest components/site/render.test.tsx` — asserts "Melike Adıgüzel Güzellik Salonu", "Bakırköy", "4,7", "1.273", "%92"
@@ -25,10 +25,10 @@ rating and review count, and reaches the salon in one tap by WhatsApp or phone.
       → `vitest packs/presets.test.ts` — reads components/site/fonts.ts and asserts latin-ext on every next/font call, plus registry membership
       falling back mid-word. — `vitest`
 - [x] The page's metadata sets `robots: noindex, nofollow`, and `/robots.txt` disallows
-      → `app/layout.tsx` and `app/(site)/[slug]/page.tsx` set robots index:false; `app/robots.ts` disallows `/`. Build output lists `○ /robots.txt`
+      → `vitest app/seo.test.ts` — asserts `robots()` disallows `/` with no allow rule, that `NOINDEX` is `{index:false, follow:false, nocache:true}`, and that both layout and route take the directive from the shared constant rather than inlining their own. Added after the spec audit found this criterion had no test at all.
       everything. — `vitest`
 - [x] `./scripts/check-boundary.sh` exits 0 with the render layer present: nothing under
-      → `./scripts/check-boundary.sh` → "render layer is free of db, env and studio references"
+      → `./scripts/check-boundary.sh` exits 0; proved falsifiable by adding a `next/headers` import, which fails it with exit 1. The `next/headers` pattern was added after the spec audit found the script claimed that rule but never checked it — until then it lived only in the ESLint rule.
       `components/site/` or `packs/` imports a database driver, `lib/db`, `app/studio`,
       `next/headers`, or reads `process.env`. — `./scripts/check-boundary.sh`
 - [x] `./scripts/verify.sh` exits 0 without any database connection configured, so CI stays

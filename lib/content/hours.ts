@@ -1,4 +1,5 @@
 import { DAY_KEYS, type DayKey, type DayHours, type WeekHours } from "./schema";
+import { inflectTime } from "./turkish";
 
 /**
  * "Şu an açık · 19:00'a kadar" is a small feature that does disproportionate work in a
@@ -93,11 +94,17 @@ export function isOpenNow(hours: WeekHours, now: Date): OpenState {
   return { open: false, opensAt: null, opensDay: null };
 }
 
-/** "Şu an açık · 19:00'a kadar" / "Şu an kapalı · Pazartesi 09:00'da açılıyor" */
+/**
+ * "Şu an açık · 19:00’a kadar" / "Şu an kapalı · Pazartesi 09:00’da açılıyor".
+ *
+ * The suffix is derived from the spoken form of the time, never hardcoded — see
+ * lib/content/turkish.ts. Hardcoding ’a/’da happens to look right for a 09:00–19:00
+ * salon and is wrong for the 08:00–20:00 clinic hours the veteriner pack will use.
+ */
 export function openStateLabel(state: OpenState, today: DayKey): string {
-  if (state.open) return `Şu an açık · ${state.closesAt}’a kadar`;
+  if (state.open) return `Şu an açık · ${inflectTime(state.closesAt, "dative")} kadar`;
   if (state.opensAt === null) return "Şu an kapalı";
-  const when =
-    state.opensDay === today ? state.opensAt : `${DAY_NAMES_TR[state.opensDay]} ${state.opensAt}`;
-  return `Şu an kapalı · ${when}’da açılıyor`;
+  const opensAt = inflectTime(state.opensAt, "locative");
+  const when = state.opensDay === today ? opensAt : `${DAY_NAMES_TR[state.opensDay]} ${opensAt}`;
+  return `Şu an kapalı · ${when} açılıyor`;
 }
