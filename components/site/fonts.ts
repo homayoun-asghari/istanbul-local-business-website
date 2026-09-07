@@ -1,4 +1,4 @@
-import { Bodoni_Moda, Cormorant_Garamond, Jost, Manrope } from "next/font/google";
+import { Bodoni_Moda, Cormorant_Garamond, Jost, Manrope, Onest } from "next/font/google";
 
 /**
  * Loaded with literal arguments because next/font is a compile-time transform.
@@ -33,5 +33,12 @@ export const sansAltFont = Manrope({
   variable: "--font-body-alt",
   subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600"],
+  display: "swap",
+});
+
+export const geometricFont = Onest({
+  variable: "--font-onest",
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "800"],
   display: "swap",
 });

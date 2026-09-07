@@ -64,4 +64,29 @@ export const gece: Preset = {
   },
 };
 
-export const BEAUTY_PRESETS: Record<string, Preset> = { atolye, klinik, gece };
+/**
+ * "Krom" — the pinned, animated one. Near-black ground, two drifting glows and a molten
+ * metal object; the business photograph does not appear until the second screen, which is
+ * the whole point. Onest thin at display size, heavy on the last two words.
+ */
+export const krom: Preset = {
+  id: "krom",
+  label: "Krom — koyu zemin, sıvı metal, hareketli",
+  fonts: { display: "onest", body: "onest" },
+  hero: "chrome",
+  tokens: {
+    ground: "#0A0A0C",
+    surface: "#131316",
+    ink: "#F4F0EA",
+    inkSoft: "#CFC8BF",
+    muted: "#8B857E",
+    line: "#22222A",
+    brand: "#E8A05C",
+    brandInk: "#14100C",
+    accent: "#B4506B",
+    radius: "18px",
+    radiusPill: "999px",
+  },
+};
+
+export const BEAUTY_PRESETS: Record<string, Preset> = { atolye, klinik, gece, krom };
