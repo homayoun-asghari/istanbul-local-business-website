@@ -20,12 +20,13 @@ import { Footer } from "./Footer";
  */
 export function Site({ content, now }: { content: SiteContent; now: Date }) {
   const preset = BEAUTY_PRESETS[content.preset] ?? BEAUTY_PRESETS.atolye;
+  const sections = withoutRepeatedPhotos(content.sections);
 
   return (
     <div style={presetCssVars(preset) as React.CSSProperties} className="bg-ground text-ink">
       <Header content={content} />
       <main>
-        {content.sections.map((section, index) => {
+        {sections.map((section, index) => {
           const key = `${section.type}-${index}`;
           switch (section.type) {
             case "hero":
@@ -49,4 +50,32 @@ export function Site({ content, now }: { content: SiteContent; now: Date }) {
       <ContactBar content={content} />
     </div>
   );
+}
+
+/**
+ * Most leads come with exactly one photo from their Google listing. Showing it in the
+ * hero and again in the gallery reads as padding — the owner notices immediately that
+ * it is the same picture twice. Drop gallery images already used above, and drop the
+ * gallery entirely if nothing is left.
+ */
+function withoutRepeatedPhotos(sections: SiteContent["sections"]): SiteContent["sections"] {
+  const seen = new Set<string>();
+  const kept: SiteContent["sections"] = [];
+
+  for (const section of sections) {
+    if (section.type === "hero") {
+      seen.add(section.image.src);
+      kept.push(section);
+      continue;
+    }
+    if (section.type === "gallery") {
+      const images = section.images.filter((image) => !seen.has(image.src));
+      for (const image of images) seen.add(image.src);
+      if (images.length === 0) continue;
+      kept.push({ ...section, images });
+      continue;
+    }
+    kept.push(section);
+  }
+  return kept;
 }

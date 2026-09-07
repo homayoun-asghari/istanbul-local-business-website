@@ -56,7 +56,9 @@ describe("the demo a salon owner opens", () => {
   });
 
   it("renders every section in the content, in order", () => {
-    for (const id of ["hizmetler", "hakkimizda", "galeri", "saatler", "iletisim"]) {
+    // No #galeri: this lead's only photo is already the hero, so the gallery is
+    // dropped rather than showing the same picture twice. See withoutRepeatedPhotos.
+    for (const id of ["hizmetler", "hakkimizda", "saatler", "iletisim"]) {
       expect(html, `missing section #${id}`).toContain(`id="${id}"`);
     }
     expect(html.indexOf("hizmetler")).toBeLessThan(html.indexOf("iletisim"));
@@ -88,5 +90,30 @@ describe("the live open/closed state", () => {
     const html = render(CLOSED);
     expect(html).toContain("Şu an kapalı");
     expect(html).toContain("Pazartesi 09:00");
+  });
+});
+
+describe("repeated photos", () => {
+  it("drops a gallery that only repeats the hero photo", () => {
+    const html = render(OPEN);
+    const heroSrc = melike.sections.find((s) => s.type === "hero")!.image.src;
+    // Count <img> tags only: React also emits a <link rel="preload"> for the eager
+    // hero image, so the raw URL legitimately appears more than once.
+    const imgs = (html.match(/<img[^>]*>/g) ?? []).filter((tag) => tag.includes(heroSrc));
+    expect(imgs.length, "the salon's only photo must be shown once, not twice").toBe(1);
+    expect(html).not.toContain('id="galeri"');
+  });
+
+  it("keeps a gallery whose photos are not already shown", () => {
+    const extra = { src: "https://example.com/salon-2.jpg", alt: "Salondan ikinci kare" };
+    const withGallery = {
+      ...melike,
+      sections: melike.sections.map((s) =>
+        s.type === "gallery" ? { ...s, images: [...s.images, extra] } : s,
+      ),
+    };
+    const html = renderToStaticMarkup(<Site content={withGallery} now={OPEN} />);
+    expect(html).toContain('id="galeri"');
+    expect(html).toContain(extra.src);
   });
 });
