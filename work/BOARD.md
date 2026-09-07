@@ -7,7 +7,7 @@ Every slice crosses the whole stack and ends in something a person can do.
 
 | #   | Slug              | Slice (what a user can do)                                                                                                       | PRD    | Status |
 | --- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | `first-demo`      | A phone visitor opens Melike Adıgüzel Güzellik Salonu's demo on a live Vercel URL, sees their real 4.7★/1273 rating and photo, and reaches them in one tap by WhatsApp or phone. Content comes from Neon. | J3     | todo   |
+| 1   | `first-demo`      | A phone visitor opens Melike Adıgüzel Güzellik Salonu's demo on a live Vercel URL, sees their real 4.7★/1273 rating and photo, and reaches them in one tap by WhatsApp or phone. Content comes from Neon. | J3     | doing  |
 | 2   | `studio-edit`     | The operator logs into `/studio`, edits that business's Turkish content in a form, publishes, and sees the change live.           | J2     | todo   |
 | 3   | `leads-import`    | The operator pastes CSV from the leads sheet and sees all 42 businesses as a working list with industry and pipeline status.      | J1     | todo   |
 | 4   | `demo-from-lead`  | The operator turns any lead row into a published demo in under ten minutes, pre-filled from the pack, without opening a code editor. | J2     | todo   |
