@@ -90,19 +90,19 @@ describe("isOpenNow — overnight shifts, for the 7/24 veteriner pack", () => {
 describe("openStateLabel", () => {
   it("says when it closes today", () => {
     expect(openStateLabel({ open: true, closesAt: "19:00" }, "mon")).toBe(
-      "Şu an açık · 19:00'a kadar",
+      "Şu an açık · 19:00’a kadar",
     );
   });
 
   it("omits the day name when it opens again the same day", () => {
     expect(openStateLabel({ open: false, opensAt: "09:00", opensDay: "mon" }, "mon")).toBe(
-      "Şu an kapalı · 09:00'da açılıyor",
+      "Şu an kapalı · 09:00’da açılıyor",
     );
   });
 
   it("names the day when it opens on a later day", () => {
     expect(openStateLabel({ open: false, opensAt: "09:00", opensDay: "mon" }, "sun")).toBe(
-      "Şu an kapalı · Pazartesi 09:00'da açılıyor",
+      "Şu an kapalı · Pazartesi 09:00’da açılıyor",
     );
   });
 });

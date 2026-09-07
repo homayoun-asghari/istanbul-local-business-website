@@ -95,9 +95,9 @@ export function isOpenNow(hours: WeekHours, now: Date): OpenState {
 
 /** "Şu an açık · 19:00'a kadar" / "Şu an kapalı · Pazartesi 09:00'da açılıyor" */
 export function openStateLabel(state: OpenState, today: DayKey): string {
-  if (state.open) return `Şu an açık · ${state.closesAt}'a kadar`;
+  if (state.open) return `Şu an açık · ${state.closesAt}’a kadar`;
   if (state.opensAt === null) return "Şu an kapalı";
   const when =
     state.opensDay === today ? state.opensAt : `${DAY_NAMES_TR[state.opensDay]} ${state.opensAt}`;
-  return `Şu an kapalı · ${when}'da açılıyor`;
+  return `Şu an kapalı · ${when}’da açılıyor`;
 }

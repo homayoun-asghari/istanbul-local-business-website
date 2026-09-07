@@ -9,8 +9,9 @@ describe("SiteContent", () => {
   });
 
   it("rejects content with no phone number", () => {
-    const { phone: _dropped, ...rest } = melike.business;
-    expect(() => parseSiteContent({ ...melike, business: rest })).toThrow();
+    const business: Record<string, unknown> = { ...melike.business };
+    delete business.phone;
+    expect(() => parseSiteContent({ ...melike, business })).toThrow();
   });
 
   it("rejects a phone number that is not Turkish E.164", () => {

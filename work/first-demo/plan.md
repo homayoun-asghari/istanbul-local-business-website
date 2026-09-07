@@ -8,13 +8,13 @@
 - [x] 3. Design tokens, Turkish-safe fonts and the beauty preset — files: `app/globals.css`,
       `packs/beauty/preset.ts`, `packs/beauty/fonts.ts`, `packs/beauty/fonts.test.ts` —
       verified by: `vitest packs/beauty`
-- [ ] 4. Render layer: sections and page shell — files: `components/site/*.tsx`,
+- [x] 4. Render layer: sections and page shell — files: `components/site/*.tsx`,
       `components/site/render.test.tsx` — verified by: `vitest components/site` and
       `./scripts/check-boundary.sh`
-- [ ] 5. Conversion furniture: WhatsApp, call, live open state, map, sticky mobile bar —
+- [x] 5. Conversion furniture: WhatsApp, call, live open state, map, sticky mobile bar —
       files: `components/site/ContactBar.tsx`, `components/site/Hours.tsx`,
       `components/site/Map.tsx`, tests alongside — verified by: `vitest components/site`
-- [ ] 6. Route, metadata and robots — files: `app/(site)/[slug]/page.tsx`,
+- [x] 6. Route, metadata and robots — files: `app/(site)/[slug]/page.tsx`,
       `app/robots.ts`, `app/(site)/[slug]/metadata.test.ts` — verified by: `vitest app` and
       `npm run build`
 - [ ] 7. Neon schema, loader and seed — files: `lib/db/schema.ts`, `lib/db/client.ts`,

@@ -47,14 +47,14 @@ export const melike: SiteContent = {
   seo: {
     title: "Melike Adıgüzel Güzellik Salonu — Osmaniye, Bakırköy",
     description:
-      "Bakırköy Osmaniye'de güzellik ve bakım hizmetleri. Google'da 1.273 değerlendirme ile 4,7 puan. Randevu için WhatsApp'tan yazabilirsiniz.",
+      "Bakırköy Osmaniye'de güzellik ve bakım hizmetleri. Google'da 1.273 değerlendirme ile 4,7 puan. Randevu için WhatsApp’tan yazabilirsiniz.",
   },
   sections: [
     {
       type: "hero",
       headline: "Bakırköy'de kendinizi iyi hissettiren bakım",
       subline:
-        "Osmaniye'deki salonumuzda cilt bakımından kalıcı makyaja kadar her işlemi, size ayrılmış zaman ve tek tek planlanmış randevularla yapıyoruz.",
+        "Osmaniye’deki salonumuzda cilt bakımından kalıcı makyaja kadar her işlemi, size ayrılmış zaman ve tek tek planlanmış randevularla yapıyoruz.",
       image: {
         src: MAPS_PHOTO,
         alt: "Melike Adıgüzel Güzellik Salonu'nun Osmaniye, Bakırköy'deki salonundan bir kare",
@@ -88,8 +88,8 @@ export const melike: SiteContent = {
       type: "about",
       title: "Hakkımızda",
       body: [
-        "Osmaniye Mahallesi'ndeki salonumuzda, Bakırköy ve çevresinden gelen misafirlerimizi ağırlıyoruz.",
-        "Google üzerinde 1.273 değerlendirme aldık ve ortalamamız 4,7. Değerlendirmelerin %92'si beş yıldız. Bizi tercih eden herkese ayrı ayrı teşekkür ederiz.",
+        "Osmaniye Mahallesi’ndeki salonumuzda, Bakırköy ve çevresinden gelen misafirlerimizi ağırlıyoruz.",
+        "Google üzerinde 1.273 değerlendirme aldık ve ortalamamız 4,7. Değerlendirmelerin %92’si beş yıldız. Bizi tercih eden herkese ayrı ayrı teşekkür ederiz.",
         "Randevu sistemiyle çalışıyoruz; böylece her misafirimize ayrılmış bir zaman diliminde ilgilenebiliyoruz.",
       ],
       placeholder: true,
