@@ -17,7 +17,7 @@
 - [x] 6. Route, metadata and robots — files: `app/(site)/[slug]/page.tsx`,
       `app/robots.ts`, `app/(site)/[slug]/metadata.test.ts` — verified by: `vitest app` and
       `npm run build`
-- [ ] 7. Neon schema, loader and seed — files: `lib/db/schema.ts`, `lib/db/client.ts`,
+- [x] 7. Neon schema, loader and seed — files: `lib/db/schema.ts`, `lib/db/client.ts`,
       `lib/db/sites.ts`, `drizzle.config.ts`, `scripts/seed.ts`, `scripts/db-check.ts` —
       verified by: `./scripts/verify.sh` green with no DATABASE_URL, and the operator running
       `db:push && db:seed && db:check`
