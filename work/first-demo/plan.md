@@ -5,7 +5,7 @@
       `vitest lib/content`
 - [x] 2. Opening-hours logic in Europe/Istanbul — files: `lib/content/hours.ts`,
       `lib/content/hours.test.ts` — verified by: `vitest lib/content/hours`
-- [ ] 3. Design tokens, Turkish-safe fonts and the beauty preset — files: `app/globals.css`,
+- [x] 3. Design tokens, Turkish-safe fonts and the beauty preset — files: `app/globals.css`,
       `packs/beauty/preset.ts`, `packs/beauty/fonts.ts`, `packs/beauty/fonts.test.ts` —
       verified by: `vitest packs/beauty`
 - [ ] 4. Render layer: sections and page shell — files: `components/site/*.tsx`,
