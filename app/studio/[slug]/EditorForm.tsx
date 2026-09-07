@@ -228,6 +228,16 @@ export function EditorForm({
           );
         }
 
+        if (section.type === "emergency") {
+          return (
+            <section key={key}>
+              <h2>Acil bandı{badge}</h2>
+              <Field name={`section.${index}.title`} label="Başlık" value={section.title} />
+              <Field name={`section.${index}.note`} label="Açıklama" value={section.note} />
+            </section>
+          );
+        }
+
         if (section.type === "proof") return null;
 
         return (

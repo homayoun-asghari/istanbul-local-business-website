@@ -13,7 +13,7 @@
     "test": "vitest run --passWithNoTests",
     "db:push": "node --env-file-if-exists=.env.local ./node_modules/drizzle-kit/bin.cjs push --force",
     "db:studio": "node --env-file-if-exists=.env.local ./node_modules/drizzle-kit/bin.cjs studio",
-    "eject": "tsx scripts/eject.ts",
+    "eject": "tsx --env-file-if-exists=.env.local scripts/eject.ts",
     "db:seed": "tsx --env-file-if-exists=.env.local scripts/seed.ts",
     "db:check": "tsx --env-file-if-exists=.env.local scripts/db-check.ts"
   },

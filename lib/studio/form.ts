@@ -101,6 +101,8 @@ function sectionFromFields(section: Section, index: number, fields: Fields): Sec
         images: images.length > 0 ? images : section.images,
       };
     }
+    case "emergency":
+      return { ...section, title: at("title", section.title), note: at("note", section.note) };
     case "proof":
       // Renders entirely from business.rating / reviewCount — nothing to edit here.
       return section;

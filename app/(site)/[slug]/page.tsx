@@ -29,5 +29,5 @@ export default async function DemoPage({ params }: PageProps<"/[slug]">) {
   const { slug } = await params;
   const content = await getPublishedSite(slug);
   if (!content) notFound();
-  return <Site content={content} now={new Date()} />;
+  return <Site content={content} now={new Date()} trackAs={slug} />;
 }

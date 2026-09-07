@@ -20,7 +20,9 @@ export default async function StudioIndex() {
           </button>
         </form>
       </div>
-      <p className="note">{sites.length} kayıt.</p>
+      <p className="note">
+        {sites.length} kayıt · <Link href="/studio/leads">aday işletmeler →</Link>
+      </p>
 
       {sites.length === 0 ? (
         <p className="msg" style={{ marginTop: 20 }}>

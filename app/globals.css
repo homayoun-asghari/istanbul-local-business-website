@@ -19,8 +19,8 @@
   --color-brand-ink: var(--brand-ink);
   --color-accent: var(--accent);
 
-  --font-display: var(--font-display), Georgia, "Times New Roman", serif;
-  --font-body: var(--font-body), "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-display-active), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-body-active), "Helvetica Neue", Arial, sans-serif;
 
   --radius-edge: var(--radius);
   --radius-pill: var(--radius-pill);
@@ -33,7 +33,7 @@ html {
 body {
   background: var(--ground);
   color: var(--ink);
-  font-family: var(--font-body), "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-body-active), "Helvetica Neue", Arial, sans-serif;
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -49,7 +49,7 @@ h3 {
 /* The eyebrow label used above section headings. Uppercase Turkish needs the extra
    tracking to stay readable — İ and Ş are visually dense. */
 .eyebrow {
-  font-family: var(--font-body), "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-body-active), "Helvetica Neue", Arial, sans-serif;
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.18em;

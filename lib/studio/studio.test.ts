@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { config } from "@/middleware";
 import { melike } from "@/lib/content/fixtures/melike";
 import { placeholderCount } from "./form";
+import { safeNext } from "./auth";
 
 describe("what the middleware protects", () => {
   const matches = (path: string) =>
@@ -35,5 +36,22 @@ describe("placeholder badging", () => {
       sections: melike.sections.map((section) => ({ ...section, placeholder: false })),
     };
     expect(placeholderCount(answered)).toBe(0);
+  });
+});
+
+describe("the post-login redirect", () => {
+  it("keeps a same-origin path", () => {
+    expect(safeNext("/studio/melike-adiguzel-guzellik")).toBe("/studio/melike-adiguzel-guzellik");
+  });
+
+  it("refuses a protocol-relative host, which would be an open redirect", () => {
+    expect(safeNext("//evil.example")).toBe("/studio");
+  });
+
+  it("refuses an absolute URL and anything else odd", () => {
+    expect(safeNext("https://evil.example/phish")).toBe("/studio");
+    expect(safeNext("javascript:alert(1)")).toBe("/studio");
+    expect(safeNext(null)).toBe("/studio");
+    expect(safeNext("")).toBe("/studio");
   });
 });

@@ -1,16 +1,13 @@
 import type { Preset } from "../types";
 
 /**
- * "Atölye" — the atelier. Warm bone ground, deep wine, brushed brass, square panels
- * and hairline rules, with a high-contrast fashion serif carrying the headlines.
- *
- * Chosen against the obvious: rose gold, blush gradients and script lettering are what
- * every güzellik salonu template in Istanbul already looks like, so a salon owner reads
- * them as "someone reused a template on me". This reads as an editorial spread instead.
+ * Three complete looks, not three colour swaps. Ten demos that differ only in accent hue
+ * read as ten copies of one site — exactly the impression that loses the sale — so each
+ * preset changes typeface, edge language and rhythm as well.
  */
 export const atolye: Preset = {
   id: "atolye",
-  label: "Atölye — bone, şarap kırmızısı, pirinç",
+  label: "Atölye — kemik beyazı, şarap, pirinç",
   fonts: { display: "bodoni-moda", body: "jost" },
   tokens: {
     ground: "#F4F2ED",
@@ -27,4 +24,44 @@ export const atolye: Preset = {
   },
 };
 
-export const BEAUTY_PRESETS: Record<string, Preset> = { atolye };
+/** Clinical calm: cool greys, deep teal, soft edges. Reads as a medical aesthetics clinic. */
+export const klinik: Preset = {
+  id: "klinik",
+  label: "Klinik — buz grisi, petrol yeşili, yumuşak köşe",
+  fonts: { display: "cormorant-garamond", body: "manrope" },
+  tokens: {
+    ground: "#F5F7F7",
+    surface: "#FFFFFF",
+    ink: "#141C1D",
+    inkSoft: "#37474A",
+    muted: "#6E8083",
+    line: "#DDE5E6",
+    brand: "#12595C",
+    brandInk: "#F2FAFA",
+    accent: "#C08A5A",
+    radius: "14px",
+    radiusPill: "999px",
+  },
+};
+
+/** Evening luxe: near-black ground, warm gold. For salons that trade on glamour. */
+export const gece: Preset = {
+  id: "gece",
+  label: "Gece — koyu zemin, altın, keskin köşe",
+  fonts: { display: "cormorant-garamond", body: "jost" },
+  tokens: {
+    ground: "#14110F",
+    surface: "#1D1917",
+    ink: "#F3EDE6",
+    inkSoft: "#D2C8BC",
+    muted: "#968B7E",
+    line: "#2C2521",
+    brand: "#C2A163",
+    brandInk: "#17130F",
+    accent: "#8C6A3A",
+    radius: "2px",
+    radiusPill: "999px",
+  },
+};
+
+export const BEAUTY_PRESETS: Record<string, Preset> = { atolye, klinik, gece };

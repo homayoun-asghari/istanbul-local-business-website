@@ -1,4 +1,4 @@
-import { Bodoni_Moda, Jost } from "next/font/google";
+import { Bodoni_Moda, Cormorant_Garamond, Jost, Manrope } from "next/font/google";
 
 /**
  * Loaded with literal arguments because next/font is a compile-time transform.
@@ -17,6 +17,20 @@ export const displayFont = Bodoni_Moda({
 
 export const bodyFont = Jost({
   variable: "--font-body",
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "600"],
+  display: "swap",
+});
+
+export const serifAltFont = Cormorant_Garamond({
+  variable: "--font-display-alt",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+export const sansAltFont = Manrope({
+  variable: "--font-body-alt",
   subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600"],
   display: "swap",

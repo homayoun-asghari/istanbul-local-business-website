@@ -80,3 +80,26 @@ export async function countVersions(slug: string): Promise<number> {
     .where(eq(siteVersions.siteId, row.id));
   return versions.length;
 }
+
+/** Creating a demo from a lead. Re-running replaces the draft rather than failing. */
+export async function createSite(content: SiteContent): Promise<void> {
+  await db()
+    .insert(sites)
+    .values({
+      slug: content.slug,
+      pack: content.pack,
+      preset: content.preset,
+      content,
+      status: "published",
+    })
+    .onConflictDoUpdate({
+      target: sites.slug,
+      set: {
+        pack: content.pack,
+        preset: content.preset,
+        content,
+        status: "published",
+        updatedAt: new Date(),
+      },
+    });
+}

@@ -77,3 +77,13 @@ export const sessionCookieOptions = {
   path: "/",
   maxAge: SESSION_HOURS * 60 * 60,
 } as const;
+
+/**
+ * `?next=` comes from the URL, so it is attacker-controlled. Only a same-origin path is
+ * allowed: a protocol-relative "//evil.com" or an absolute URL would otherwise turn the
+ * login page into an open redirect.
+ */
+export function safeNext(value: unknown): string {
+  const next = String(value ?? "");
+  return next.startsWith("/") && !next.startsWith("//") ? next : "/studio";
+}
