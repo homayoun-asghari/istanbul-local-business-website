@@ -5,6 +5,7 @@ import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import { isOpenNow, istanbulNow, openStateLabel } from "@/lib/content/hours";
 import { telHref, whatsappHref } from "@/lib/content/schema";
 import { formatPhone } from "./Cta";
+import { ChromeCanvas } from "./ChromeCanvas";
 
 /**
  * The chrome hero.
@@ -125,7 +126,9 @@ export function ChromeHero({
           surface so the bands ripple instead of sitting flat.
         */}
         <div className="chrome-metal" aria-hidden="true">
+          {/* The CSS shape is the fallback; the canvas covers it when WebGL2 exists. */}
           <div className="chrome-ball" />
+          <ChromeCanvas />
         </div>
 
         <svg width="0" height="0" aria-hidden="true" focusable="false">
