@@ -54,7 +54,7 @@ Ask about:
 - A hard constraint not stated — deadline, budget, stack, hosting, compliance, an
   existing system to integrate with.
 - Scale and realism — real users or a demo? Real payments or simulated? Real
-  third-party integrations or stubs? *(This one is material surprisingly often.)*
+  third-party integrations or stubs? _(This one is material surprisingly often.)_
 - What is explicitly **out** of scope for v1.
 
 Never ask:
@@ -71,13 +71,15 @@ Never ask:
 Create these three. They are the project's memory; everything downstream reads them.
 
 **`docs/PRD.md`** — what and why, not how.
+
 - One-paragraph summary
 - The users, and what each needs
 - Numbered user journeys, each phrased as something a person can do
 - Explicit non-goals
 - What "v1 is finished" means
 
-**`docs/ARCHITECTURE.md`** — how, and *why that way*.
+**`docs/ARCHITECTURE.md`** — how, and _why that way_.
+
 - Stack, and the reason for each choice (this is the part worth writing)
 - Directory layout
 - Data model
@@ -85,6 +87,7 @@ Create these three. They are the project's memory; everything downstream reads t
 - What is real versus simulated, stated plainly
 
 **`docs/DECISIONS.md`** — append-only.
+
 - One line per decision: `YYYY-MM-DD — <decision> — <why>`
 - Seed it with every decision from Step 2, and every assumption made in place of a
   sixth question.
@@ -140,10 +143,10 @@ Format:
 Source of truth for remaining work. `/ship-it` works top to bottom.
 Status: `todo` -> `doing` -> `done`
 
-| # | Slug | Slice (what a user can do) | PRD | Status |
-|---|------|----------------------------|-----|--------|
-| 1 | signup | A visitor can sign up and see an empty dashboard | J1 | todo |
-| 2 | create-project | A signed-in user can create a project and see it listed | J2 | todo |
+| #   | Slug           | Slice (what a user can do)                              | PRD | Status |
+| --- | -------------- | ------------------------------------------------------- | --- | ------ |
+| 1   | signup         | A visitor can sign up and see an empty dashboard        | J1  | todo   |
+| 2   | create-project | A signed-in user can create a project and see it listed | J2  | todo   |
 ```
 
 Then ask whether to mirror the board to GitHub Issues. If yes:

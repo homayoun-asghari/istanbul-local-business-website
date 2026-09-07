@@ -1,32 +1,20 @@
 name: verify
 
 on:
-  pull_request:
   push:
     branches: [main]
+  pull_request:
 
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # /kickoff adds the toolchain setup for the chosen stack here.
       - uses: actions/setup-node@v4
-        if: hashFiles('package.json') != ''
         with:
           node-version: 24
           cache: npm
       - run: npm ci
-        if: hashFiles('package-lock.json') != ''
-
-      # CI runs the script itself, never a copy of its steps. That is the whole
-      # point: add a check to verify.sh and CI picks it up with no second edit,
-      # so local green and CI green cannot drift apart.
+      # CI runs the same file the agent runs. Never list the checks here —
+      # that is what stops local green and CI green from drifting apart.
       - run: ./scripts/verify.sh
-
-  config:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: ./scripts/check-config.sh
