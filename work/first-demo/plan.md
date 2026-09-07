@@ -3,7 +3,7 @@
 - [x] 1. Content schema and the real fixture — files: `lib/content/schema.ts`,
       `lib/content/schema.test.ts`, `lib/content/fixtures/melike.ts` — verified by:
       `vitest lib/content`
-- [ ] 2. Opening-hours logic in Europe/Istanbul — files: `lib/content/hours.ts`,
+- [x] 2. Opening-hours logic in Europe/Istanbul — files: `lib/content/hours.ts`,
       `lib/content/hours.test.ts` — verified by: `vitest lib/content/hours`
 - [ ] 3. Design tokens, Turkish-safe fonts and the beauty preset — files: `app/globals.css`,
       `packs/beauty/preset.ts`, `packs/beauty/fonts.ts`, `packs/beauty/fonts.test.ts` —
