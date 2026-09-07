@@ -1,7 +1,9 @@
 import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import { isOpenNow, istanbulNow, openStateLabel } from "@/lib/content/hours";
+import { presetFor } from "@/packs/registry";
 import { Container } from "./primitives";
 import { CallButton, WhatsAppButton } from "./Cta";
+import { ChromeHero } from "./ChromeHero";
 
 export function Hero({
   section,
@@ -12,6 +14,11 @@ export function Hero({
   content: SiteContent;
   now: Date;
 }) {
+  // A preset may replace the hero entirely rather than only recolour it.
+  if (presetFor(content).hero === "chrome") {
+    return <ChromeHero section={section} content={content} now={now} />;
+  }
+
   const { business } = content;
   const state = isOpenNow(content.hours, now);
   const label = openStateLabel(state, istanbulNow(now).day);

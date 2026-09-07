@@ -41,6 +41,13 @@ export const TURKISH_SAFE_FONTS = {
     cssVariable: "--font-body-alt",
     fallback: "'Helvetica Neue', Arial, sans-serif",
   },
+  /** Modern geometric. Thin at display size, heavy for the words that carry weight. */
+  onest: {
+    family: "Onest",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-onest",
+    fallback: "'Helvetica Neue', Arial, sans-serif",
+  },
 } as const satisfies Record<
   string,
   { family: string; subsets: readonly string[]; fallback: string; cssVariable: string }

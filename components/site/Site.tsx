@@ -32,10 +32,12 @@ export function Site({
 }) {
   const preset = presetFor(content);
   const sections = withoutRepeatedPhotos(content.sections);
+  // The chrome hero carries its own navigation, so the shared header would be a second one.
+  const ownsHeader = preset.hero === "chrome";
 
   return (
     <div style={presetCssVars(preset) as React.CSSProperties} className="bg-ground text-ink">
-      <Header content={content} />
+      {ownsHeader ? null : <Header content={content} />}
       <main>
         {sections.map((section, index) => {
           const key = `${section.type}-${index}`;

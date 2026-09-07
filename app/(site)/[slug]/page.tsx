@@ -25,9 +25,21 @@ export async function generateMetadata({ params }: PageProps<"/[slug]">): Promis
   };
 }
 
-export default async function DemoPage({ params }: PageProps<"/[slug]">) {
+export default async function DemoPage({ params, searchParams }: PageProps<"/[slug]">) {
   const { slug } = await params;
   const content = await getPublishedSite(slug);
   if (!content) notFound();
-  return <Site content={content} now={new Date()} trackAs={slug} />;
+
+  // ?preset=krom renders this business in another template without saving anything.
+  // It is how a template gets judged on a real business before being assigned.
+  const { preset } = await searchParams;
+  const previewing = typeof preset === "string" && preset.length > 0;
+
+  return (
+    <Site
+      content={previewing ? { ...content, preset } : content}
+      now={new Date()}
+      trackAs={previewing ? undefined : slug}
+    />
+  );
 }

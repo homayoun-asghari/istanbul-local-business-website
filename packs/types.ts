@@ -10,6 +10,12 @@ export type Preset = {
   /** Shown in the studio's preset picker. */
   label: string;
   fonts: { display: FontKey; body: FontKey };
+  /**
+   * Which hero the preset renders. "classic" is the split text-and-photo layout every
+   * preset shipped with; "chrome" replaces it with a pinned, animated scene in which the
+   * business photo does not appear above the fold at all.
+   */
+  hero?: "classic" | "chrome";
   tokens: {
     ground: string;
     surface: string;
