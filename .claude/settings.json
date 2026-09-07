@@ -12,10 +12,7 @@
       "Bash(terraform apply:*)",
       "Bash(kubectl delete:*)"
     ],
-    "ask": [
-      "Bash(gh pr merge:*)",
-      "Bash(git push:*)"
-    ],
+    "ask": ["Bash(gh pr merge:*)", "Bash(git push:*)"],
     "allow": [
       "Bash(./scripts/verify.sh)",
       "Bash(./scripts/verify.sh --fast)",

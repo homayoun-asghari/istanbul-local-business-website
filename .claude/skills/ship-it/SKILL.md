@@ -13,7 +13,7 @@ Work the board top to bottom, one vertical slice at a time, until it is empty.
 Argument: `$ARGUMENTS` — a slug to build only that slice, or blank for the whole board.
 
 **Do not stop after one slice.** Finish the board. Stop only for a condition in
-*Stop conditions* below.
+_Stop conditions_ below.
 
 ---
 
@@ -53,13 +53,16 @@ Write `work/<slug>/spec.md`:
 # <slug>
 
 ## What a user can do when this is done
+
 <one sentence>
 
 ## Acceptance criteria
+
 - [ ] <criterion — specific enough that a test can prove it>
 - [ ] <...>
 
 ## Out of scope
+
 - <...>
 ```
 
