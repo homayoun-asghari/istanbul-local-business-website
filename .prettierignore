@@ -1,6 +1,7 @@
+.claude/settings.local.json
 .next
+docs/system-design.md
 node_modules
 package-lock.json
 public
 work/
-docs/system-design.md

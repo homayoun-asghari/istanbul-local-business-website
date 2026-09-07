@@ -11,9 +11,11 @@
     "format": "prettier --write .",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
-    "eject": "tsx scripts/eject.ts"
+    "db:push": "node --env-file-if-exists=.env.local ./node_modules/drizzle-kit/bin.cjs push --force",
+    "db:studio": "node --env-file-if-exists=.env.local ./node_modules/drizzle-kit/bin.cjs studio",
+    "eject": "tsx scripts/eject.ts",
+    "db:seed": "tsx --env-file-if-exists=.env.local scripts/seed.ts",
+    "db:check": "tsx --env-file-if-exists=.env.local scripts/db-check.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
