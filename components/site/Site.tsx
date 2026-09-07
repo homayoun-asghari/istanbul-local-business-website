@@ -1,9 +1,10 @@
 import type { SiteContent } from "@/lib/content/schema";
 import { presetCssVars } from "@/packs/types";
-import { BEAUTY_PRESETS } from "@/packs/beauty/preset";
+import { presetFor } from "@/packs/registry";
 import { Header } from "./Header";
 import { Hero } from "./Hero";
 import { Proof } from "./Proof";
+import { Emergency } from "./Emergency";
 import { Services } from "./Services";
 import { About } from "./About";
 import { Gallery } from "./Gallery";
@@ -11,6 +12,7 @@ import { HoursSection } from "./HoursSection";
 import { Contact } from "./Contact";
 import { ContactBar } from "./ContactBar";
 import { Footer } from "./Footer";
+import { Signals } from "./Signals";
 
 /**
  * The whole render layer, entered here. It takes a validated SiteContent object and a
@@ -18,8 +20,17 @@ import { Footer } from "./Footer";
  * what lets `npm run eject` copy this directory into a client's own repository, where
  * none of those things exist. See docs/ARCHITECTURE.md.
  */
-export function Site({ content, now }: { content: SiteContent; now: Date }) {
-  const preset = BEAUTY_PRESETS[content.preset] ?? BEAUTY_PRESETS.atolye;
+export function Site({
+  content,
+  now,
+  trackAs,
+}: {
+  content: SiteContent;
+  now: Date;
+  /** Set on the multi-tenant demo host only. An ejected client site never reports. */
+  trackAs?: string;
+}) {
+  const preset = presetFor(content);
   const sections = withoutRepeatedPhotos(content.sections);
 
   return (
@@ -33,6 +44,8 @@ export function Site({ content, now }: { content: SiteContent; now: Date }) {
               return <Hero key={key} section={section} content={content} now={now} />;
             case "proof":
               return <Proof key={key} content={content} />;
+            case "emergency":
+              return <Emergency key={key} section={section} content={content} />;
             case "services":
               return <Services key={key} section={section} />;
             case "about":
@@ -48,6 +61,7 @@ export function Site({ content, now }: { content: SiteContent; now: Date }) {
       </main>
       <Footer content={content} year={now.getUTCFullYear()} />
       <ContactBar content={content} />
+      {trackAs ? <Signals slug={trackAs} /> : null}
     </div>
   );
 }

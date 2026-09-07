@@ -1,4 +1,4 @@
-import type { FontKey } from "./fonts";
+import { fontValue, type FontKey } from "./fonts";
 
 /**
  * A preset is a complete visual identity, not a colour swap. Ten sites that differ only
@@ -42,5 +42,8 @@ export function presetCssVars(preset: Preset): Record<string, string> {
     "--accent": t.accent,
     "--radius": t.radius,
     "--radius-pill": t.radiusPill,
+    // A preset changes the typefaces too — a colour swap alone reads as one template.
+    "--font-display-active": fontValue(preset.fonts.display),
+    "--font-body-active": fontValue(preset.fonts.body),
   };
 }

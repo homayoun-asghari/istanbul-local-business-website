@@ -34,6 +34,30 @@ describe("SiteContent", () => {
     expect(() => parseSiteContent(bad)).toThrow();
   });
 
+  it("accepts a local image path, which is what an ejected client site uses", () => {
+    const local = {
+      ...melike,
+      sections: melike.sections.map((section) =>
+        section.type === "hero"
+          ? { ...section, image: { ...section.image, src: "/images/image-1.jpg" } }
+          : section,
+      ),
+    };
+    expect(() => parseSiteContent(local)).not.toThrow();
+  });
+
+  it("rejects an image src that is neither a URL nor a path", () => {
+    const bad = {
+      ...melike,
+      sections: melike.sections.map((section) =>
+        section.type === "hero"
+          ? { ...section, image: { ...section.image, src: "images/oops.jpg" } }
+          : section,
+      ),
+    };
+    expect(() => parseSiteContent(bad)).toThrow();
+  });
+
   it("rejects a rating above five", () => {
     expect(() =>
       parseSiteContent({ ...melike, business: { ...melike.business, rating: 5.4 } }),

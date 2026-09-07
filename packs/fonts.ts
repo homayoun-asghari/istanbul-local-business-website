@@ -17,20 +17,42 @@ export const TURKISH_SAFE_FONTS = {
   "bodoni-moda": {
     family: "Bodoni Moda",
     subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-display",
     fallback: "Georgia, 'Times New Roman', serif",
   },
   /** Geometric sans with a warm cast. Reads cleanly at small sizes on a phone. */
   jost: {
     family: "Jost",
     subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-body",
+    fallback: "'Helvetica Neue', Arial, sans-serif",
+  },
+  /** Old-style serif with a light, elegant colour. Carries the klinik and gece looks. */
+  "cormorant-garamond": {
+    family: "Cormorant Garamond",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-display-alt",
+    fallback: "Georgia, 'Times New Roman', serif",
+  },
+  /** Neutral, highly legible sans for dense clinical copy. */
+  manrope: {
+    family: "Manrope",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-body-alt",
     fallback: "'Helvetica Neue', Arial, sans-serif",
   },
 } as const satisfies Record<
   string,
-  { family: string; subsets: readonly string[]; fallback: string }
+  { family: string; subsets: readonly string[]; fallback: string; cssVariable: string }
 >;
 
 export function fontStack(key: FontKey): string {
   const font = TURKISH_SAFE_FONTS[key];
   return `"${font.family}", ${font.fallback}`;
+}
+
+/** What a preset writes into --font-display-active / --font-body-active. */
+export function fontValue(key: FontKey): string {
+  const font = TURKISH_SAFE_FONTS[key];
+  return `var(${font.cssVariable}), ${font.fallback}`;
 }

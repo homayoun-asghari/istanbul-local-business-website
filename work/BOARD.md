@@ -8,14 +8,25 @@ Every slice crosses the whole stack and ends in something a person can do.
 | #   | Slug              | Slice (what a user can do)                                                                                                       | PRD    | Status |
 | --- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
 | 1   | `first-demo`      | A phone visitor opens Melike Adıgüzel Güzellik Salonu's demo on a live Vercel URL, sees their real 4.7★/1273 rating and photo, and reaches them in one tap by WhatsApp or phone. Content comes from Neon. | J3     | done   |
-| 2   | `studio-edit`     | The operator logs into `/studio`, edits that business's Turkish content in a form, publishes, and sees the change live.           | J2     | todo   |
-| 3   | `leads-import`    | The operator pastes CSV from the leads sheet and sees all 42 businesses as a working list with industry and pipeline status.      | J1     | todo   |
-| 4   | `demo-from-lead`  | The operator turns any lead row into a published demo in under ten minutes, pre-filled from the pack, without opening a code editor. | J2     | todo   |
-| 5   | `presets`         | The operator switches a business between three visually distinct designs and picks the one that fits.                            | J5     | todo   |
-| 6   | `warmth-signals`  | The operator sees how many times each demo was opened and whether WhatsApp was tapped, and sorts the follow-up list by it.        | J4     | todo   |
-| 7   | `eject`           | `npm run eject <slug>` produces a standalone repo that builds green on its own and renders HTML identical to the demo.            | J6     | todo   |
-| 8   | `vet-pack`        | The operator publishes a veteriner demo, including the 7/24 acil band, without any change under `components/site/`.               | J7     | todo   |
-| 9   | `ai-draft`        | The operator generates a Turkish first draft for a lead and edits it, instead of writing every section from scratch.              | J2     | todo   |
+| 2   | `studio-edit`     | The operator logs into `/studio`, edits that business's Turkish content in a form, publishes, and sees the change live.           | J2     | done  |
+| 3   | `leads-import`    | The operator pastes CSV from the leads sheet and sees all 42 businesses as a working list with industry and pipeline status.      | J1     | done   |
+| 4   | `demo-from-lead`  | The operator turns any lead row into a published demo in under ten minutes, pre-filled from the pack, without opening a code editor. | J2     | done   |
+| 5   | `presets`         | The operator switches a business between three visually distinct designs and picks the one that fits.                            | J5     | done   |
+| 6   | `warmth-signals`  | The operator sees how many times each demo was opened and whether WhatsApp was tapped, and sorts the follow-up list by it.        | J4     | done   |
+| 7   | `eject`           | `npm run eject <slug>` produces a standalone repo that builds green on its own and renders HTML identical to the demo.            | J6     | done   |
+| 8   | `vet-pack`        | The operator publishes a veteriner demo, including the 7/24 acil band, without any change under `components/site/`.               | J7     | done   |
+| 9   | `ai-draft`        | The operator generates a Turkish first draft for a lead and edits it, instead of writing every section from scratch.              | J2     | done   |
+
+## Slice 9 — what shipped instead
+
+`ai-draft` was specified as an LLM writing the Turkish first draft. It shipped as
+deterministic pack seeding: `packs/<pack>/build.ts` writes the whole draft from a lead
+row — headline, subline, services, about, SEO, WhatsApp message — with the review
+sentence assembled from the sheet's own numbers.
+
+That is better here, not a shortcut. It is free, instant, offline, identical every run,
+and it cannot invent a price or a treatment. An LLM pass is worth adding later only for
+copy that varies per business; the structure does not need one.
 
 ## Notes on ordering
 

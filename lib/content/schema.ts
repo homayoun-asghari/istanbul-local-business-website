@@ -31,8 +31,20 @@ export const WeekHoursSchema = z.object({
   note: z.string().optional(),
 });
 
+/**
+ * Either a remote URL (a demo pointing at the business's Google photo) or a root-relative
+ * path (an ejected client site, whose images were downloaded into public/). Both are
+ * valid states of the same field, so the schema has to accept both.
+ */
+const ImageSrc = z
+  .string()
+  .min(1)
+  .refine((value) => /^https?:\/\//.test(value) || value.startsWith("/"), {
+    message: "image src must be an http(s) URL or a root-relative path",
+  });
+
 export const ImageSchema = z.object({
-  src: z.string().url(),
+  src: ImageSrc,
   alt: z.string().min(1),
   width: z.number().int().positive().optional(),
   height: z.number().int().positive().optional(),
@@ -92,6 +104,13 @@ export const SectionSchema = z.discriminatedUnion("type", [
     type: z.literal("gallery"),
     title: z.string().min(1),
     images: z.array(ImageSchema).min(1),
+    placeholder,
+  }),
+  z.object({
+    type: z.literal("emergency"),
+    /** "7/24 Acil" — the whole reason a pet owner opens a vet's site at 3am. */
+    title: z.string().min(1),
+    note: z.string().min(1),
     placeholder,
   }),
   z.object({ type: z.literal("hours"), title: z.string().min(1), placeholder }),

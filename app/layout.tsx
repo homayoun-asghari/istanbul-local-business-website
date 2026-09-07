@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { bodyFont, displayFont } from "@/components/site/fonts";
+import { bodyFont, displayFont, sansAltFont, serifAltFont } from "@/components/site/fonts";
 import { NOINDEX } from "@/lib/content/seo";
 import "./globals.css";
 
@@ -13,7 +13,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="tr" className={`${displayFont.variable} ${bodyFont.variable}`}>
+    <html
+      lang="tr"
+      className={`${displayFont.variable} ${bodyFont.variable} ${serifAltFont.variable} ${sansAltFont.variable}`}
+    >
       <body>{children}</body>
     </html>
   );
