@@ -29,3 +29,9 @@ Append-only. One line per decision, newest last.
 2026-09-07 — The site has no dark mode — these are real business websites that commit to one look, not documents that follow the reader's theme.
 2026-09-07 — The Next.js agent-rules block in CLAUDE.md is committed deliberately, not stripped — `next dev` rewrites it on every run, so removing it only produces a permanently dirty tree.
 2026-09-07 — scripts/check-boundary.sh also greps for next/headers and server-only — the spec audit found the rule was claimed in the proof but enforced only by ESLint.
+2026-09-07 — Turkish letters are folded before any keyword match, not just in slugs — JavaScript's /i flag does not fold İ, so /veteriner/i silently missed "VETERİNER" and every 7/24 clinic in the sheet.
+2026-09-07 — Content drafting is deterministic pack seeding rather than an LLM call — free, instant, identical every run, and structurally unable to invent a price or a treatment.
+2026-09-07 — Presets are spread across leads by a hash of the slug — three salons in the same district receiving the same layout in one week is how a demo reads as a reused template.
+2026-09-07 — Image src accepts an http(s) URL or a root-relative path — a demo points at the business's Google photo, an ejected client site at its own public/ folder; both are valid states of one field.
+2026-09-07 — The ejected repo pins turbopack.root and outputFileTracingRoot — without it Next walks up, adopts the operator's project as the workspace root and compiles its middleware into the client's site.
+2026-09-07 — Deploy denials and permission prompts were removed from the project settings at the owner's explicit instruction; the guard hook (no commits to main, no force-push to trunk, no piping remote scripts to a shell) is kept.

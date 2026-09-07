@@ -15,7 +15,9 @@
     "db:studio": "node --env-file-if-exists=.env.local ./node_modules/drizzle-kit/bin.cjs studio",
     "eject": "tsx --env-file-if-exists=.env.local scripts/eject.ts",
     "db:seed": "tsx --env-file-if-exists=.env.local scripts/seed.ts",
-    "db:check": "tsx --env-file-if-exists=.env.local scripts/db-check.ts"
+    "db:check": "tsx --env-file-if-exists=.env.local scripts/db-check.ts",
+    "leads:import": "tsx --env-file-if-exists=.env.local scripts/import-leads.ts",
+    "demos:build": "tsx --env-file-if-exists=.env.local scripts/build-demos.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
