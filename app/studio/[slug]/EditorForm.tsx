@@ -35,44 +35,40 @@ export function EditorForm({
       <h1>{business.name}</h1>
       <p className="note">
         <a href={`/${slug}`} target="_blank" rel="noreferrer">
-          /{slug} ↗
+          View live site: /{slug} ↗
         </a>
       </p>
 
-      <h2>İşletme</h2>
+      <h2>Business</h2>
       <div className="grid">
-        <Field name="business.name" label="İşletme adı" value={business.name} />
-        <Field name="business.neighborhood" label="Mahalle" value={business.neighborhood} />
-        <Field name="business.district" label="İlçe" value={business.district} />
-        <Field name="business.phone" label="Telefon (+905XXXXXXXXX)" value={business.phone} />
-        <Field name="business.whatsapp" label="WhatsApp bağlantısı" value={business.whatsapp} />
+        <Field name="business.name" label="Business name" value={business.name} />
+        <Field name="business.neighborhood" label="Neighbourhood" value={business.neighborhood} />
+        <Field name="business.district" label="District" value={business.district} />
+        <Field name="business.phone" label="Phone (+905XXXXXXXXX)" value={business.phone} />
+        <Field name="business.whatsapp" label="WhatsApp link" value={business.whatsapp} />
         <Field
           name="business.instagram"
-          label="Instagram (opsiyonel)"
+          label="Instagram (optional)"
           value={business.instagram ?? ""}
         />
-        <Field name="business.rating" label="Google puanı" value={String(business.rating)} />
+        <Field name="business.rating" label="Google rating" value={String(business.rating)} />
         <Field
           name="business.reviewCount"
-          label="Değerlendirme sayısı"
+          label="Review count"
           value={String(business.reviewCount)}
         />
         <Field
           name="business.fiveStarPct"
-          label="Beş yıldız %"
+          label="Five-star %"
           value={String(business.fiveStarPct)}
         />
-        <Field name="business.lat" label="Enlem" value={String(business.lat)} />
-        <Field name="business.lng" label="Boylam" value={String(business.lng)} />
-        <Field
-          name="business.mapsUrl"
-          label="Google Haritalar bağlantısı"
-          value={business.mapsUrl}
-        />
+        <Field name="business.lat" label="Latitude" value={String(business.lat)} />
+        <Field name="business.lng" label="Longitude" value={String(business.lng)} />
+        <Field name="business.mapsUrl" label="Google Maps link" value={business.mapsUrl} />
       </div>
 
-      <h2>Tasarım</h2>
-      <label htmlFor="preset">Tasarım seçimi</label>
+      <h2>Design</h2>
+      <label htmlFor="preset">Template</label>
       <select id="preset" name="preset" defaultValue={content.preset}>
         {presets.map((preset) => (
           <option key={preset.id} value={preset.id}>
@@ -81,7 +77,7 @@ export function EditorForm({
         ))}
       </select>
 
-      <h2>Çalışma saatleri</h2>
+      <h2>Opening hours</h2>
       {dayKeys.map((day) => {
         const slot = content.hours[day];
         const closed = slot === "closed";
@@ -89,7 +85,7 @@ export function EditorForm({
           <div className="hours" key={day}>
             <span>{dayNames[day]}</span>
             <div>
-              <label htmlFor={`hours.${day}.open`}>Açılış</label>
+              <label htmlFor={`hours.${day}.open`}>Opens</label>
               <input
                 id={`hours.${day}.open`}
                 type="text"
@@ -99,7 +95,7 @@ export function EditorForm({
               />
             </div>
             <div>
-              <label htmlFor={`hours.${day}.close`}>Kapanış</label>
+              <label htmlFor={`hours.${day}.close`}>Closes</label>
               <input
                 id={`hours.${day}.close`}
                 type="text"
@@ -109,39 +105,43 @@ export function EditorForm({
               />
             </div>
             <label style={{ whiteSpace: "nowrap", marginBottom: 9 }}>
-              <input type="checkbox" name={`hours.${day}.closed`} defaultChecked={closed} /> Kapalı
+              <input type="checkbox" name={`hours.${day}.closed`} defaultChecked={closed} /> Closed
             </label>
           </div>
         );
       })}
-      <Field name="hours.note" label="Saatlerin altındaki not" value={content.hours.note ?? ""} />
+      <Field
+        name="hours.note"
+        label="Note under the hours (shown in Turkish)"
+        value={content.hours.note ?? ""}
+      />
 
-      <h2>WhatsApp ve arama</h2>
+      <h2>Contact</h2>
       <Area
         name="whatsappMessage"
-        label="Müşteri WhatsApp'a bastığında hazır gelen mesaj"
+        label="Prefilled WhatsApp message (Turkish — the customer sees this)"
         value={content.whatsappMessage}
       />
 
       {content.sections.map((section, index) => {
         const key = `${section.type}-${index}`;
-        const badge = section.placeholder ? <span className="badge">taslak içerik</span> : null;
+        const badge = section.placeholder ? <span className="badge">draft copy</span> : null;
 
         if (section.type === "hero") {
           return (
             <section key={key}>
-              <h2>Üst bölüm{badge}</h2>
-              <Field name={`section.${index}.headline`} label="Başlık" value={section.headline} />
-              <Area name={`section.${index}.subline`} label="Alt başlık" value={section.subline} />
+              <h2>Hero{badge}</h2>
+              <Field name={`section.${index}.headline`} label="Headline" value={section.headline} />
+              <Area name={`section.${index}.subline`} label="Subheading" value={section.subline} />
               <div className="grid">
                 <Field
                   name={`section.${index}.image.src`}
-                  label="Fotoğraf adresi"
+                  label="Photo URL"
                   value={section.image.src}
                 />
                 <Field
                   name={`section.${index}.image.alt`}
-                  label="Fotoğraf açıklaması"
+                  label="Photo alt text"
                   value={section.image.alt}
                 />
               </div>
@@ -152,15 +152,19 @@ export function EditorForm({
         if (section.type === "services") {
           return (
             <section key={key}>
-              <h2>Hizmetler{badge}</h2>
-              <Field name={`section.${index}.title`} label="Bölüm başlığı" value={section.title} />
+              <h2>Services{badge}</h2>
+              <Field
+                name={`section.${index}.title`}
+                label="Section heading"
+                value={section.title}
+              />
               <Field
                 name={`section.${index}.intro`}
-                label="Giriş cümlesi"
+                label="Intro line"
                 value={section.intro ?? ""}
               />
               <p className="note" style={{ marginTop: 14 }}>
-                Adı boş bırakılan hizmet silinir.
+                Clearing a name deletes that service.
               </p>
               {[...section.items, { name: "", description: "" }].map((item, itemIndex) => (
                 <div className="row" key={itemIndex}>
@@ -168,15 +172,15 @@ export function EditorForm({
                     type="text"
                     name={`section.${index}.item.${itemIndex}.name`}
                     defaultValue={item.name}
-                    placeholder="Hizmet adı"
-                    aria-label="Hizmet adı"
+                    placeholder="Service name"
+                    aria-label="Service name"
                   />
                   <input
                     type="text"
                     name={`section.${index}.item.${itemIndex}.description`}
                     defaultValue={item.description ?? ""}
-                    placeholder="Kısa açıklama"
-                    aria-label="Hizmet açıklaması"
+                    placeholder="Short description"
+                    aria-label="Service description"
                   />
                 </div>
               ))}
@@ -187,11 +191,15 @@ export function EditorForm({
         if (section.type === "about") {
           return (
             <section key={key}>
-              <h2>Hakkımızda{badge}</h2>
-              <Field name={`section.${index}.title`} label="Bölüm başlığı" value={section.title} />
+              <h2>About{badge}</h2>
+              <Field
+                name={`section.${index}.title`}
+                label="Section heading"
+                value={section.title}
+              />
               <Area
                 name={`section.${index}.body`}
-                label="Metin — paragrafları boş satırla ayırın"
+                label="Body — separate paragraphs with a blank line"
                 value={section.body.join("\n\n")}
               />
             </section>
@@ -201,10 +209,14 @@ export function EditorForm({
         if (section.type === "gallery") {
           return (
             <section key={key}>
-              <h2>Galeri{badge}</h2>
-              <Field name={`section.${index}.title`} label="Bölüm başlığı" value={section.title} />
+              <h2>Gallery{badge}</h2>
+              <Field
+                name={`section.${index}.title`}
+                label="Section heading"
+                value={section.title}
+              />
               <p className="note" style={{ marginTop: 14 }}>
-                Üst bölümdeki fotoğraf burada tekrar gösterilmez.
+                A photo already used in the hero is not repeated here.
               </p>
               {[...section.images, { src: "", alt: "" }].map((image, imageIndex) => (
                 <div className="row" key={imageIndex}>
@@ -212,15 +224,15 @@ export function EditorForm({
                     type="text"
                     name={`section.${index}.image.${imageIndex}.src`}
                     defaultValue={image.src}
-                    placeholder="Fotoğraf adresi"
-                    aria-label="Fotoğraf adresi"
+                    placeholder="Photo URL"
+                    aria-label="Photo URL"
                   />
                   <input
                     type="text"
                     name={`section.${index}.image.${imageIndex}.alt`}
                     defaultValue={image.alt}
-                    placeholder="Fotoğraf açıklaması"
-                    aria-label="Fotoğraf açıklaması"
+                    placeholder="Photo alt text"
+                    aria-label="Photo alt text"
                   />
                 </div>
               ))}
@@ -231,9 +243,9 @@ export function EditorForm({
         if (section.type === "emergency") {
           return (
             <section key={key}>
-              <h2>Acil bandı{badge}</h2>
-              <Field name={`section.${index}.title`} label="Başlık" value={section.title} />
-              <Field name={`section.${index}.note`} label="Açıklama" value={section.note} />
+              <h2>Emergency band{badge}</h2>
+              <Field name={`section.${index}.title`} label="Headline" value={section.title} />
+              <Field name={`section.${index}.note`} label="Note" value={section.note} />
             </section>
           );
         }
@@ -243,21 +255,25 @@ export function EditorForm({
         return (
           <section key={key}>
             <h2>
-              {section.type === "hours" ? "Saatler bölümü" : "İletişim bölümü"}
+              {section.type === "hours" ? "Hours section" : "Contact section"}
               {badge}
             </h2>
-            <Field name={`section.${index}.title`} label="Bölüm başlığı" value={section.title} />
+            <Field name={`section.${index}.title`} label="Section heading" value={section.title} />
           </section>
         );
       })}
 
-      <h2>Arama motoru</h2>
-      <Field name="seo.title" label="Sayfa başlığı" value={content.seo.title} />
-      <Area name="seo.description" label="Sayfa açıklaması" value={content.seo.description} />
+      <h2>Search engine</h2>
+      <Field name="seo.title" label="Page title (Turkish)" value={content.seo.title} />
+      <Area
+        name="seo.description"
+        label="Page description (Turkish)"
+        value={content.seo.description}
+      />
 
       <div className="bar">
         <button type="submit" disabled={pending}>
-          {pending ? "Yayınlanıyor…" : "Yayınla"}
+          {pending ? "Publishing…" : "Publish"}
         </button>
         {message ? <span className="msg">{message}</span> : null}
       </div>

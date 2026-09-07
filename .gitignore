@@ -47,5 +47,6 @@ npm-debug.log*
 out/
 playwright-report/
 test-results/
+work/design-v2/insp/
 yarn-debug.log*
 yarn-error.log*

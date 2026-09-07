@@ -16,10 +16,10 @@ import { getSite, publishSite } from "@/lib/db/sites";
 export async function signIn(_state: string | null, data: FormData): Promise<string | null> {
   const password = process.env.STUDIO_PASSWORD;
   const secret = process.env.STUDIO_SECRET;
-  if (!password || !secret) return "STUDIO_PASSWORD veya STUDIO_SECRET tanımlı değil.";
+  if (!password || !secret) return "STUDIO_PASSWORD or STUDIO_SECRET is not set.";
 
   const supplied = String(data.get("password") ?? "");
-  if (!safeEqual(supplied, password)) return "Parola hatalı.";
+  if (!safeEqual(supplied, password)) return "Wrong password.";
 
   const store = await cookies();
   store.set(SESSION_COOKIE, await createSession(secret), sessionCookieOptions);
@@ -34,7 +34,7 @@ export async function signOut(): Promise<void> {
 export async function publish(_state: string | null, data: FormData): Promise<string | null> {
   const slug = String(data.get("slug") ?? "");
   const site = await getSite(slug);
-  if (!site?.content) return "Bu işletme bulunamadı veya içeriği bozuk.";
+  if (!site?.content) return "No such business, or its content is corrupt.";
 
   const candidate = contentFromFields(site.content, fieldsFromFormData(data));
   const result = validate(candidate);
@@ -46,7 +46,7 @@ export async function publish(_state: string | null, data: FormData): Promise<st
   await publishSite(slug, result.content);
   revalidatePath(`/${slug}`);
   revalidatePath(`/studio/${slug}`);
-  return "Yayınlandı.";
+  return "Published.";
 }
 
 export async function importSheet(_state: string | null, data: FormData): Promise<string | null> {
@@ -54,14 +54,14 @@ export async function importSheet(_state: string | null, data: FormData): Promis
   const { importLeads } = await import("@/lib/db/leads");
 
   const csv = String(data.get("csv") ?? "").trim();
-  if (!csv) return "Yapıştırılan alan boş.";
+  if (!csv) return "Nothing pasted.";
 
   const { leads, skipped } = leadsFromCsv(csv);
-  if (leads.length === 0) return "Hiç satır okunamadı. Başlık satırını da yapıştırdınız mı?";
+  if (leads.length === 0) return "No rows read. Did you include the header row?";
 
   const { imported } = await importLeads(leads);
   revalidatePath("/studio/leads");
-  return `${imported} kayıt alındı${skipped > 0 ? `, ${skipped} boş satır atlandı` : ""}.`;
+  return `Imported ${imported} leads${skipped > 0 ? `, skipped ${skipped} blank rows` : ""}.`;
 }
 
 export async function buildDemo(_state: string | null, data: FormData): Promise<string | null> {
@@ -71,10 +71,10 @@ export async function buildDemo(_state: string | null, data: FormData): Promise<
   const { createSite } = await import("@/lib/db/sites");
 
   const lead = await getLead(String(data.get("leadId") ?? ""));
-  if (!lead) return "Kayıt bulunamadı.";
+  if (!lead) return "Lead not found.";
 
   const pack = packForIndustry(lead.industry as "beauty" | "vet");
-  if (!pack) return `"${lead.industry}" için henüz bir sektör paketi yok.`;
+  if (!pack) return `No industry pack for "${lead.industry}" yet.`;
 
   try {
     const content = pack.build({
@@ -109,4 +109,62 @@ export async function buildDemo(_state: string | null, data: FormData): Promise<
   }
 
   redirect(`/studio/${lead.slug}`);
+}
+
+/**
+ * Adding one lead by hand. Most leads arrive by CSV, but a lead found on the street or
+ * sent by a friend should not require building a spreadsheet first.
+ */
+export async function addLead(_state: string | null, data: FormData): Promise<string | null> {
+  const { normalisePhone } = await import("@/lib/leads/csv");
+  const { inferIndustry } = await import("@/lib/leads/industry");
+  const { slugify } = await import("@/lib/leads/slug");
+  const { importLeads } = await import("@/lib/db/leads");
+
+  const text = (name: string) => String(data.get(name) ?? "").trim();
+  const number = (name: string) => {
+    const raw = text(name).replace(",", ".");
+    return raw === "" ? null : Number.isFinite(Number(raw)) ? Number(raw) : null;
+  };
+
+  const business = text("business");
+  if (!business) return "Business name is required.";
+
+  const phone = normalisePhone(text("phone"));
+  if (!phone) return "Phone must be a Turkish mobile number, e.g. 0551 533 09 19.";
+
+  const slug = slugify(business);
+  if (!slug) return "That business name does not produce a usable web address.";
+
+  // The operator can override the guess; blank means infer it from the name.
+  const chosen = text("industry");
+  const industry = chosen === "" ? inferIndustry(business) : chosen;
+
+  await importLeads([
+    {
+      sourceKey: slug,
+      business,
+      slug,
+      industry: industry as ReturnType<typeof inferIndustry>,
+      phone,
+      waLink: `https://wa.me/${phone.replace("+", "")}`,
+      rating: number("rating"),
+      reviews: number("reviews"),
+      pctFive: number("pctFive"),
+      photos: null,
+      social: text("social") || null,
+      mapsPlace: text("mapsPlace") || null,
+      photo: text("photo") || null,
+      neighborhood: text("neighborhood") || null,
+      district: text("district") || null,
+      lat: number("lat"),
+      lng: number("lng"),
+      contacted: false,
+      demoBuilt: false,
+      demoUrl: null,
+    },
+  ]);
+
+  revalidatePath("/studio/leads");
+  return `Added ${business}.`;
 }
