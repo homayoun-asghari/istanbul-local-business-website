@@ -20,8 +20,7 @@ export function Sade({
 }) {
   const stock = presetFor(content).stock;
   const image = stock ? { src: stock.hero, alt: stock.heroAlt } : section.image;
-  const gallery = content.sections.find((s) => s.type === "gallery");
-  const strip = gallery ? gallery.images.slice(0, 3) : [];
+  const strip = (stock?.tiles ?? []).slice(0, 3);
 
   return (
     <section className="relative" style={{ background: "var(--ground)" }}>
@@ -60,9 +59,9 @@ export function Sade({
               {strip.map((image, index) => (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
-                  key={image.src + index}
-                  src={image.src}
-                  alt={image.alt}
+                  key={image + index}
+                  src={image}
+                  alt=""
                   className="salon-word rounded-edge h-20 w-20 object-cover sm:h-24 sm:w-24"
                   style={{ ["--i" as string]: 8 + index }}
                   loading="lazy"
