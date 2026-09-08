@@ -34,14 +34,19 @@ export function InstagramStrip({
       </Container>
       <div className="grid grid-cols-3 gap-1.5 px-1.5 sm:grid-cols-6">
         {section.images.map((image, index) => (
-          <Reveal as="figure" key={image.src + index} delay={index * 45} className="m-0">
+          <Reveal
+            as="figure"
+            key={image.src + index}
+            delay={index * 45}
+            className="photo-hover m-0"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={image.src}
               alt={image.alt}
               loading="lazy"
               decoding="async"
-              className="aspect-square w-full object-cover transition-transform duration-700 hover:scale-105"
+              className="aspect-square w-full object-cover"
             />
           </Reveal>
         ))}

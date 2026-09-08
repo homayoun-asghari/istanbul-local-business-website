@@ -1,6 +1,7 @@
 import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import { presetFor } from "@/packs/registry";
 import { HeroActions, OpenNow, RatingLine, SalonNav, Words } from "./shared";
+import { ScrollScene } from "../ScrollScene";
 
 /**
  * 02 Gece — the KOSA canvas.
@@ -22,7 +23,7 @@ export function Gece({
   const stock = presetFor(content).stock;
   const image = stock ? { src: stock.hero, alt: stock.heroAlt } : section.image;
   return (
-    <section
+    <ScrollScene
       className="relative min-h-[86vh] overflow-hidden"
       style={{ background: "var(--ground)" }}
     >
@@ -30,7 +31,7 @@ export function Gece({
       <img
         src={image.src}
         alt={image.alt}
-        className="salon-drift absolute inset-0 h-full w-full object-cover opacity-80"
+        className="salon-drift scene-bg absolute inset-0 h-full w-full object-cover opacity-80"
         loading="eager"
         decoding="async"
       />
@@ -45,7 +46,7 @@ export function Gece({
 
       <p
         aria-hidden="true"
-        className="font-display pointer-events-none absolute inset-x-0 bottom-[6%] m-0 text-center leading-[0.78] tracking-[0.06em] text-white/[0.07]"
+        className="font-display scene-ghost pointer-events-none absolute inset-x-0 bottom-[6%] m-0 text-center leading-[0.78] tracking-[0.06em] text-white/[0.07]"
         style={{ fontSize: "clamp(76px,15vw,210px)" }}
       >
         {content.business.name.split(/\s+/)[0].toLocaleUpperCase("tr-TR")}
@@ -53,7 +54,7 @@ export function Gece({
 
       <div className="relative z-20 flex min-h-[86vh] flex-col">
         <SalonNav content={content} dark />
-        <div className="flex flex-1 flex-col items-center justify-center px-[clamp(20px,5vw,60px)] text-center">
+        <div className="scene-copy-fade flex flex-1 flex-col items-center justify-center px-[clamp(20px,5vw,60px)] text-center">
           <p
             className="salon-word m-0 text-[11px] tracking-[0.28em] uppercase opacity-70"
             style={{ ["--i" as string]: 0 }}
@@ -78,6 +79,6 @@ export function Gece({
           </div>
         </div>
       </div>
-    </section>
+    </ScrollScene>
   );
 }

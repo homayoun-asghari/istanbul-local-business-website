@@ -1,6 +1,7 @@
 import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import { Container, Eyebrow, SectionHeading } from "./primitives";
 import { CallButton, WhatsAppButton, formatPhone } from "./Cta";
+import { StaticMap } from "./StaticMap";
 
 export function Contact({
   section,
@@ -10,8 +11,6 @@ export function Contact({
   content: SiteContent;
 }) {
   const { business } = content;
-  // The keyless embed endpoint. Google's Maps Embed API needs a billed key; this does not.
-  const embed = `https://maps.google.com/maps?q=${business.lat},${business.lng}&z=16&output=embed`;
 
   return (
     <section id="iletisim" className="py-16 md:py-24">
@@ -78,13 +77,7 @@ export function Contact({
           </div>
 
           <div className="mt-10 md:mt-0">
-            <iframe
-              src={embed}
-              title={`${business.name} konumu`}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="rounded-edge border-line h-[320px] w-full border md:h-[460px]"
-            />
+            <StaticMap business={business} />
           </div>
         </div>
       </Container>

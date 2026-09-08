@@ -24,7 +24,7 @@ export type Preset = {
    * tile strip supplies its own, and because it lives on the preset the ?preset= preview
    * shows the right pictures too instead of the lead's photo in the wrong shape.
    */
-  stock?: { hero: string; heroAlt: string; tiles?: string[] };
+  stock?: { hero: string; heroAlt: string; tiles?: string[]; staff?: string[] };
   tokens: {
     ground: string;
     surface: string;

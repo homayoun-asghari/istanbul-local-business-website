@@ -454,10 +454,10 @@ h3 {
 @keyframes salon-drift {
   0%,
   100% {
-    transform: scale(1.06) translate3d(0, 0, 0);
+    transform: scale(1.12) translate3d(0, 0, 0);
   }
   50% {
-    transform: scale(1.12) translate3d(-1.4%, -1.2%, 0);
+    transform: scale(1.18) translate3d(-1.4%, -1.2%, 0);
   }
 }
 .salon-drift {
@@ -475,10 +475,20 @@ h3 {
     transform: none;
   }
 }
+/* The stagger is deliberately short. At 90ms a step the last thumbnail in a hero
+   strip did not finish arriving until nearly two seconds in, which reads as a slow
+   page rather than as choreography. */
+.salon-word,
+.salon-in {
+  animation: salon-word 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(90ms + var(--i) * 62ms);
+}
+/* Only the word variant sets a display. This class sits on spans inside a headline,
+   where inline-block is what makes the transform apply at all — but putting it on a
+   flex row silently turned that row back into inline-block and ran the price list
+   together on one line. Anything that owns its own display uses .salon-in. */
 .salon-word {
   display: inline-block;
-  animation: salon-word 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(120ms + var(--i) * 90ms);
 }
 
 /* A rule that draws itself, used under section eyebrows. */
@@ -495,6 +505,90 @@ h3 {
   animation: salon-rule 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
+/* ---------------------------------------------------------------------------
+   Scroll scenes.
+
+   ScrollScene.tsx writes one number per frame — `--sy`, 0 at rest and 1 once the
+   hero has scrolled its own height away — and everything below reads it. No
+   transition on any of these: an eased parallax lags behind the finger, which is
+   exactly what makes a cheap one feel cheap.
+
+   `translate` is used rather than `transform` on purpose. The drift animation below
+   already owns `transform`; the individual transform properties compose with it
+   instead of overwriting it.
+   --------------------------------------------------------------------------- */
+.scene {
+  --sy: 0;
+}
+
+/* Full-bleed photography sinks slowly. The drift keyframes above scale it to 1.12,
+   so there is room to move without exposing the section behind. */
+.scene-bg {
+  translate: 0 calc(var(--sy) * 40px);
+}
+
+/* Copy centred over a photograph leaves as you scroll past it. */
+.scene-copy-fade {
+  translate: 0 calc(var(--sy) * -54px);
+  opacity: calc(1 - var(--sy) * 1.15);
+}
+
+/* Copy in a split hero only lifts — it is still being read when --sy is halfway. */
+.scene-copy {
+  translate: 0 calc(var(--sy) * -34px);
+}
+
+/* The photograph in a split hero travels against the copy. The difference between
+   the two is the whole effect. */
+.scene-media {
+  translate: 0 calc(var(--sy) * -74px);
+}
+
+/* The ghosted wordmark is furthest back, so it moves most. */
+.scene-ghost {
+  translate: 0 calc(var(--sy) * -130px);
+}
+
+/* Kesim: the word pulls away from the subject and the interleave comes apart. */
+.scene-word {
+  translate: 0 calc(var(--sy) * -96px);
+}
+.scene-subject {
+  translate: 0 calc(var(--sy) * -22px);
+}
+
+/* Photographs answer the pointer. Slow enough to read as weight, not as a hover. */
+.photo-hover {
+  overflow: hidden;
+}
+.photo-hover img {
+  transition:
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.7s ease;
+}
+.photo-hover:hover img {
+  transform: scale(1.045);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-bg,
+  .scene-copy,
+  .scene-copy-fade,
+  .scene-media,
+  .scene-ghost,
+  .scene-word,
+  .scene-subject {
+    translate: none !important;
+    opacity: 1 !important;
+  }
+  .photo-hover img {
+    transition: none !important;
+  }
+  .photo-hover:hover img {
+    transform: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal,
   .reveal-idle,
@@ -505,6 +599,7 @@ h3 {
   }
   .salon-drift,
   .salon-word,
+  .salon-in,
   .salon-rule {
     animation: none !important;
   }

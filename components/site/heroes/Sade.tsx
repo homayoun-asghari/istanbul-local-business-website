@@ -1,6 +1,7 @@
 import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import { presetFor } from "@/packs/registry";
 import { HeroActions, OpenNow, RatingLine, SalonNav, Words } from "./shared";
+import { ScrollScene } from "../ScrollScene";
 
 /**
  * 06 Sade — the quietest of the six, and the only one whose palette and typefaces were
@@ -23,7 +24,7 @@ export function Sade({
   const strip = (stock?.tiles ?? []).slice(0, 3);
 
   return (
-    <section className="relative" style={{ background: "var(--ground)" }}>
+    <ScrollScene className="relative" style={{ background: "var(--ground)" }}>
       <SalonNav content={content} />
       <div className="mx-auto grid max-w-[1180px] items-center gap-10 px-[clamp(20px,5vw,60px)] pt-4 pb-16 md:grid-cols-[1.05fr_0.95fr] md:gap-16 md:pb-24">
         <div>
@@ -62,7 +63,7 @@ export function Sade({
                   key={image + index}
                   src={image}
                   alt=""
-                  className="salon-word rounded-edge h-20 w-20 object-cover sm:h-24 sm:w-24"
+                  className="salon-in rounded-edge h-20 w-20 object-cover sm:h-24 sm:w-24"
                   style={{ ["--i" as string]: 8 + index }}
                   loading="lazy"
                   decoding="async"
@@ -76,12 +77,12 @@ export function Sade({
         <img
           src={image.src}
           alt={image.alt}
-          className="salon-word h-[48vh] w-full object-cover md:h-[72vh]"
+          className="salon-in scene-media h-[48vh] w-full object-cover md:h-[72vh]"
           style={{ borderRadius: "220px 220px 22px 22px", ["--i" as string]: 2 }}
           loading="eager"
           decoding="async"
         />
       </div>
-    </section>
+    </ScrollScene>
   );
 }

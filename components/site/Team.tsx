@@ -19,14 +19,16 @@ export function Team({ section }: { section: SectionOf<"team"> }) {
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {section.members.map((member, index) => (
             <Reveal as="figure" key={member.name} delay={index * 70} className="m-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={member.image.src}
-                alt={member.image.alt}
-                loading="lazy"
-                decoding="async"
-                className="rounded-edge aspect-[4/5] w-full object-cover"
-              />
+              <div className="photo-hover rounded-edge">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={member.image.src}
+                  alt={member.image.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[4/5] w-full object-cover"
+                />
+              </div>
               <figcaption className="mt-4">
                 <p className="font-display text-ink m-0 text-[17px]">{member.name}</p>
                 <p className="text-muted m-0 mt-1 text-[13px]">{member.role}</p>
