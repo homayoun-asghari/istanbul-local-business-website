@@ -4,13 +4,20 @@ import { HeroActions, OpenNow, RatingLine, SalonNav } from "./shared";
 import { ScrollScene } from "../ScrollScene";
 
 /**
- * 01 Kesim — the UNICKA interleave.
+ * 01 Kesim — the UNICKA hero.
  *
- * The subject is layered INTO the headline: head and shoulders in front of the letters,
- * body behind them. Done with three layers rather than a cut-out PNG — the photograph
- * keeps its own flat ground, the section behind it uses the identical colour, and a
- * clipped copy of the word draws back over the lower body. No transparency needed, which
- * matters because a keyed-out edge on a low-resolution photo looks like a ransom note.
+ * Three layers and only three: the salon's name set enormous and sitting *behind* the
+ * subject, the subject herself, and a letterspaced second word drawn over her.
+ *
+ * The earlier version drew the lower half of the big word back over her body, which put
+ * a hard horizontal seam across every letter that crossed her — the word looked cut in
+ * half rather than layered. The reference does no such thing: the word simply passes
+ * behind her, and the only thing in front is SALON, which stays readable over her black
+ * dress because it carries an outline in the page's own ground colour.
+ *
+ * The photograph keeps its own studio backdrop, flattened to exactly --ground, so the
+ * image has no visible edge and no transparency is needed. See work notes in
+ * docs/DECISIONS.md.
  */
 export function Kesim({
   section,
@@ -24,52 +31,42 @@ export function Kesim({
   const stock = presetFor(content).stock;
   const image = stock ? { src: stock.hero, alt: stock.heroAlt } : section.image;
   const word = content.business.name.split(/\s+/)[0].toLocaleUpperCase("tr-TR");
+  const letters = [...word];
+
+  // The word has to span the frame whatever the business is called, so it is sized from
+  // its own length: roughly 84% of the viewport divided by the letters in it. Long names
+  // get smaller type rather than an overflowing line.
+  const vw = Math.min(24, 140 / Math.max(letters.length, 3));
 
   return (
     <ScrollScene className="relative overflow-hidden" style={{ background: "var(--ground)" }}>
-      <SalonNav content={content} />
+      <SalonNav content={content} cta={false} />
 
-      <p
-        className="salon-word m-0 px-[clamp(20px,5vw,60px)] pt-2 text-[11px] tracking-[0.22em] uppercase text-[var(--muted)]"
-        style={{ ["--i" as string]: 0 }}
+      {/* The word's size is published to the stage so SALON can be placed relative to
+          it — the two have to stay in the same relationship at every viewport. */}
+      <div
+        className="kesim-stage"
+        style={{ ["--kesim-word" as string]: `clamp(64px, ${vw.toFixed(2)}vw, 350px)` }}
       >
-        {content.business.neighborhood} · {content.business.district}
-      </p>
-
-      {/*
-        The interleave, in one grid cell so the word and the subject share an axis.
-        Three layers: the word, the subject on her own matching ground, then the word
-        again clipped so its lower half draws back over her body.
-      */}
-      <div className="relative mx-auto grid w-full max-w-[1180px] place-items-center px-[clamp(20px,5vw,60px)] pb-8">
-        <p
-          aria-hidden="true"
-          className="salon-word scene-word font-display pointer-events-none col-start-1 row-start-1 m-0 self-center text-center leading-[0.78] tracking-[-0.035em] text-[var(--brand)]"
-          style={{ fontSize: "clamp(64px,14.5vw,196px)", ["--i" as string]: 0 }}
-        >
-          {word}
+        <p aria-hidden="true" className="kesim-word font-display">
+          {letters.map((letter, index) => (
+            <span key={`${letter}-${index}`} style={{ ["--i" as string]: index }}>
+              {letter}
+            </span>
+          ))}
         </p>
 
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={image.src}
           alt={image.alt}
-          className="salon-in scene-subject col-start-1 row-start-1 block h-[54vh] w-auto self-end object-contain md:h-[66vh]"
-          style={{ ["--i" as string]: 2 }}
+          className="kesim-subject"
           loading="eager"
           decoding="async"
         />
 
-        <p
-          aria-hidden="true"
-          className="salon-word scene-word font-display pointer-events-none col-start-1 row-start-1 m-0 self-center text-center leading-[0.78] tracking-[-0.035em] text-[var(--brand)]"
-          style={{
-            fontSize: "clamp(64px,14.5vw,196px)",
-            clipPath: "inset(52% 0 0 0)",
-            ["--i" as string]: 0,
-          }}
-        >
-          {word}
+        <p aria-hidden="true" className="kesim-sub font-display">
+          SALON
         </p>
       </div>
 
