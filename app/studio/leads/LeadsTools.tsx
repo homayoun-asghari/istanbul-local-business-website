@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { addLead, buildDemo, importSheet } from "../actions";
 
-export function LeadsTools() {
+export function ImportLeads() {
   const [message, action, pending] = useActionState(importSheet, null);
 
   return (
@@ -37,7 +37,7 @@ export function LeadsTools() {
  * see a disclosure triangle under the CSV box, and reported the feature missing. A form
  * you have to discover is a form that does not exist.
  */
-function AddLead() {
+export function AddLead() {
   const [message, action, pending] = useActionState(addLead, null);
 
   return (
@@ -104,7 +104,7 @@ function Field({
   );
 }
 
-function BuildButton({ leadId }: { leadId: string }) {
+export function BuildButton({ leadId }: { leadId: string }) {
   const [message, action, pending] = useActionState(buildDemo, null);
   return (
     <form action={action}>
@@ -120,6 +120,3 @@ function BuildButton({ leadId }: { leadId: string }) {
     </form>
   );
 }
-
-LeadsTools.BuildButton = BuildButton;
-LeadsTools.AddLead = AddLead;

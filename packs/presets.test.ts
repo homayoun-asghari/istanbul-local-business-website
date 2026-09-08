@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { BEAUTY_PRESETS } from "./beauty/preset";
 import { TURKISH_GLYPHS, TURKISH_SAFE_FONTS, fontStack } from "./fonts";
 import { presetCssVars } from "./types";
@@ -26,6 +26,34 @@ describe("Turkish-safe font registry", () => {
 
   it("covers the full Turkish glyph set in the constant the registry is checked against", () => {
     expect(TURKISH_GLYPHS).toBe("ıİşŞğĞçÇöÖüÜ");
+  });
+});
+
+describe("preset photography", () => {
+  const paths = ALL_PRESETS.flatMap((preset) =>
+    preset.stock
+      ? [preset.stock.hero, ...(preset.stock.tiles ?? []), ...(preset.stock.staff ?? [])]
+      : [],
+  );
+
+  it("is referenced by root-relative path, so it ejects with the render layer", () => {
+    for (const src of paths) expect(src.startsWith("/stock/"), src).toBe(true);
+  });
+
+  it("all exists on disk", () => {
+    // A preset pointing at a file that is not there renders a broken image on a demo
+    // and, worse, ships that hole into a client's repository. Renaming an asset without
+    // renaming its reference is the way this happens.
+    for (const src of new Set(paths)) {
+      expect(existsSync(`public${src}`), `missing public${src}`).toBe(true);
+    }
+  });
+
+  it("gives every salon preset a hero, tiles and staff", () => {
+    for (const preset of ALL_PRESETS.filter((candidate) => candidate.stock)) {
+      expect(preset.stock!.tiles?.length, `${preset.id} tiles`).toBeGreaterThan(0);
+      expect(preset.stock!.staff?.length, `${preset.id} staff`).toBeGreaterThan(0);
+    }
   });
 });
 
