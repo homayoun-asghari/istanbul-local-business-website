@@ -5,6 +5,10 @@ import { Header } from "./Header";
 import { Hero } from "./Hero";
 import { Proof } from "./Proof";
 import { Emergency } from "./Emergency";
+import { PriceList } from "./PriceList";
+import { Team } from "./Team";
+import { InstagramStrip } from "./InstagramStrip";
+import { Booking } from "./Booking";
 import { Services } from "./Services";
 import { About } from "./About";
 import { Gallery } from "./Gallery";
@@ -31,9 +35,12 @@ export function Site({
   trackAs?: string;
 }) {
   const preset = presetFor(content);
-  const sections = withoutRepeatedPhotos(content.sections);
+  const sections = withoutRepeatedPhotos(
+    withPresetPhotography(content.sections, preset.stock?.tiles),
+  );
   // The chrome hero carries its own navigation, so the shared header would be a second one.
-  const ownsHeader = preset.hero === "chrome";
+  const SALON_HEROES = new Set(["kesim", "gece", "kemer", "makro", "menu", "sade"]);
+  const ownsHeader = preset.hero === "chrome" || SALON_HEROES.has(preset.hero ?? "");
 
   return (
     <div style={presetCssVars(preset) as React.CSSProperties} className="bg-ground text-ink">
@@ -58,6 +65,14 @@ export function Site({
               return <HoursSection key={key} section={section} content={content} now={now} />;
             case "contact":
               return <Contact key={key} section={section} content={content} />;
+            case "pricelist":
+              return <PriceList key={key} section={section} />;
+            case "team":
+              return <Team key={key} section={section} />;
+            case "instagram":
+              return <InstagramStrip key={key} section={section} content={content} />;
+            case "booking":
+              return <Booking key={key} section={section} content={content} />;
           }
         })}
       </main>
@@ -94,4 +109,47 @@ function withoutRepeatedPhotos(sections: SiteContent["sections"]): SiteContent["
     kept.push(section);
   }
   return kept;
+}
+
+/**
+ * Swaps the tile imagery for the preset's own.
+ *
+ * These leads have exactly one usable photograph — a storefront shot from the street —
+ * and a gallery, a team grid and an Instagram strip need eight. The preset supplies them,
+ * so switching template switches the whole photographic world with it rather than
+ * stretching one snapshot into shapes it was never going to fill.
+ */
+function withPresetPhotography(
+  sections: SiteContent["sections"],
+  tiles: string[] | undefined,
+): SiteContent["sections"] {
+  if (!tiles || tiles.length === 0) return sections;
+  const pick = (index: number) => tiles[index % tiles.length];
+
+  return sections.map((section) => {
+    if (section.type === "gallery") {
+      return { ...section, images: section.images.map((im, i) => ({ ...im, src: pick(i) })) };
+    }
+    if (section.type === "instagram") {
+      return { ...section, images: section.images.map((im, i) => ({ ...im, src: pick(i) })) };
+    }
+    if (section.type === "team") {
+      return {
+        ...section,
+        members: section.members.map((m, i) => ({
+          ...m,
+          image: { ...m.image, src: pick(i + 1) },
+        })),
+      };
+    }
+    if (section.type === "pricelist") {
+      return {
+        ...section,
+        items: section.items.map((item, i) =>
+          item.image ? { ...item, image: { ...item.image, src: pick(i) } } : item,
+        ),
+      };
+    }
+    return section;
+  });
 }

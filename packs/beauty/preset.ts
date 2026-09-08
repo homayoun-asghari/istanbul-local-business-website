@@ -45,9 +45,9 @@ export const klinik: Preset = {
 };
 
 /** Evening luxe: near-black ground, warm gold. For salons that trade on glamour. */
-export const gece: Preset = {
-  id: "gece",
-  label: "Gece — koyu zemin, altın, keskin köşe",
+export const geceKlasik: Preset = {
+  id: "gece-klasik",
+  label: "Gece Klasik — koyu zemin, altın, keskin köşe",
   fonts: { display: "cormorant-garamond", body: "jost" },
   tokens: {
     ground: "#14110F",
@@ -89,4 +89,218 @@ export const krom: Preset = {
   },
 };
 
-export const BEAUTY_PRESETS: Record<string, Preset> = { atolye, klinik, gece, krom };
+/* ---------------------------------------------------------------------------
+   The salon set. Every ground below was sampled from its own reference render so
+   the built page matches the design pixel for pixel rather than approximately.
+   --------------------------------------------------------------------------- */
+
+/** 01 — the interleave. A cut-out subject layered into an enormous magenta serif. */
+export const kesim: Preset = {
+  id: "kesim",
+  stock: {
+    hero: "/stock/kesim-woman.jpg",
+    heroAlt: "Salonumuzdan bir kare",
+    tiles: [
+      "/stock/thumb-1.jpg",
+      "/stock/thumb-3.jpg",
+      "/stock/thumb-4.jpg",
+      "/stock/thumb-5.jpg",
+      "/stock/thumb-6.jpg",
+      "/stock/thumb-2.jpg",
+    ],
+  },
+  label: "Kesim — greige, magenta, dev serif",
+  fonts: { display: "playfair", body: "dm-sans" },
+  hero: "kesim",
+  tokens: {
+    ground: "#ECD6C0",
+    surface: "#FFFFFF",
+    ink: "#1A1310",
+    inkSoft: "#4A3A31",
+    muted: "#8A7364",
+    line: "#DCC3A9",
+    brand: "#D6207E",
+    brandInk: "#FFF4F9",
+    accent: "#1A1310",
+    radius: "2px",
+    radiusPill: "999px",
+  },
+};
+
+/** 02 — the photograph is the whole page. */
+export const gece: Preset = {
+  id: "gece",
+  stock: {
+    hero: "/stock/gece-hair.jpg",
+    heroAlt: "Saç tasarımı uygulaması",
+    tiles: [
+      "/stock/thumb-5.jpg",
+      "/stock/thumb-1.jpg",
+      "/stock/thumb-4.jpg",
+      "/stock/thumb-3.jpg",
+      "/stock/thumb-6.jpg",
+      "/stock/thumb-2.jpg",
+    ],
+  },
+  label: "Gece — tam ekran fotoğraf, koyu, ten rengi",
+  fonts: { display: "marcellus", body: "dm-sans" },
+  hero: "gece",
+  tokens: {
+    ground: "#0D0E0D",
+    surface: "#161715",
+    ink: "#F2EBE4",
+    inkSoft: "#D6CCC1",
+    muted: "#9A8F84",
+    line: "#272724",
+    brand: "#E4C9A8",
+    brandInk: "#17130E",
+    accent: "#B98F63",
+    radius: "2px",
+    radiusPill: "999px",
+  },
+};
+
+/** 03 — blush, terracotta, arches. The softest sell. */
+export const kemer: Preset = {
+  id: "kemer",
+  stock: {
+    hero: "/stock/kemer-portrait.jpg",
+    heroAlt: "Cilt bakımı seansı",
+    tiles: [
+      "/stock/kemer-nails.jpg",
+      "/stock/kemer-hands.jpg",
+      "/stock/thumb-4.jpg",
+      "/stock/thumb-1.jpg",
+      "/stock/thumb-6.jpg",
+      "/stock/thumb-5.jpg",
+    ],
+  },
+  label: "Kemer — pudra, terrakota, kemerli fotoğraf",
+  fonts: { display: "cormorant-garamond", body: "dm-sans" },
+  hero: "kemer",
+  tokens: {
+    ground: "#FFF3EE",
+    surface: "#FFFFFF",
+    ink: "#2B1A14",
+    inkSoft: "#5A4038",
+    muted: "#9A7C70",
+    line: "#F0DED6",
+    brand: "#B4552B",
+    brandInk: "#FFF6F2",
+    accent: "#D89A78",
+    radius: "16px",
+    radiusPill: "999px",
+  },
+};
+
+/** 04 — the macro crop with a script line. */
+export const makro: Preset = {
+  id: "makro",
+  stock: {
+    hero: "/stock/makro-hand.jpg",
+    heroAlt: "Kalıcı oje uygulaması",
+    tiles: [
+      "/stock/thumb-3.jpg",
+      "/stock/thumb-1.jpg",
+      "/stock/thumb-2.jpg",
+      "/stock/thumb-4.jpg",
+      "/stock/thumb-6.jpg",
+      "/stock/thumb-5.jpg",
+    ],
+  },
+  label: "Makro — yakın çekim, el yazısı, koyu",
+  fonts: { display: "marcellus", body: "dm-sans" },
+  hero: "makro",
+  tokens: {
+    ground: "#0C0804",
+    surface: "#171008",
+    ink: "#EFE3DA",
+    inkSoft: "#D2C2B4",
+    muted: "#9C8A7C",
+    line: "#251A11",
+    brand: "#C8443F",
+    brandInk: "#FFF2EF",
+    accent: "#E0B486",
+    radius: "2px",
+    radiusPill: "999px",
+  },
+};
+
+/** 05 — half photograph, half price list. */
+export const menu: Preset = {
+  id: "menu",
+  stock: {
+    hero: "/stock/menu-salon.jpg",
+    heroAlt: "Salonumuzda bir uygulama",
+    tiles: [
+      "/stock/thumb-6.jpg",
+      "/stock/thumb-1.jpg",
+      "/stock/thumb-3.jpg",
+      "/stock/thumb-4.jpg",
+      "/stock/thumb-5.jpg",
+      "/stock/thumb-2.jpg",
+    ],
+  },
+  label: "Menü — fiyat listesi, krem, kahve",
+  fonts: { display: "marcellus", body: "dm-sans" },
+  hero: "menu",
+  tokens: {
+    ground: "#FFFBF2",
+    surface: "#FFFFFF",
+    ink: "#241713",
+    inkSoft: "#5D4038",
+    muted: "#8C7268",
+    line: "#EADFD0",
+    brand: "#5D3222",
+    brandInk: "#FFF8F2",
+    accent: "#C9A227",
+    radius: "8px",
+    radiusPill: "999px",
+  },
+};
+
+/** 06 — the verified palette, read off a live salon site. */
+export const sade: Preset = {
+  id: "sade",
+  stock: {
+    hero: "/stock/sade-facial.jpg",
+    heroAlt: "Yüz bakımı uygulaması",
+    tiles: [
+      "/stock/thumb-4.jpg",
+      "/stock/thumb-1.jpg",
+      "/stock/thumb-6.jpg",
+      "/stock/thumb-3.jpg",
+      "/stock/thumb-5.jpg",
+      "/stock/thumb-2.jpg",
+    ],
+  },
+  label: "Sade — sıcak krem, kahve, tek fotoğraf",
+  fonts: { display: "marcellus", body: "dm-sans" },
+  hero: "sade",
+  tokens: {
+    ground: "#FFF8EB",
+    surface: "#FFFFFF",
+    ink: "#241713",
+    inkSoft: "#5D4038",
+    muted: "#8C7268",
+    line: "#EDE0CE",
+    brand: "#5D3222",
+    brandInk: "#FDF7EF",
+    accent: "#D9C4B4",
+    radius: "10px",
+    radiusPill: "999px",
+  },
+};
+
+export const BEAUTY_PRESETS: Record<string, Preset> = {
+  kesim,
+  gece,
+  kemer,
+  makro,
+  menu,
+  sade,
+  atolye,
+  klinik,
+  krom,
+  "gece-klasik": geceKlasik,
+};

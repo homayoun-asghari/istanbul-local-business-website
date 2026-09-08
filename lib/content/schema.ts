@@ -106,6 +106,54 @@ export const SectionSchema = z.discriminatedUnion("type", [
     images: z.array(ImageSchema).min(1),
     placeholder,
   }),
+  /**
+   * A price menu. Every salon theme studied publishes prices — a round thumbnail, the
+   * service, a dotted leader and the number. Price opacity is the top complaint about
+   * this trade, so this is the section that answers a real objection.
+   */
+  z.object({
+    type: z.literal("pricelist"),
+    title: z.string().min(1),
+    intro: z.string().optional(),
+    items: z
+      .array(
+        z.object({
+          name: z.string().min(1),
+          description: z.string().optional(),
+          /** Free text, not a number: "₺450", "₺450'den başlayan", "Randevuda belirlenir". */
+          price: z.string().min(1),
+          duration: z.string().optional(),
+          image: ImageSchema.optional(),
+        }),
+      )
+      .min(1),
+    placeholder,
+  }),
+  /** Named people with portraits. The strongest trust signal that is not a stock photo. */
+  z.object({
+    type: z.literal("team"),
+    title: z.string().min(1),
+    intro: z.string().optional(),
+    members: z
+      .array(z.object({ name: z.string().min(1), role: z.string().min(1), image: ImageSchema }))
+      .min(1),
+    placeholder,
+  }),
+  /** The strip of squares above the footer that every salon theme ships. */
+  z.object({
+    type: z.literal("instagram"),
+    title: z.string().min(1),
+    handle: z.string().optional(),
+    images: z.array(ImageSchema).min(1),
+    placeholder,
+  }),
+  /** Hours beside a WhatsApp booking panel — a form on the page, not just a link. */
+  z.object({
+    type: z.literal("booking"),
+    title: z.string().min(1),
+    note: z.string().optional(),
+    placeholder,
+  }),
   z.object({
     type: z.literal("emergency"),
     /** "7/24 Acil" — the whole reason a pet owner opens a vet's site at 3am. */

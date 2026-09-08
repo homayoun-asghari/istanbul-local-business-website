@@ -1,4 +1,14 @@
-import { Bodoni_Moda, Cormorant_Garamond, Jost, Manrope, Onest } from "next/font/google";
+import {
+  Bodoni_Moda,
+  Cormorant_Garamond,
+  DM_Sans,
+  Dancing_Script,
+  Jost,
+  Manrope,
+  Marcellus,
+  Onest,
+  Playfair_Display,
+} from "next/font/google";
 
 /**
  * Loaded with literal arguments because next/font is a compile-time transform.
@@ -40,5 +50,34 @@ export const geometricFont = Onest({
   variable: "--font-onest",
   subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "800"],
+  display: "swap",
+});
+
+export const marcellusFont = Marcellus({
+  variable: "--font-marcellus",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400"],
+  display: "swap",
+});
+
+export const dmSansFont = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "700"],
+  display: "swap",
+});
+
+/** The handwritten line that sits above serif capitals in every nail-salon theme. */
+export const scriptFont = Dancing_Script({
+  variable: "--font-script",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "600"],
+  display: "swap",
+});
+
+export const playfairFont = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "600", "800"],
   display: "swap",
 });

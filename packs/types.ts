@@ -15,7 +15,16 @@ export type Preset = {
    * preset shipped with; "chrome" replaces it with a pinned, animated scene in which the
    * business photo does not appear above the fold at all.
    */
-  hero?: "classic" | "chrome";
+  hero?: "classic" | "chrome" | "kesim" | "gece" | "kemer" | "makro" | "menu" | "sade";
+  /**
+   * Photography the preset owns rather than the business.
+   *
+   * These leads arrive with one low-resolution storefront snap from Google Maps, which
+   * none of these layouts can carry. A preset that needs a portrait, a macro crop or a
+   * tile strip supplies its own, and because it lives on the preset the ?preset= preview
+   * shows the right pictures too instead of the lead's photo in the wrong shape.
+   */
+  stock?: { hero: string; heroAlt: string; tiles?: string[] };
   tokens: {
     ground: string;
     surface: string;
