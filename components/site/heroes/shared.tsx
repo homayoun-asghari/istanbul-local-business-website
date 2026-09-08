@@ -47,7 +47,17 @@ const NAV: [href: string, label: string, section: SiteContent["sections"][number
   ["#iletisim", "İletişim", "contact"],
 ];
 
-export function SalonNav({ content, dark = false }: { content: SiteContent; dark?: boolean }) {
+export function SalonNav({
+  content,
+  dark = false,
+  cta = true,
+}: {
+  content: SiteContent;
+  dark?: boolean;
+  /** Kesim turns this off: its hero already carries the appointment button, and two of
+      them on one screen reads as a template that was not thought about. */
+  cta?: boolean;
+}) {
   const present = new Set(content.sections.map((section) => section.type));
   const links = NAV.filter(([, , section]) => present.has(section));
   return (
@@ -62,15 +72,17 @@ export function SalonNav({ content, dark = false }: { content: SiteContent; dark
           </a>
         ))}
       </nav>
-      <a
-        href={whatsappHref(content)}
-        target="_blank"
-        rel="noopener noreferrer"
-        data-cta="whatsapp"
-        className="bg-brand text-brand-ink shrink-0 rounded-[var(--radius-pill)] px-5 py-2.5 text-[12.5px] font-medium whitespace-nowrap"
-      >
-        Randevu al
-      </a>
+      {cta ? (
+        <a
+          href={whatsappHref(content)}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cta="whatsapp"
+          className="bg-brand text-brand-ink shrink-0 rounded-[var(--radius-pill)] px-5 py-2.5 text-[12.5px] font-medium whitespace-nowrap"
+        >
+          Randevu al
+        </a>
+      ) : null}
     </header>
   );
 }

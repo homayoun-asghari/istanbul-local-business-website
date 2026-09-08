@@ -32,13 +32,17 @@ export function LeadsTools() {
  * One lead at a time. Only the business name and phone are required — everything else can
  * be filled in later, and a lead with no photo or district simply cannot have a demo built
  * until it is.
+ *
+ * This was a collapsed <details> and went unnoticed: the operator looked for it, did not
+ * see a disclosure triangle under the CSV box, and reported the feature missing. A form
+ * you have to discover is a form that does not exist.
  */
 function AddLead() {
   const [message, action, pending] = useActionState(addLead, null);
 
   return (
-    <details style={{ marginTop: 24 }}>
-      <summary style={{ cursor: "pointer" }}>Add a lead by hand</summary>
+    <section style={{ marginTop: 28 }}>
+      <h2>Add a lead by hand</h2>
       <form action={action} style={{ marginTop: 14 }}>
         <div className="grid">
           <Field name="business" label="Business name *" placeholder="Melike Adıgüzel Güzellik" />
@@ -79,7 +83,7 @@ function AddLead() {
           {message ? <span className="msg">{message}</span> : null}
         </div>
       </form>
-    </details>
+    </section>
   );
 }
 

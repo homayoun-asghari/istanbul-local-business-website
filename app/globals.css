@@ -549,12 +549,153 @@ h3 {
   translate: 0 calc(var(--sy) * -130px);
 }
 
-/* Kesim: the word pulls away from the subject and the interleave comes apart. */
-.scene-word {
+/* ---------------------------------------------------------------------------
+   Kesim.
+
+   One stage, three layers stacked in a single grid cell: the name behind, the
+   subject in front of it, and SALON in front of her. The subject fills the stage
+   height — she is the composition, not an inset picture — and her photograph's
+   backdrop is exactly --ground, so the frame is invisible.
+
+   The entrance is staged the way the reference stages it: the word unfurls alone
+   on the empty ground, and only once it has settled does the subject arrive.
+   --------------------------------------------------------------------------- */
+.kesim-stage {
+  position: relative;
+  display: grid;
+  /* One row, one column, both pinned to the stage's own size. Without minmax(0,1fr)
+     the row grows to the intrinsic height of the 1500px photograph and the whole
+     composition falls out of the hero. */
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  height: clamp(420px, 74vh, 780px);
+  padding: 0 clamp(20px, 5vw, 60px);
+  overflow: hidden;
+}
+
+.kesim-word,
+.kesim-subject,
+.kesim-sub {
+  grid-area: 1 / 1;
+}
+
+.kesim-word {
+  z-index: 1;
+  margin: 0;
+  align-self: center;
+  font-size: var(--kesim-word);
+  color: var(--brand);
+  line-height: 0.78;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+  pointer-events: none;
+  transform-origin: left center;
+  animation: kesim-unfurl 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
   translate: 0 calc(var(--sy) * -96px);
 }
-.scene-subject {
-  translate: 0 calc(var(--sy) * -22px);
+/* Each letter unwinds out of the compressed word as it opens. Without this the
+   word just stretches, which reads as a slide rather than as type arriving. */
+.kesim-word span {
+  display: inline-block;
+  animation: kesim-untwist 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(100ms + var(--i) * 26ms);
+}
+
+.kesim-subject {
+  z-index: 2;
+  align-self: end;
+  justify-self: center;
+  height: 100%;
+  max-height: 100%;
+  width: auto;
+  object-fit: contain;
+  animation: kesim-arrive 1s cubic-bezier(0.16, 1, 0.3, 1) 0.95s both;
+  translate: 0 calc(var(--sy) * -18px);
+}
+
+/* SALON sits over her. Dark ink reads on the ground; the ring of --ground behind the
+   glyphs is what keeps it readable where it crosses her black dress — the same trick
+   the reference uses, and the reason it can sit anywhere on the figure. */
+.kesim-sub {
+  z-index: 3;
+  margin: 0;
+  align-self: center;
+  color: var(--ink);
+  font-size: clamp(12px, 1.9vw, 24px);
+  letter-spacing: 0.46em;
+  text-indent: 0.46em;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateY(calc(var(--kesim-word) * 0.58));
+  text-shadow:
+    0 0.07em 0 var(--ground),
+    0 -0.07em 0 var(--ground),
+    0.07em 0 0 var(--ground),
+    -0.07em 0 0 var(--ground),
+    0.05em 0.05em 0 var(--ground),
+    -0.05em 0.05em 0 var(--ground),
+    0.05em -0.05em 0 var(--ground),
+    -0.05em -0.05em 0 var(--ground);
+  animation: kesim-fade 0.8s ease 1.35s both;
+  translate: 0 calc(var(--sy) * -70px);
+}
+
+@keyframes kesim-unfurl {
+  from {
+    transform: scaleX(0.05);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes kesim-untwist {
+  from {
+    transform: rotate(-17deg) translateY(0.07em);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes kesim-arrive {
+  from {
+    opacity: 0;
+    transform: scale(1.045);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes kesim-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .kesim-stage {
+    height: clamp(380px, 62vh, 560px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kesim-word,
+  .kesim-word span,
+  .kesim-subject,
+  .kesim-sub {
+    animation: none !important;
+    transform: none !important;
+    translate: none !important;
+    opacity: 1 !important;
+  }
+  .kesim-sub {
+    transform: translateY(calc(var(--kesim-word) * 0.58)) !important;
+  }
 }
 
 /* Photographs answer the pointer. Slow enough to read as weight, not as a hover. */
@@ -575,9 +716,7 @@ h3 {
   .scene-copy,
   .scene-copy-fade,
   .scene-media,
-  .scene-ghost,
-  .scene-word,
-  .scene-subject {
+  .scene-ghost {
     translate: none !important;
     opacity: 1 !important;
   }
