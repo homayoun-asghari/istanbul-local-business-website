@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import {
   bodyFont,
   displayFont,
+  dmSansFont,
   geometricFont,
+  marcellusFont,
+  playfairFont,
   sansAltFont,
+  scriptFont,
   serifAltFont,
 } from "@/components/site/fonts";
 import { NOINDEX } from "@/lib/content/seo";
@@ -21,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="tr"
-      className={`${displayFont.variable} ${bodyFont.variable} ${serifAltFont.variable} ${sansAltFont.variable} ${geometricFont.variable}`}
+      className={`${displayFont.variable} ${bodyFont.variable} ${serifAltFont.variable} ${sansAltFont.variable} ${geometricFont.variable} ${marcellusFont.variable} ${dmSansFont.variable} ${scriptFont.variable} ${playfairFont.variable}`}
     >
       <body>{children}</body>
     </html>

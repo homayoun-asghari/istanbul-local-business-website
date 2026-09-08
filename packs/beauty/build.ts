@@ -14,6 +14,57 @@ void ALWAYS_OPEN;
  * rather than promise a result. No prices, no staff names, no clinical claims — the
  * owner reads this before replying, and a wrong specific is worse than a vague one.
  */
+/**
+ * A price menu. Prices are ranges, written the way a Turkish salon writes them —
+ * "₺600'den başlayan" rather than a single number — so the owner is not committed to a
+ * figure they never quoted. Every one of the four themes studied publishes prices.
+ */
+const PRICES = [
+  {
+    name: "Cilt Bakımı",
+    description: "Analiz, temizlik ve bakım",
+    price: "₺900’den",
+    duration: "60 dk",
+  },
+  {
+    name: "Lazer Epilasyon",
+    description: "Bölgeye göre seans",
+    price: "₺750’den",
+    duration: "30 dk",
+  },
+  {
+    name: "Kaş Tasarımı",
+    description: "Yüz hatlarına göre şekillendirme",
+    price: "₺350’den",
+    duration: "25 dk",
+  },
+  {
+    name: "Kalıcı Makyaj",
+    description: "Kaş, eyeliner, dudak",
+    price: "₺4.500’den",
+    duration: "90 dk",
+  },
+  {
+    name: "Ağda ve Tüy Bakımı",
+    description: "Bölgesel ve düzenli bakım",
+    price: "₺400’den",
+    duration: "40 dk",
+  },
+  {
+    name: "Manikür ve Pedikür",
+    description: "El ve ayak bakımı, kalıcı oje",
+    price: "₺650’den",
+    duration: "45 dk",
+  },
+];
+
+const TEAM = [
+  { name: "Melike", role: "Kurucu · Cilt bakımı" },
+  { name: "Ayşe", role: "Kalıcı makyaj" },
+  { name: "Zeynep", role: "Lazer epilasyon" },
+  { name: "Elif", role: "Manikür ve pedikür" },
+];
+
 const SERVICES = [
   { name: "Cilt Bakımı", description: "Cilt tipinize göre planlanan temizlik ve bakım seansları." },
   {
@@ -73,8 +124,49 @@ export function buildBeautySite(lead: BuildInput, preset = "atolye"): SiteConten
         images: [{ src: lead.photo!, alt: `${business.name} iç mekan` }],
         placeholder: true,
       },
+      {
+        type: "pricelist",
+        title: "Fiyat listesi",
+        intro:
+          "Fiyatlar uygulamanın kapsamına göre değişir; randevuda net tutarı birlikte belirliyoruz.",
+        items: PRICES.map((item, index) => ({
+          ...item,
+          image: { src: `/stock/thumb-${(index % 6) + 1}.jpg`, alt: item.name },
+        })),
+        placeholder: true,
+      },
+      {
+        type: "team",
+        title: "Bizi biz yapan ekip",
+        intro: "Randevunuzu hangi arkadaşımızla almak istediğinizi belirtebilirsiniz.",
+        members: TEAM.map((member, index) => ({
+          ...member,
+          image: {
+            src: `/stock/thumb-${(index % 6) + 1}.jpg`,
+            alt: `${member.name} — ${member.role}`,
+          },
+        })),
+        placeholder: true,
+      },
+      {
+        type: "booking",
+        title: "Randevu alın",
+        note: "Formu doldurun, mesajınız WhatsApp’ta hazır olarak açılsın. Genellikle aynı gün dönüyoruz.",
+        placeholder: false,
+      },
       { type: "hours", title: "Çalışma Saatleri", placeholder: false },
       { type: "contact", title: "İletişim ve Konum", placeholder: false },
+      {
+        type: "instagram",
+        title: "Salondan kareler",
+        handle:
+          lead.social && /instagram/i.test(lead.social) ? "Instagram’da takip edin" : undefined,
+        images: Array.from({ length: 6 }, (_, index) => ({
+          src: `/stock/thumb-${index + 1}.jpg`,
+          alt: `${business.name} — salondan bir kare`,
+        })),
+        placeholder: true,
+      },
     ],
   };
 }

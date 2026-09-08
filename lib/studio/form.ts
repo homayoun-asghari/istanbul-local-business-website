@@ -101,6 +101,49 @@ function sectionFromFields(section: Section, index: number, fields: Fields): Sec
         images: images.length > 0 ? images : section.images,
       };
     }
+    case "pricelist": {
+      const edited = rows(fields, `section.${index}.item`)
+        .map((row) => ({
+          name: (row.name ?? "").trim(),
+          description: (row.description ?? "").trim() || undefined,
+          price: (row.price ?? "").trim(),
+          duration: (row.duration ?? "").trim() || undefined,
+        }))
+        .filter((item) => item.name.length > 0 && item.price.length > 0);
+      return {
+        ...section,
+        title: at("title", section.title),
+        intro: at("intro", section.intro ?? "") || undefined,
+        items: edited.length > 0 ? edited : section.items,
+      };
+    }
+    case "team": {
+      const edited = rows(fields, `section.${index}.member`)
+        .map((row, i) => ({
+          name: (row.name ?? "").trim(),
+          role: (row.role ?? "").trim(),
+          image: section.members[i]?.image ?? section.members[0].image,
+        }))
+        .filter((m) => m.name.length > 0);
+      return {
+        ...section,
+        title: at("title", section.title),
+        intro: at("intro", section.intro ?? "") || undefined,
+        members: edited.length > 0 ? edited : section.members,
+      };
+    }
+    case "instagram":
+      return {
+        ...section,
+        title: at("title", section.title),
+        handle: at("handle", section.handle ?? "") || undefined,
+      };
+    case "booking":
+      return {
+        ...section,
+        title: at("title", section.title),
+        note: at("note", section.note ?? "") || undefined,
+      };
     case "emergency":
       return { ...section, title: at("title", section.title), note: at("note", section.note) };
     case "proof":

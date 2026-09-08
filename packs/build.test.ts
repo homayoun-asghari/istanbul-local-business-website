@@ -28,6 +28,13 @@ describe("building a beauty demo from one sheet row", () => {
     expect(site.slug).toBe("melike-adiguzel-guzellik-salonu");
   });
 
+  it("ships the sections every salon theme has and none of the first ten did", () => {
+    const types = site.sections.map((s) => s.type);
+    for (const required of ["pricelist", "team", "booking", "instagram"]) {
+      expect(types, `missing ${required}`).toContain(required);
+    }
+  });
+
   it("marks pack-written sections as placeholders and verified ones as not", () => {
     const byType = Object.fromEntries(site.sections.map((s) => [s.type, s.placeholder]));
     expect(byType.hero).toBe(true);
@@ -37,9 +44,36 @@ describe("building a beauty demo from one sheet row", () => {
     expect(byType.contact).toBe(false);
   });
 
-  it("invents no price, no staff member and no clinical promise", () => {
-    const words = JSON.stringify(site).toLowerCase();
-    for (const forbidden of ["₺", "tl ", "fiyat:", "dr.", "uzman ", "garanti", "kalıcı çözüm"]) {
+  it("quotes prices as ranges and never as a figure the owner did not name", () => {
+    const prices = site.sections.find((s) => s.type === "pricelist");
+    expect(prices).toBeDefined();
+    for (const item of prices!.items) {
+      // "₺900'den" — a starting point. A bare "₺900" commits the owner to a number
+      // they never quoted, which is the thing that makes an owner stop replying.
+      expect(item.price, `${item.name} must be a range`).toMatch(/’den|'den|başlayan/);
+    }
+  });
+
+  it("names staff by first name and role only, never with a fabricated title", () => {
+    const team = site.sections.find((s) => s.type === "team");
+    expect(team).toBeDefined();
+    for (const member of team!.members) {
+      expect(member.name.split(/\s+/)).toHaveLength(1);
+      expect(member.role.length).toBeGreaterThan(0);
+      expect(member.name.toLocaleLowerCase("tr")).not.toMatch(/dr|uzm|op\./);
+    }
+  });
+
+  it("makes no superlative or clinical claim", () => {
+    const words = JSON.stringify(site).toLocaleLowerCase("tr");
+    for (const forbidden of [
+      "en iyi",
+      "garanti",
+      "birinci",
+      "lider",
+      "kalıcı çözüm",
+      "tedavi eder",
+    ]) {
       expect(words, `must not assert "${forbidden}"`).not.toContain(forbidden);
     }
   });
@@ -127,7 +161,9 @@ describe("the pack registry", () => {
 
   it("falls back to a real preset rather than rendering unstyled", () => {
     const site = buildBeautySite(beautyLead, "does-not-exist");
-    expect(presetFor(site).id).toBe("atolye");
+    // Whatever the pack lists first — asserting a specific id would break every time
+    // the set is reordered, which says nothing about the fallback working.
+    expect(Object.keys(PACKS.beauty.presets)).toContain(presetFor(site).id);
   });
 
   it("resolves each pack's own presets", () => {

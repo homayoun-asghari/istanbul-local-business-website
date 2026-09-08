@@ -48,6 +48,34 @@ export const TURKISH_SAFE_FONTS = {
     cssVariable: "--font-onest",
     fallback: "'Helvetica Neue', Arial, sans-serif",
   },
+  /** Roman inscriptional serif. Read off sailon.bravisthemes.com, a live salon site. */
+  marcellus: {
+    family: "Marcellus",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-marcellus",
+    fallback: "Georgia, 'Times New Roman', serif",
+  },
+  /** Its partner on that same site: quiet, highly legible, warm. */
+  "dm-sans": {
+    family: "DM Sans",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-dm-sans",
+    fallback: "'Helvetica Neue', Arial, sans-serif",
+  },
+  /** The handwritten line above serif capitals — the beauty-salon signature. */
+  "dancing-script": {
+    family: "Dancing Script",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-script",
+    fallback: "'Snell Roundhand', cursive",
+  },
+  /** High-contrast display serif for the interleaved headline. */
+  playfair: {
+    family: "Playfair Display",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-playfair",
+    fallback: "Georgia, 'Times New Roman', serif",
+  },
 } as const satisfies Record<
   string,
   { family: string; subsets: readonly string[]; fallback: string; cssVariable: string }

@@ -4,6 +4,12 @@ import { presetFor } from "@/packs/registry";
 import { Container } from "./primitives";
 import { CallButton, WhatsAppButton } from "./Cta";
 import { ChromeHero } from "./ChromeHero";
+import { Kesim } from "./heroes/Kesim";
+import { Gece } from "./heroes/Gece";
+import { Kemer } from "./heroes/Kemer";
+import { Makro } from "./heroes/Makro";
+import { Menu } from "./heroes/Menu";
+import { Sade } from "./heroes/Sade";
 
 export function Hero({
   section,
@@ -15,9 +21,14 @@ export function Hero({
   now: Date;
 }) {
   // A preset may replace the hero entirely rather than only recolour it.
-  if (presetFor(content).hero === "chrome") {
-    return <ChromeHero section={section} content={content} now={now} />;
-  }
+  const variant = presetFor(content).hero;
+  if (variant === "chrome") return <ChromeHero section={section} content={content} now={now} />;
+  if (variant === "kesim") return <Kesim section={section} content={content} now={now} />;
+  if (variant === "gece") return <Gece section={section} content={content} now={now} />;
+  if (variant === "kemer") return <Kemer section={section} content={content} now={now} />;
+  if (variant === "makro") return <Makro section={section} content={content} now={now} />;
+  if (variant === "menu") return <Menu section={section} content={content} now={now} />;
+  if (variant === "sade") return <Sade section={section} content={content} now={now} />;
 
   const { business } = content;
   const state = isOpenNow(content.hours, now);
