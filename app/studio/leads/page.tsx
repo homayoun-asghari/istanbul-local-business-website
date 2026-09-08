@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { listLeads } from "@/lib/db/leads";
 import { INDUSTRY_LABELS_TR, type Industry } from "@/lib/leads/industry";
-import { LeadsTools } from "./LeadsTools";
+import { AddLead, BuildButton, ImportLeads } from "./LeadsTools";
 
 export const dynamic = "force-dynamic";
 
@@ -19,8 +19,8 @@ export default async function LeadsPage() {
         {leads.length} leads · {buildable.length} have an industry pack
       </p>
 
-      <LeadsTools />
-      <LeadsTools.AddLead />
+      <ImportLeads />
+      <AddLead />
 
       {leads.length > 0 ? (
         <table style={{ marginTop: 24 }}>
@@ -55,7 +55,7 @@ export default async function LeadsPage() {
                     {lead.hasSite ? (
                       <Link href={`/studio/${lead.slug}`}>edit →</Link>
                     ) : (
-                      <LeadsTools.BuildButton leadId={lead.id} />
+                      <BuildButton leadId={lead.id} />
                     )}
                   </td>
                 </tr>

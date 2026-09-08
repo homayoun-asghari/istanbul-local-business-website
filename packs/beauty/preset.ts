@@ -98,7 +98,7 @@ export const krom: Preset = {
 export const kesim: Preset = {
   id: "kesim",
   stock: {
-    hero: "/stock/kesim-woman.jpg",
+    hero: "/stock/kesim-woman.webp",
     heroAlt: "Salonumuzun stil çekiminden bir kare",
     tiles: [
       "/stock/thumb-1.jpg",

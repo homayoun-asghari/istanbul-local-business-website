@@ -26,16 +26,30 @@ async function loadContent(slug: string): Promise<SiteContent> {
   return SiteContentSchema.parse(site.content);
 }
 
-/** Images are downloaded so the delivered site never hotlinks back to Google or to us. */
+/**
+ * Remote images are downloaded so the delivered site never hotlinks back to Google or to
+ * us. Root-relative sources are already local — they are the preset's own photography,
+ * copied wholesale from public/stock — and passing one to fetch() throws, which used to
+ * break eject outright for every template that ships with its own pictures.
+ */
 async function localiseImages(content: SiteContent, outDir: string): Promise<SiteContent> {
   await mkdir(path.join(outDir, "public/images"), { recursive: true });
   const cache = new Map<string, string>();
 
   const download = async (url: string): Promise<string> => {
+    if (url.startsWith("/")) return url;
     if (cache.has(url)) return cache.get(url)!;
-    const name = `image-${cache.size + 1}.jpg`;
     const response = await fetch(url);
     if (!response.ok) throw new Error(`could not download ${url} (${response.status})`);
+    const type = response.headers.get("content-type") ?? "";
+    const extension = type.includes("png")
+      ? "png"
+      : type.includes("webp")
+        ? "webp"
+        : type.includes("avif")
+          ? "avif"
+          : "jpg";
+    const name = `image-${cache.size + 1}.${extension}`;
     await writeFile(
       path.join(outDir, "public/images", name),
       Buffer.from(await response.arrayBuffer()),
@@ -119,6 +133,12 @@ async function main() {
   // Tests and the operator's own fixtures are not the client's business, and a stray
   // test file fails their build by importing a fixture that was not copied.
   await stripDevFiles(outDir);
+
+  // The presets carry their own photography and reference it by root-relative path, so
+  // it has to travel with them or the client's site renders a page of broken images.
+  await cp(path.join(ROOT, "public/stock"), path.join(outDir, "public/stock"), {
+    recursive: true,
+  });
 
   const local = await localiseImages(content, outDir);
   await writeFile(path.join(outDir, "site.content.json"), `${JSON.stringify(local, null, 2)}\n`);
