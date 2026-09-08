@@ -48,5 +48,7 @@ out/
 playwright-report/
 test-results/
 work/design-v2/insp/
+work/design-v3/frames/
+work/design-v3/sheets/
 yarn-debug.log*
 yarn-error.log*
