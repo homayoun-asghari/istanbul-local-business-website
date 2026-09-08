@@ -34,14 +34,22 @@ export function OpenNow({ content, now }: { content: SiteContent; now: Date }) {
   );
 }
 
+/**
+ * Only the sections this site actually has. A lead with no price list used to get a
+ * "Fiyatlar" link that scrolled nowhere — the first thing an owner clicks, and the
+ * fastest way to look like a template.
+ */
+const NAV: [href: string, label: string, section: SiteContent["sections"][number]["type"]][] = [
+  ["#hizmetler", "Hizmetler", "services"],
+  ["#fiyatlar", "Fiyatlar", "pricelist"],
+  ["#ekip", "Ekip", "team"],
+  ["#randevu", "Randevu", "booking"],
+  ["#iletisim", "İletişim", "contact"],
+];
+
 export function SalonNav({ content, dark = false }: { content: SiteContent; dark?: boolean }) {
-  const links = [
-    ["#hizmetler", "Hizmetler"],
-    ["#fiyatlar", "Fiyatlar"],
-    ["#ekip", "Ekip"],
-    ["#randevu", "Randevu"],
-    ["#iletisim", "İletişim"],
-  ];
+  const present = new Set(content.sections.map((section) => section.type));
+  const links = NAV.filter(([, , section]) => present.has(section));
   return (
     <header className="relative z-30 flex items-center justify-between gap-6 px-[clamp(20px,5vw,60px)] py-5">
       <a href="#" className="font-display text-[15px] leading-tight tracking-[0.01em]">

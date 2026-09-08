@@ -1,6 +1,7 @@
 import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import { presetFor } from "@/packs/registry";
 import { HeroActions, OpenNow, RatingLine, SalonNav, Words } from "./shared";
+import { ScrollScene } from "../ScrollScene";
 
 /**
  * 04 Makro — the ATURA crop.
@@ -23,7 +24,7 @@ export function Makro({
   const [first, ...rest] = section.headline.split(/\s+/);
 
   return (
-    <section
+    <ScrollScene
       className="relative min-h-[84vh] overflow-hidden"
       style={{ background: "var(--ground)" }}
     >
@@ -31,7 +32,7 @@ export function Makro({
       <img
         src={image.src}
         alt={image.alt}
-        className="salon-drift absolute inset-0 h-full w-full object-cover"
+        className="salon-drift scene-bg absolute inset-0 h-full w-full object-cover"
         loading="eager"
         decoding="async"
       />
@@ -46,7 +47,7 @@ export function Makro({
 
       <div className="relative z-20 flex min-h-[84vh] flex-col">
         <SalonNav content={content} dark />
-        <div className="flex flex-1 flex-col items-center justify-center px-[clamp(20px,5vw,60px)] text-center">
+        <div className="scene-copy-fade flex flex-1 flex-col items-center justify-center px-[clamp(20px,5vw,60px)] text-center">
           {/* The script line — the beauty signature that none of the first ten had. */}
           <p
             className="salon-word m-0 text-[clamp(22px,3.4vw,38px)] italic leading-none text-[var(--brand)]"
@@ -72,6 +73,6 @@ export function Makro({
           </div>
         </div>
       </div>
-    </section>
+    </ScrollScene>
   );
 }

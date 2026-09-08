@@ -36,7 +36,7 @@ export function Site({
 }) {
   const preset = presetFor(content);
   const sections = withoutRepeatedPhotos(
-    withPresetPhotography(content.sections, preset.stock?.tiles),
+    withPresetPhotography(content.sections, preset.stock?.tiles, preset.stock?.staff),
   );
   // The chrome hero carries its own navigation, so the shared header would be a second one.
   const SALON_HEROES = new Set(["kesim", "gece", "kemer", "makro", "menu", "sade"]);
@@ -122,23 +122,34 @@ function withoutRepeatedPhotos(sections: SiteContent["sections"]): SiteContent["
 function withPresetPhotography(
   sections: SiteContent["sections"],
   tiles: string[] | undefined,
+  staff: string[] | undefined,
 ): SiteContent["sections"] {
   if (!tiles || tiles.length === 0) return sections;
   const pick = (index: number) => tiles[index % tiles.length];
 
   return sections.map((section) => {
     if (section.type === "gallery") {
-      return { ...section, images: section.images.map((im, i) => ({ ...im, src: pick(i) })) };
+      // These leads have one photograph, so the gallery arrives with a single image and
+      // renders as one lonely 16:9 band. Three tiles, offset past the ones the price
+      // list already used, fill the grid without repeating a picture on the way down.
+      const images = [0, 1, 2].map((i) => ({
+        ...section.images[0],
+        src: pick(i + 2),
+      }));
+      return { ...section, images };
     }
     if (section.type === "instagram") {
       return { ...section, images: section.images.map((im, i) => ({ ...im, src: pick(i) })) };
     }
     if (section.type === "team") {
+      // Staff portraits when the preset has them: a close-up of a manicure captioned
+      // "Melike — Kurucu" reads as a broken page, not as a team.
+      const faces = staff && staff.length > 0 ? staff : tiles;
       return {
         ...section,
         members: section.members.map((m, i) => ({
           ...m,
-          image: { ...m.image, src: pick(i + 1) },
+          image: { ...m.image, src: faces[i % faces.length] },
         })),
       };
     }

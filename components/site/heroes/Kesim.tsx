@@ -1,6 +1,7 @@
 import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import { presetFor } from "@/packs/registry";
-import { HeroActions, OpenNow, RatingLine, SalonNav, Words } from "./shared";
+import { HeroActions, OpenNow, RatingLine, SalonNav } from "./shared";
+import { ScrollScene } from "../ScrollScene";
 
 /**
  * 01 Kesim — the UNICKA interleave.
@@ -25,8 +26,15 @@ export function Kesim({
   const word = content.business.name.split(/\s+/)[0].toLocaleUpperCase("tr-TR");
 
   return (
-    <section className="relative overflow-hidden" style={{ background: "var(--ground)" }}>
+    <ScrollScene className="relative overflow-hidden" style={{ background: "var(--ground)" }}>
       <SalonNav content={content} />
+
+      <p
+        className="salon-word m-0 px-[clamp(20px,5vw,60px)] pt-2 text-[11px] tracking-[0.22em] uppercase text-[var(--muted)]"
+        style={{ ["--i" as string]: 0 }}
+      >
+        {content.business.neighborhood} · {content.business.district}
+      </p>
 
       {/*
         The interleave, in one grid cell so the word and the subject share an axis.
@@ -36,7 +44,7 @@ export function Kesim({
       <div className="relative mx-auto grid w-full max-w-[1180px] place-items-center px-[clamp(20px,5vw,60px)] pb-8">
         <p
           aria-hidden="true"
-          className="salon-word font-display pointer-events-none col-start-1 row-start-1 m-0 self-center text-center leading-[0.78] tracking-[-0.035em] text-[var(--brand)]"
+          className="salon-word scene-word font-display pointer-events-none col-start-1 row-start-1 m-0 self-center text-center leading-[0.78] tracking-[-0.035em] text-[var(--brand)]"
           style={{ fontSize: "clamp(64px,14.5vw,196px)", ["--i" as string]: 0 }}
         >
           {word}
@@ -46,7 +54,7 @@ export function Kesim({
         <img
           src={image.src}
           alt={image.alt}
-          className="salon-word col-start-1 row-start-1 block h-[54vh] w-auto self-end object-contain md:h-[66vh]"
+          className="salon-in scene-subject col-start-1 row-start-1 block h-[54vh] w-auto self-end object-contain md:h-[66vh]"
           style={{ ["--i" as string]: 2 }}
           loading="eager"
           decoding="async"
@@ -54,7 +62,7 @@ export function Kesim({
 
         <p
           aria-hidden="true"
-          className="salon-word font-display pointer-events-none col-start-1 row-start-1 m-0 self-center text-center leading-[0.78] tracking-[-0.035em] text-[var(--brand)]"
+          className="salon-word scene-word font-display pointer-events-none col-start-1 row-start-1 m-0 self-center text-center leading-[0.78] tracking-[-0.035em] text-[var(--brand)]"
           style={{
             fontSize: "clamp(64px,14.5vw,196px)",
             clipPath: "inset(52% 0 0 0)",
@@ -62,13 +70,6 @@ export function Kesim({
           }}
         >
           {word}
-        </p>
-
-        <p
-          className="salon-word font-display col-start-1 row-start-1 m-0 translate-y-[26%] self-center text-center text-[clamp(12px,1.9vw,22px)] tracking-[0.46em]"
-          style={{ ["--i" as string]: 4 }}
-        >
-          SALON
         </p>
       </div>
 
@@ -82,6 +83,6 @@ export function Kesim({
         </div>
         <HeroActions content={content} />
       </div>
-    </section>
+    </ScrollScene>
   );
 }

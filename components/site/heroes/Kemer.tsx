@@ -2,6 +2,7 @@ import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import { formatCount } from "@/lib/content/schema";
 import { presetFor } from "@/packs/registry";
 import { HeroActions, OpenNow, SalonNav, Words } from "./shared";
+import { ScrollScene } from "../ScrollScene";
 
 /**
  * 03 Kemer — the GLOWRIA collage.
@@ -26,7 +27,7 @@ export function Kemer({
   const extras = (stock?.tiles ?? []).slice(0, 2);
 
   return (
-    <section className="relative overflow-hidden" style={{ background: "var(--ground)" }}>
+    <ScrollScene className="relative overflow-hidden" style={{ background: "var(--ground)" }}>
       {/* Botanical line work, drawn rather than loaded — one less file in the client repo. */}
       <svg
         aria-hidden="true"
@@ -79,7 +80,7 @@ export function Kemer({
           <img
             src={image.src}
             alt={image.alt}
-            className="salon-word ml-auto block h-[46vh] w-full max-w-[420px] object-cover md:h-[62vh]"
+            className="salon-in scene-media ml-auto block h-[46vh] w-full max-w-[420px] object-cover md:h-[62vh]"
             style={{ borderRadius: "50% 50% 18px 18px / 32% 32% 4% 4%", ["--i" as string]: 2 }}
             loading="eager"
             decoding="async"
@@ -90,7 +91,7 @@ export function Kemer({
             <img
               src={extras[0]}
               alt=""
-              className="salon-word rounded-edge absolute -bottom-4 -left-2 hidden h-[168px] w-[188px] object-cover shadow-[0_18px_44px_rgba(45,20,10,.13)] sm:block"
+              className="salon-in rounded-edge absolute -bottom-4 -left-2 hidden h-[168px] w-[188px] object-cover shadow-[0_18px_44px_rgba(45,20,10,.13)] sm:block"
               style={{ ["--i" as string]: 4 }}
               loading="lazy"
               decoding="async"
@@ -98,7 +99,7 @@ export function Kemer({
           ) : null}
 
           <div
-            className="salon-word bg-surface rounded-edge absolute top-[18%] -right-1 px-5 py-4 shadow-[0_14px_36px_rgba(45,20,10,.10)]"
+            className="salon-in bg-surface rounded-edge absolute top-[18%] -right-1 px-5 py-4 shadow-[0_14px_36px_rgba(45,20,10,.10)]"
             style={{ ["--i" as string]: 5 }}
           >
             <p className="font-display text-ink m-0 text-[26px] leading-none">
@@ -108,11 +109,11 @@ export function Kemer({
           </div>
 
           <div
-            className="salon-word bg-surface rounded-edge absolute -bottom-6 right-6 flex items-center gap-3 px-4 py-3 shadow-[0_14px_36px_rgba(45,20,10,.10)]"
+            className="salon-in bg-surface rounded-edge absolute -bottom-6 right-6 flex items-center gap-3 px-4 py-3 shadow-[0_14px_36px_rgba(45,20,10,.10)]"
             style={{ ["--i" as string]: 6 }}
           >
             <div className="flex -space-x-2.5">
-              {["/stock/thumb-1.jpg", "/stock/thumb-4.jpg", "/stock/thumb-5.jpg"].map((src) => (
+              {(stock?.staff ?? stock?.tiles ?? []).slice(0, 3).map((src) => (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   key={src}
@@ -130,6 +131,6 @@ export function Kemer({
           </div>
         </div>
       </div>
-    </section>
+    </ScrollScene>
   );
 }

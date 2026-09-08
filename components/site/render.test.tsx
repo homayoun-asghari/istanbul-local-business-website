@@ -52,12 +52,23 @@ describe("the demo a salon owner opens", () => {
 
   it("offers directions to the salon", () => {
     expect(html).toContain(melike.business.mapsUrl);
-    expect(html).toContain(`maps.google.com/maps?q=${melike.business.lat}`);
+  });
+
+  it("shows a map that cannot fail to a provider's error page", () => {
+    // Two embeds were tried and both broke on the rendered page: Google's keyless
+    // endpoint refuses to be framed, and OSM's own embed demands WebGL and apologises
+    // in English when it is missing. Guard both so neither creeps back.
+    expect(html).not.toContain("maps.google.com/maps?q=");
+    expect(html).not.toContain("openstreetmap.org/export/embed.html");
+    expect(html).not.toContain("<iframe");
+    expect(html).toContain("https://tile.openstreetmap.org/16/38025/24572.png");
+    expect(html).toContain("© OpenStreetMap katkıda bulunanlar");
   });
 
   it("renders every section in the content, in order", () => {
-    // No #galeri: this lead's only photo is already the hero, so the gallery is
-    // dropped rather than showing the same picture twice. See withoutRepeatedPhotos.
+    // No #galeri: this fixture's preset carries no stock photography, so the gallery
+    // still holds the lead's only photo — already the hero — and is dropped rather than
+    // showing the same picture twice. See withoutRepeatedPhotos.
     for (const id of ["hizmetler", "hakkimizda", "saatler", "iletisim"]) {
       expect(html, `missing section #${id}`).toContain(`id="${id}"`);
     }
@@ -77,7 +88,15 @@ describe("the demo a salon owner opens", () => {
   it("gives every image alt text, in Turkish", () => {
     const imgs = html.match(/<img[^>]*>/g) ?? [];
     expect(imgs.length).toBeGreaterThan(0);
-    for (const img of imgs) expect(img).toMatch(/alt="[^"]+"/);
+    for (const img of imgs) {
+      // Map tiles are decorative — the panel around them carries the label — and an
+      // empty alt is the correct markup for those. Everything else must be described.
+      if (img.includes("tile.openstreetmap.org")) {
+        expect(img).toContain('alt=""');
+        continue;
+      }
+      expect(img).toMatch(/alt="[^"]+"/);
+    }
   });
 });
 

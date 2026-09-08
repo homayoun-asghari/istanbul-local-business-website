@@ -99,7 +99,7 @@ export const kesim: Preset = {
   id: "kesim",
   stock: {
     hero: "/stock/kesim-woman.jpg",
-    heroAlt: "Salonumuzdan bir kare",
+    heroAlt: "Salonumuzun stil çekiminden bir kare",
     tiles: [
       "/stock/thumb-1.jpg",
       "/stock/thumb-3.jpg",
@@ -108,12 +108,13 @@ export const kesim: Preset = {
       "/stock/thumb-6.jpg",
       "/stock/thumb-2.jpg",
     ],
+    staff: ["/stock/staff-1.jpg", "/stock/staff-2.jpg", "/stock/staff-3.jpg", "/stock/staff-4.jpg"],
   },
   label: "Kesim — greige, magenta, dev serif",
   fonts: { display: "playfair", body: "dm-sans" },
   hero: "kesim",
   tokens: {
-    ground: "#ECD6C0",
+    ground: "#ECD6BF",
     surface: "#FFFFFF",
     ink: "#1A1310",
     inkSoft: "#4A3A31",
@@ -132,7 +133,7 @@ export const gece: Preset = {
   id: "gece",
   stock: {
     hero: "/stock/gece-hair.jpg",
-    heroAlt: "Saç tasarımı uygulaması",
+    heroAlt: "Saç bakımı sonrası parlak, hareketli saçlar",
     tiles: [
       "/stock/thumb-5.jpg",
       "/stock/thumb-1.jpg",
@@ -141,6 +142,7 @@ export const gece: Preset = {
       "/stock/thumb-6.jpg",
       "/stock/thumb-2.jpg",
     ],
+    staff: ["/stock/staff-1.jpg", "/stock/staff-2.jpg", "/stock/staff-3.jpg", "/stock/staff-4.jpg"],
   },
   label: "Gece — tam ekran fotoğraf, koyu, ten rengi",
   fonts: { display: "marcellus", body: "dm-sans" },
@@ -165,7 +167,7 @@ export const kemer: Preset = {
   id: "kemer",
   stock: {
     hero: "/stock/kemer-portrait.jpg",
-    heroAlt: "Cilt bakımı seansı",
+    heroAlt: "Cilt bakımı sonrası ışıldayan bir müşterimiz",
     tiles: [
       "/stock/kemer-nails.jpg",
       "/stock/kemer-hands.jpg",
@@ -174,6 +176,7 @@ export const kemer: Preset = {
       "/stock/thumb-6.jpg",
       "/stock/thumb-5.jpg",
     ],
+    staff: ["/stock/staff-1.jpg", "/stock/staff-2.jpg", "/stock/staff-3.jpg", "/stock/staff-4.jpg"],
   },
   label: "Kemer — pudra, terrakota, kemerli fotoğraf",
   fonts: { display: "cormorant-garamond", body: "dm-sans" },
@@ -198,7 +201,7 @@ export const makro: Preset = {
   id: "makro",
   stock: {
     hero: "/stock/makro-hand.jpg",
-    heroAlt: "Kalıcı oje uygulaması",
+    heroAlt: "Kalıcı oje uygulanmış eller, yakın çekim",
     tiles: [
       "/stock/thumb-3.jpg",
       "/stock/thumb-1.jpg",
@@ -207,6 +210,7 @@ export const makro: Preset = {
       "/stock/thumb-6.jpg",
       "/stock/thumb-5.jpg",
     ],
+    staff: ["/stock/staff-1.jpg", "/stock/staff-2.jpg", "/stock/staff-3.jpg", "/stock/staff-4.jpg"],
   },
   label: "Makro — yakın çekim, el yazısı, koyu",
   fonts: { display: "marcellus", body: "dm-sans" },
@@ -231,7 +235,7 @@ export const menu: Preset = {
   id: "menu",
   stock: {
     hero: "/stock/menu-salon.jpg",
-    heroAlt: "Salonumuzda bir uygulama",
+    heroAlt: "Salonumuzda saç şekillendirme uygulaması",
     tiles: [
       "/stock/thumb-6.jpg",
       "/stock/thumb-1.jpg",
@@ -240,6 +244,7 @@ export const menu: Preset = {
       "/stock/thumb-5.jpg",
       "/stock/thumb-2.jpg",
     ],
+    staff: ["/stock/staff-1.jpg", "/stock/staff-2.jpg", "/stock/staff-3.jpg", "/stock/staff-4.jpg"],
   },
   label: "Menü — fiyat listesi, krem, kahve",
   fonts: { display: "marcellus", body: "dm-sans" },
@@ -264,7 +269,7 @@ export const sade: Preset = {
   id: "sade",
   stock: {
     hero: "/stock/sade-facial.jpg",
-    heroAlt: "Yüz bakımı uygulaması",
+    heroAlt: "Yüz bakımı seansında maske uygulaması",
     tiles: [
       "/stock/thumb-4.jpg",
       "/stock/thumb-1.jpg",
@@ -273,6 +278,7 @@ export const sade: Preset = {
       "/stock/thumb-5.jpg",
       "/stock/thumb-2.jpg",
     ],
+    staff: ["/stock/staff-1.jpg", "/stock/staff-2.jpg", "/stock/staff-3.jpg", "/stock/staff-4.jpg"],
   },
   label: "Sade — sıcak krem, kahve, tek fotoğraf",
   fonts: { display: "marcellus", body: "dm-sans" },

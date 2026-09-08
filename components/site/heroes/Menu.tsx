@@ -1,6 +1,7 @@
 import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import { presetFor } from "@/packs/registry";
 import { HeroActions, OpenNow, RatingLine, SalonNav, Words } from "./shared";
+import { ScrollScene } from "../ScrollScene";
 
 /**
  * 05 Menü — half photograph, half price list.
@@ -24,7 +25,7 @@ export function Menu({
   const preview = prices ? prices.items.slice(0, 5) : [];
 
   return (
-    <section className="relative" style={{ background: "var(--ground)" }}>
+    <ScrollScene className="relative" style={{ background: "var(--ground)" }}>
       <SalonNav content={content} />
       <div className="mx-auto grid max-w-[1180px] items-stretch gap-0 px-[clamp(20px,5vw,60px)] pb-14 md:grid-cols-[0.95fr_1.05fr] md:gap-14">
         <div className="relative order-2 md:order-1">
@@ -32,14 +33,14 @@ export function Menu({
           <img
             src={image.src}
             alt={image.alt}
-            className="salon-word rounded-edge h-[42vh] w-full object-cover md:h-[70vh]"
+            className="salon-in scene-media rounded-edge h-[42vh] w-full object-cover md:h-[70vh]"
             style={{ ["--i" as string]: 1 }}
             loading="eager"
             decoding="async"
           />
         </div>
 
-        <div className="order-1 flex flex-col justify-center py-8 md:order-2 md:py-14">
+        <div className="scene-copy order-1 flex flex-col justify-center py-8 md:order-2 md:py-14">
           <p
             className="salon-word m-0 text-[11px] tracking-[0.2em] uppercase text-[var(--muted)]"
             style={{ ["--i" as string]: 0 }}
@@ -61,7 +62,7 @@ export function Menu({
               {preview.map((item, index) => (
                 <li
                   key={item.name}
-                  className="salon-word border-line flex items-baseline gap-3 border-b py-2.5"
+                  className="salon-in border-line flex items-baseline gap-3 border-b py-2.5"
                   style={{ ["--i" as string]: 6 + index }}
                 >
                   <span className="text-ink text-[14.5px]">{item.name}</span>
@@ -88,6 +89,6 @@ export function Menu({
           </div>
         </div>
       </div>
-    </section>
+    </ScrollScene>
   );
 }
