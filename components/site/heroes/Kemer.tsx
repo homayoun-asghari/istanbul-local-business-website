@@ -23,8 +23,7 @@ export function Kemer({
   const image = stock ? { src: stock.hero, alt: stock.heroAlt } : section.image;
   const words = section.headline.split(/\s+/);
   const split = Math.max(1, Math.ceil(words.length / 2));
-  const gallery = content.sections.find((s) => s.type === "gallery");
-  const extras = gallery ? gallery.images.slice(0, 2) : [];
+  const extras = (stock?.tiles ?? []).slice(0, 2);
 
   return (
     <section className="relative overflow-hidden" style={{ background: "var(--ground)" }}>
@@ -89,8 +88,8 @@ export function Kemer({
           {extras[0] ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
-              src={extras[0].src}
-              alt={extras[0].alt}
+              src={extras[0]}
+              alt=""
               className="salon-word rounded-edge absolute -bottom-4 -left-2 hidden h-[168px] w-[188px] object-cover shadow-[0_18px_44px_rgba(45,20,10,.13)] sm:block"
               style={{ ["--i" as string]: 4 }}
               loading="lazy"

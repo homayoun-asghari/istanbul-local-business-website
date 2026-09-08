@@ -13,7 +13,8 @@ export function Words({ text, className = "" }: { text: string; className?: stri
           className={`salon-word ${className}`}
           style={{ ["--i" as string]: index }}
         >
-          {word}{" "}
+          {word}
+          {index < text.split(/\s+/).length - 1 ? "\u00a0" : ""}
         </span>
       ))}
     </>

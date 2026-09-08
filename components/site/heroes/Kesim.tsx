@@ -28,34 +28,36 @@ export function Kesim({
     <section className="relative overflow-hidden" style={{ background: "var(--ground)" }}>
       <SalonNav content={content} />
 
-      <div className="relative mx-auto min-h-[74vh] w-full max-w-[1180px] px-[clamp(20px,5vw,60px)] pb-10 md:min-h-[80vh]">
-        {/* Layer 1 — the word, behind everything. */}
+      {/*
+        The interleave, in one grid cell so the word and the subject share an axis.
+        Three layers: the word, the subject on her own matching ground, then the word
+        again clipped so its lower half draws back over her body.
+      */}
+      <div className="relative mx-auto grid w-full max-w-[1180px] place-items-center px-[clamp(20px,5vw,60px)] pb-8">
         <p
           aria-hidden="true"
-          className="font-display pointer-events-none absolute inset-x-0 top-[38%] z-10 m-0 text-center leading-[0.8] tracking-[-0.03em] text-[var(--brand)] salon-word"
-          style={{ fontSize: "clamp(72px,17vw,232px)", ["--i" as string]: 0 }}
+          className="salon-word font-display pointer-events-none col-start-1 row-start-1 m-0 self-center text-center leading-[0.78] tracking-[-0.035em] text-[var(--brand)]"
+          style={{ fontSize: "clamp(64px,14.5vw,196px)", ["--i" as string]: 0 }}
         >
           {word}
         </p>
 
-        {/* Layer 2 — the subject, on her own matching ground. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={image.src}
           alt={image.alt}
-          className="salon-word relative z-20 mx-auto block h-[52vh] w-auto object-contain object-bottom md:h-[62vh]"
+          className="salon-word col-start-1 row-start-1 block h-[54vh] w-auto self-end object-contain md:h-[66vh]"
           style={{ ["--i" as string]: 2 }}
           loading="eager"
           decoding="async"
         />
 
-        {/* Layer 3 — the same word again, clipped so its lower half draws over her body. */}
         <p
           aria-hidden="true"
-          className="font-display pointer-events-none absolute inset-x-0 top-[38%] z-30 m-0 text-center leading-[0.8] tracking-[-0.03em] text-[var(--brand)] salon-word"
+          className="salon-word font-display pointer-events-none col-start-1 row-start-1 m-0 self-center text-center leading-[0.78] tracking-[-0.035em] text-[var(--brand)]"
           style={{
-            fontSize: "clamp(72px,17vw,232px)",
-            clipPath: "inset(46% 0 0 0)",
+            fontSize: "clamp(64px,14.5vw,196px)",
+            clipPath: "inset(52% 0 0 0)",
             ["--i" as string]: 0,
           }}
         >
@@ -63,17 +65,20 @@ export function Kesim({
         </p>
 
         <p
-          className="font-display absolute inset-x-0 top-[66%] z-40 m-0 text-center text-[clamp(13px,2.2vw,26px)] tracking-[0.42em] salon-word"
+          className="salon-word font-display col-start-1 row-start-1 m-0 translate-y-[26%] self-center text-center text-[clamp(12px,1.9vw,22px)] tracking-[0.46em]"
           style={{ ["--i" as string]: 4 }}
         >
-          {section.subline}
+          SALON
         </p>
       </div>
 
       <div className="border-line relative z-40 mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-6 border-t px-[clamp(20px,5vw,60px)] py-6">
-        <div className="flex flex-col gap-2">
-          <OpenNow content={content} now={now} />
-          <RatingLine content={content} />
+        <div className="flex max-w-[46ch] flex-col gap-2">
+          <p className="text-ink-soft m-0 text-[14px] leading-relaxed">{section.subline}</p>
+          <div className="mt-1 flex flex-wrap items-center gap-x-5 gap-y-1">
+            <OpenNow content={content} now={now} />
+            <RatingLine content={content} />
+          </div>
         </div>
         <HeroActions content={content} />
       </div>
