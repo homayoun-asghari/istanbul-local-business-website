@@ -764,3 +764,1196 @@ h3 {
     animation: none !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   01 Cam — the dental pack's glass preset.
+
+   Everything below is scoped to the cam sections. The page is a deep blue field
+   with one white card floating on it, and translucent 3D objects carry every
+   image on the site, because a dental lead arrives with a storefront snap and no
+   clinical photography at all.
+
+   Motion is the product here, not the trim, and it is staged rather than
+   scattered: the card rises, the copy arrives, the molar lands last and keeps
+   breathing, and the tiles deal themselves out underneath. On scroll the molar
+   drifts against the copy through --sy, which ScrollScene writes per frame.
+   --------------------------------------------------------------------------- */
+.cam-scene {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(14px, 2.2vw, 30px);
+  background: radial-gradient(
+    120% 90% at 50% -12%,
+    color-mix(in srgb, var(--accent) 62%, #ffffff) 0%,
+    var(--accent) 34%,
+    var(--ground) 100%
+  );
+  overflow: hidden;
+}
+
+/* A bloom behind the molar. It is the only thing on the page that never stops. */
+.cam-glow {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  width: min(1100px, 92vw);
+  aspect-ratio: 1;
+  translate: -50% calc(-50% + var(--sy) * -90px);
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.5), transparent 72%);
+  filter: blur(12px);
+  z-index: 0;
+  pointer-events: none;
+  animation: cam-breathe 9s ease-in-out infinite;
+}
+
+.cam-card {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  border-radius: clamp(14px, 1.6vw, 24px);
+  padding: clamp(18px, 2vw, 28px) clamp(18px, 2.6vw, 40px) clamp(22px, 2.4vw, 34px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 50px 90px -50px rgba(4, 22, 52, 0.75);
+  animation: cam-card-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ---- nav ---- */
+.cam-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  animation: cam-fade 0.7s ease 0.25s both;
+}
+.cam-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--brand);
+  text-decoration: none;
+  flex: none;
+}
+.cam-brand span {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+  max-width: 15ch;
+}
+.cam-links {
+  display: none;
+  gap: clamp(14px, 1.8vw, 28px);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.cam-links a,
+.cam-contact {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.cam-links a:hover {
+  color: var(--brand);
+}
+.cam-contact {
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  flex: none;
+}
+@media (min-width: 1000px) {
+  .cam-links {
+    display: flex;
+  }
+}
+
+/* ---- the three-part stage ---- */
+.cam-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 8px;
+  padding-block: clamp(16px, 2vw, 26px);
+  isolation: isolate;
+}
+@media (min-width: 900px) {
+  .cam-stage {
+    grid-template-columns: 1fr 1.04fr 1fr;
+    min-height: 400px;
+  }
+}
+
+.cam-h1 {
+  font-family: var(--font-display-active), sans-serif;
+  font-size: clamp(30px, 3.4vw, 46px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  margin: 0;
+  max-width: 12ch;
+  animation: cam-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.34s both;
+}
+.cam-lede {
+  margin: 18px 0 0;
+  max-width: 31ch;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  animation: cam-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.42s both;
+}
+
+.cam-molar {
+  display: block;
+  width: min(100%, 460px);
+  margin: 0 auto;
+  /* Glass on white: multiply keeps the caustics and drops the render's own ground,
+     which is what lets the object sit on the card with no cut-out at all. */
+  mix-blend-mode: multiply;
+  position: relative;
+  z-index: 1;
+  translate: 0 calc(var(--sy) * -120px);
+  animation:
+    cam-molar-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.62s both,
+    cam-float 7s ease-in-out 1.8s infinite;
+}
+
+.cam-h2 {
+  font-family: var(--font-display-active), sans-serif;
+  font-size: clamp(24px, 2.5vw, 34px);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0;
+  animation: cam-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+.cam-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  animation: cam-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.58s both;
+}
+.cam-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: linear-gradient(180deg, var(--accent), var(--brand));
+  color: var(--brand-ink);
+  border-radius: var(--radius-pill);
+  padding: 12px 21px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 12px 24px -12px color-mix(in srgb, var(--brand) 80%, transparent);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s ease;
+}
+.cam-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 30px -14px color-mix(in srgb, var(--brand) 85%, transparent);
+}
+.cam-call {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.cam-open {
+  margin-top: 16px;
+  color: var(--ink-soft);
+  animation: cam-fade 0.8s ease 0.72s both;
+}
+
+/* The clinic's own name, ghosted across the base with the molar in front of it. */
+.cam-ghost {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2%;
+  z-index: -1;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-display-active), sans-serif;
+  font-size: clamp(20px, 3.4vw, 48px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: color-mix(in srgb, var(--brand) 16%, transparent);
+  pointer-events: none;
+  translate: 0 calc(var(--sy) * -50px);
+  animation: cam-wipe 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.9s both;
+}
+
+/* ---- the tile strip ---- */
+.cam-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(6px, 0.9vw, 13px);
+  margin-top: clamp(10px, 1.6vw, 20px);
+}
+.cam-tile {
+  position: relative;
+  display: block;
+  border-radius: clamp(8px, 0.9vw, 14px);
+  overflow: hidden;
+  aspect-ratio: 3 / 3.6;
+  background: var(--ground);
+  text-decoration: none;
+  animation: cam-deal 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(1.02s + var(--i) * 80ms);
+  transition:
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.45s ease;
+}
+.cam-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cam-tile b {
+  position: absolute;
+  left: clamp(8px, 0.9vw, 13px);
+  bottom: clamp(8px, 0.9vw, 12px);
+  right: clamp(8px, 0.9vw, 13px);
+  font-size: clamp(10px, 0.85vw, 12.5px);
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(4, 22, 52, 0.7);
+}
+.cam-tile.is-lifted {
+  transform: translateY(-10px);
+  box-shadow: 0 26px 40px -26px rgba(4, 22, 52, 0.9);
+}
+.cam-tile:hover {
+  transform: translateY(-14px);
+  box-shadow: 0 30px 46px -26px rgba(4, 22, 52, 0.9);
+}
+.cam-tile:hover img {
+  transform: scale(1.07);
+}
+
+@keyframes cam-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.985);
+  }
+}
+@keyframes cam-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes cam-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@keyframes cam-molar-in {
+  from {
+    opacity: 0;
+    transform: translateY(38px) scale(1.1);
+    filter: blur(6px);
+  }
+}
+@keyframes cam-deal {
+  from {
+    opacity: 0;
+    transform: translateY(26px) rotate(-1.5deg);
+  }
+}
+@keyframes cam-wipe {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+/* Slow enough to read as a held breath rather than as an animation. */
+@keyframes cam-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(-1.1deg);
+  }
+}
+@keyframes cam-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+    scale: 1;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.06;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Cam — the sections below the hero.
+   --------------------------------------------------------------------------- */
+.cam-eyebrow {
+  font-family: var(--font-body-active), sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin: 0 0 12px;
+}
+.cam-title {
+  font-family: var(--font-display-active), sans-serif;
+  font-size: clamp(26px, 3.4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.032em;
+  line-height: 1.08;
+  color: var(--ink);
+  margin: 0;
+  text-wrap: balance;
+}
+.cam-title-left {
+  text-align: left;
+}
+.cam-intro {
+  margin: 14px auto 0;
+  max-width: 52ch;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.cam-intro-left {
+  margin-inline: 0;
+  max-width: 40ch;
+}
+.cam-centred {
+  text-align: center;
+}
+.cam-centred .cam-intro {
+  text-align: center;
+}
+.cam-panel-title,
+.cam-metric-label {
+  font-family: var(--font-body-active), sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---- clinic band ---- */
+.cam-clinic {
+  padding-block: clamp(40px, 6vw, 86px);
+}
+.cam-clinic-frame {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  min-height: clamp(380px, 46vw, 540px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(22px, 3vw, 44px);
+  isolation: isolate;
+}
+.cam-clinic-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+  animation: salon-drift 30s ease-in-out infinite;
+}
+/*
+  These leads have one low-resolution storefront snap. A heavy duotone is not a style
+  choice — it is what turns a poor photograph into a deliberate treatment.
+*/
+.cam-clinic-wash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ground) 88%, transparent) 0%,
+      color-mix(in srgb, var(--ground) 64%, transparent) 45%,
+      color-mix(in srgb, var(--ground) 92%, transparent) 100%
+    ),
+    color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.cam-clinic-copy {
+  max-width: 46ch;
+  color: #fff;
+}
+.cam-clinic-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0 0 14px;
+}
+.cam-clinic-title {
+  font-family: var(--font-display-active), sans-serif;
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0;
+}
+.cam-clinic-body {
+  margin: 16px 0 0;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.84);
+}
+.cam-facts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: clamp(28px, 4vw, 52px) 0 0;
+}
+@media (min-width: 760px) {
+  .cam-facts {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.cam-fact {
+  border-radius: calc(var(--radius) * 0.7);
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(10px);
+  color: #fff;
+}
+.cam-fact-value {
+  font-family: var(--font-display-active), sans-serif;
+  font-size: clamp(20px, 2.2vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.cam-fact-label {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+/* ---- treatments ---- */
+.cam-treatments {
+  padding-block: clamp(40px, 6vw, 86px);
+  background: var(--surface);
+  border-block: 1px solid var(--line);
+}
+.cam-treat-grid {
+  list-style: none;
+  padding: 0;
+  margin: clamp(28px, 4vw, 48px) 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(10px, 1.4vw, 18px);
+}
+@media (min-width: 820px) {
+  .cam-treat-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+.cam-treat-figure {
+  margin: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: var(--ground);
+  display: block;
+}
+.cam-treat-figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cam-treat-figure figcaption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 26px 16px 15px;
+  background: linear-gradient(180deg, transparent, rgba(4, 22, 52, 0.78));
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cam-treat-figure b {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.cam-treat-figure span {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.4;
+}
+.cam-treat {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cam-treat.is-lifted {
+  transform: translateY(-14px);
+}
+.cam-treat:hover {
+  transform: translateY(-18px);
+}
+.cam-treat:hover img {
+  transform: scale(1.07);
+}
+
+/* ---- specialists ---- */
+.cam-specialists {
+  padding-block: clamp(40px, 6vw, 86px);
+  overflow: hidden;
+}
+.cam-spec-grid {
+  display: grid;
+  gap: clamp(24px, 3vw, 40px);
+}
+@media (min-width: 900px) {
+  .cam-spec-grid {
+    grid-template-columns: 0.8fr 1.2fr;
+    align-items: center;
+    /* The track is allowed to run past the container's right edge. */
+    padding-right: 0;
+    max-width: none;
+    padding-left: max(24px, calc((100vw - 1180px) / 2 + 24px));
+  }
+}
+.cam-faces {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 12px;
+}
+.cam-faces img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--surface);
+  margin-left: -10px;
+}
+.cam-faces img:first-child {
+  margin-left: 0;
+}
+.cam-spec-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+}
+.cam-spec-nav button {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+.cam-spec-nav button:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.cam-spec-nav button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.cam-spec-count {
+  font-size: 12.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.cam-spec-track {
+  list-style: none;
+  margin: 0;
+  padding: 0 24px 8px 0;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.cam-spec-track::-webkit-scrollbar {
+  display: none;
+}
+.cam-spec-card {
+  position: relative;
+  flex: 0 0 clamp(210px, 24vw, 268px);
+  scroll-snap-align: start;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--ground);
+  aspect-ratio: 3 / 4.1;
+}
+.cam-spec-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cam-spec-card:hover img {
+  transform: scale(1.05);
+}
+.cam-spec-role {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 5px 11px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.cam-spec-meta {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 40px 16px 16px;
+  background: linear-gradient(180deg, transparent, rgba(4, 22, 52, 0.86));
+  color: #fff;
+}
+.cam-spec-meta b {
+  font-size: 15px;
+  font-weight: 600;
+}
+.cam-spec-meta p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.8);
+}
+.cam-spec-meta small {
+  display: block;
+  margin-top: 7px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* ---- planner ---- */
+.cam-planner {
+  padding-block: clamp(40px, 6vw, 86px);
+  background: var(--surface);
+  border-block: 1px solid var(--line);
+}
+.cam-plan-grid {
+  display: grid;
+  gap: clamp(12px, 1.4vw, 18px);
+  margin-top: clamp(28px, 4vw, 48px);
+}
+@media (min-width: 980px) {
+  .cam-plan-grid {
+    grid-template-columns: 0.86fr 1.04fr 1.1fr;
+    align-items: start;
+  }
+}
+.cam-plan-col {
+  display: grid;
+  gap: clamp(12px, 1.4vw, 18px);
+  align-content: start;
+}
+.cam-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ground);
+  color: #fff;
+  padding: 18px 20px;
+  margin: 0;
+  min-width: 0;
+}
+.cam-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.68);
+  margin: 0 0 14px;
+}
+.cam-step {
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--brand) 55%, #ffffff);
+}
+.cam-clear {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+.cam-clear:hover {
+  color: #fff;
+}
+
+.cam-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+}
+.cam-radio input {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  flex: none;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.cam-radio input::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-ink);
+  transform: scale(0);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cam-radio input:checked {
+  border-color: color-mix(in srgb, var(--brand) 40%, #ffffff);
+  background: var(--brand);
+}
+.cam-radio input:checked::after {
+  transform: scale(1);
+}
+
+.cam-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cam-chip {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.86);
+  border-radius: var(--radius-pill);
+  padding: 8px 15px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+.cam-chip:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.cam-chip.is-on {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--brand-ink);
+}
+
+.cam-chart {
+  display: flex;
+  flex-direction: column;
+}
+.cam-arch {
+  width: 100%;
+  height: auto;
+  max-width: 420px;
+  margin: 4px auto 0;
+  display: block;
+}
+.cam-tooth {
+  fill: rgba(255, 255, 255, 0.16);
+  stroke: rgba(255, 255, 255, 0.34);
+  stroke-width: 1;
+  cursor: pointer;
+  transition:
+    fill 0.25s ease,
+    stroke 0.25s ease;
+}
+.cam-tooth:hover {
+  fill: rgba(255, 255, 255, 0.34);
+}
+.cam-tooth.is-on {
+  fill: var(--brand);
+  stroke: color-mix(in srgb, var(--brand) 40%, #ffffff);
+}
+.cam-tooth:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.cam-arch-label {
+  fill: rgba(255, 255, 255, 0.4);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  font-family: var(--font-body-active), sans-serif;
+}
+.cam-chart-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+  min-height: 2.4em;
+}
+
+.cam-result {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cam-metric {
+  display: grid;
+  gap: 6px;
+}
+.cam-metric-value {
+  font-family: var(--font-display-active), sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.cam-dots {
+  display: flex;
+  gap: 5px;
+}
+.cam-dots i {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cam-dots i.is-on {
+  background: var(--brand);
+}
+.cam-bar {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+}
+.cam-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--brand) 40%, #ffffff));
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cam-steps ol {
+  margin: 8px 0 0;
+  padding-left: 1.1em;
+  display: grid;
+  gap: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+}
+.cam-suggest {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 12px;
+  border-radius: calc(var(--radius) * 0.6);
+  background: rgba(255, 255, 255, 0.08);
+}
+.cam-suggest img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+}
+.cam-suggest b {
+  display: block;
+  font-size: 13.5px;
+  color: #fff;
+}
+.cam-suggest span {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.66);
+}
+.cam-many {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--brand) 35%, #ffffff);
+}
+.cam-plan-cta {
+  justify-content: center;
+}
+.cam-note {
+  margin: 2px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+/* ---- before / after ---- */
+.cam-ba {
+  padding-block: clamp(40px, 6vw, 86px);
+}
+.cam-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 26px;
+}
+.cam-tab {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--muted);
+  padding: 9px 16px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.cam-tab.is-on {
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+}
+.cam-ba-grid {
+  display: grid;
+  gap: clamp(24px, 3vw, 40px);
+  margin-top: clamp(24px, 3vw, 40px);
+}
+@media (min-width: 900px) {
+  .cam-ba-grid {
+    grid-template-columns: 0.76fr 1.24fr;
+    align-items: start;
+  }
+}
+.cam-ba-title {
+  font-family: var(--font-display-active), sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0;
+}
+.cam-ba-story {
+  margin: 12px 0 22px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.cam-ba-did {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: grid;
+  gap: 7px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+.cam-ba-did li {
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.5;
+}
+.cam-ba-did li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+.cam-ba-figure {
+  margin: 0;
+}
+.cam-ba-frame {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--ground);
+  touch-action: none;
+  cursor: ew-resize;
+  user-select: none;
+}
+.cam-ba-frame > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cam-ba-clip {
+  position: absolute;
+  inset: 0;
+  width: var(--split);
+  overflow: hidden;
+}
+.cam-ba-clip img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  display: block;
+}
+.cam-ba-stamp {
+  position: absolute;
+  top: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 11px;
+  border-radius: calc(var(--radius) * 0.4);
+  background: rgba(4, 22, 52, 0.72);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+  pointer-events: none;
+}
+/* m.7/1 requires both dates on the pair, so they are part of the frame, not a caption. */
+.cam-ba-stamp em {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+.cam-ba-stamp.is-before {
+  left: 12px;
+}
+.cam-ba-stamp.is-after {
+  right: 12px;
+  text-align: right;
+}
+.cam-ba-handle {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  translate: -50% -50%;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 18px -6px rgba(4, 22, 52, 0.7);
+  pointer-events: none;
+}
+.cam-ba-handle::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: 2px;
+  height: 200vh;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: -1;
+}
+/* The range is the keyboard and screen-reader path to the same control. */
+.cam-ba-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  margin: 0;
+  cursor: ew-resize;
+  z-index: 5;
+}
+.cam-ba-range:focus-visible {
+  opacity: 0.001;
+  outline: 3px solid var(--brand);
+  outline-offset: -3px;
+}
+.cam-ba-caption {
+  margin: 14px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.cam-ba-flag {
+  display: block;
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cam-card,
+  .cam-h1,
+  .cam-lede,
+  .cam-h2,
+  .cam-actions,
+  .cam-open,
+  .cam-nav,
+  .cam-molar,
+  .cam-ghost,
+  .cam-tile,
+  .cam-glow,
+  .cam-clinic-photo {
+    animation: none !important;
+  }
+  .cam-molar,
+  .cam-ghost,
+  .cam-glow {
+    translate: none !important;
+  }
+  .cam-tile.is-lifted,
+  .cam-treat.is-lifted {
+    transform: none !important;
+  }
+}
