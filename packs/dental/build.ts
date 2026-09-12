@@ -247,6 +247,12 @@ export function buildDentalSite(lead: BuildInput, preset = "cam"): SiteContent {
     preset,
     business: {
       ...business,
+      // A clinic may not publish its rating, review count or five-star share (m.5/1-e),
+      // and content is serialised into the page whether or not a section renders it. So
+      // the dental pack drops them rather than carrying them unrendered.
+      rating: undefined,
+      reviewCount: undefined,
+      fiveStarPct: undefined,
       // m.5/1-i: the site has to say who to contact about the site itself.
       editor: `${lead.business} · ${facts.phone}`,
     },

@@ -60,9 +60,15 @@ export const BusinessSchema = z.object({
   neighborhood: z.string().min(1),
   phone: z.string().regex(E164_TR, "phone must be E.164 Turkish, e.g. +905515330919"),
   whatsapp: z.string().url(),
-  rating: z.number().min(0).max(5),
-  reviewCount: z.number().int().nonnegative(),
-  fiveStarPct: z.number().int().min(0).max(100),
+  /**
+   * The business's standing on Google. Optional because a private health facility may
+   * not publish any of it (m.5/1-e) — and a field it may not publish is one the dental
+   * pack should not carry at all, since content is serialised into the page whether it
+   * is rendered or not.
+   */
+  rating: z.number().min(0).max(5).optional(),
+  reviewCount: z.number().int().nonnegative().optional(),
+  fiveStarPct: z.number().int().min(0).max(100).optional(),
   lat: z.number(),
   lng: z.number(),
   mapsUrl: z.string().url(),
