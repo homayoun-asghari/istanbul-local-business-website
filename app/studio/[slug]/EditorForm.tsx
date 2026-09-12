@@ -51,16 +51,16 @@ export function EditorForm({
           label="Instagram (optional)"
           value={business.instagram ?? ""}
         />
-        <Field name="business.rating" label="Google rating" value={String(business.rating)} />
+        <Field name="business.rating" label="Google rating" value={String(business.rating ?? "")} />
         <Field
           name="business.reviewCount"
           label="Review count"
-          value={String(business.reviewCount)}
+          value={String(business.reviewCount ?? "")}
         />
         <Field
           name="business.fiveStarPct"
           label="Five-star %"
-          value={String(business.fiveStarPct)}
+          value={String(business.fiveStarPct ?? "")}
         />
         <Field name="business.lat" label="Latitude" value={String(business.lat)} />
         <Field name="business.lng" label="Longitude" value={String(business.lng)} />

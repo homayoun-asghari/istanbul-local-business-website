@@ -16,9 +16,9 @@ export function Proof({ content }: { content: SiteContent }) {
     count?: { value: number; kind: "rating" | "count" | "percent" };
     text?: string;
   }[] = [
-    { count: { value: business.rating, kind: "rating" }, label: "Google puanı", star: true },
-    { count: { value: business.reviewCount, kind: "count" }, label: "değerlendirme" },
-    { count: { value: business.fiveStarPct, kind: "percent" }, label: "beş yıldız" },
+    { count: { value: business.rating ?? 0, kind: "rating" }, label: "Google puanı", star: true },
+    { count: { value: business.reviewCount ?? 0, kind: "count" }, label: "değerlendirme" },
+    { count: { value: business.fiveStarPct ?? 0, kind: "percent" }, label: "beş yıldız" },
     { text: business.district, label: business.neighborhood },
   ];
 

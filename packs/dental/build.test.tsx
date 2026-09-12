@@ -57,6 +57,15 @@ describe("what a dental site must not publish", () => {
     }
   });
 
+  it("does not even carry the Google standing in its content", () => {
+    // Content is serialised into the page's hydration payload whether a section renders
+    // it or not, so "we simply do not show it" is not enough — the field has to be gone.
+    expect(content.business.rating).toBeUndefined();
+    expect(content.business.reviewCount).toBeUndefined();
+    expect(content.business.fiveStarPct).toBeUndefined();
+    expect(JSON.stringify(content)).not.toContain("406");
+  });
+
   it("shows no rating, review count or five-star figure — m.5/1-e", () => {
     expect(content.sections.some((section) => section.type === "proof")).toBe(false);
     // The numbers are in the lead and must not reach the page.

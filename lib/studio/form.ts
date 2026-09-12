@@ -231,9 +231,13 @@ export function contentFromFields(base: SiteContent, fields: Fields): SiteConten
       neighborhood: text(fields, "business.neighborhood", base.business.neighborhood),
       phone: text(fields, "business.phone", base.business.phone),
       whatsapp: text(fields, "business.whatsapp", base.business.whatsapp),
-      rating: number(fields, "business.rating", base.business.rating),
-      reviewCount: Math.round(number(fields, "business.reviewCount", base.business.reviewCount)),
-      fiveStarPct: Math.round(number(fields, "business.fiveStarPct", base.business.fiveStarPct)),
+      rating: number(fields, "business.rating", base.business.rating ?? 0),
+      reviewCount: Math.round(
+        number(fields, "business.reviewCount", base.business.reviewCount ?? 0),
+      ),
+      fiveStarPct: Math.round(
+        number(fields, "business.fiveStarPct", base.business.fiveStarPct ?? 0),
+      ),
       lat: number(fields, "business.lat", base.business.lat),
       lng: number(fields, "business.lng", base.business.lng),
       mapsUrl: text(fields, "business.mapsUrl", base.business.mapsUrl),

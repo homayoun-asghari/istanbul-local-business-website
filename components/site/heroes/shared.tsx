@@ -112,7 +112,8 @@ export function HeroActions({ content }: { content: SiteContent }) {
 
 export function RatingLine({ content }: { content: SiteContent }) {
   const { rating, reviewCount } = content.business;
-  if (!reviewCount) return null;
+  // A clinic has neither, and may not publish them if it did (m.5/1-e).
+  if (!reviewCount || rating === undefined) return null;
   return (
     <p className="m-0 text-[13px] opacity-75">
       Google&rsquo;da <b className="font-medium">{formatRating(rating)}</b> ·{" "}

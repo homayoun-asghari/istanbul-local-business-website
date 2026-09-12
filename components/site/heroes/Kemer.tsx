@@ -103,7 +103,7 @@ export function Kemer({
             style={{ ["--i" as string]: 5 }}
           >
             <p className="font-display text-ink m-0 text-[26px] leading-none">
-              {formatCount(content.business.reviewCount)}
+              {formatCount(content.business.reviewCount ?? 0)}
             </p>
             <p className="text-muted m-0 mt-1 text-[11px] tracking-wide">değerlendirme</p>
           </div>
@@ -126,7 +126,7 @@ export function Kemer({
               ))}
             </div>
             <p className="text-ink m-0 text-[12.5px] leading-tight">
-              %{content.business.fiveStarPct} beş yıldız
+              %{content.business.fiveStarPct ?? 0} beş yıldız
             </p>
           </div>
         </div>
