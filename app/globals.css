@@ -778,6 +778,15 @@ h3 {
    breathing, and the tiles deal themselves out underneath. On scroll the molar
    drifts against the copy through --sy, which ScrollScene writes per frame.
    --------------------------------------------------------------------------- */
+.cam-scene,
+.cam-clinic,
+.cam-specialists,
+.cam-ba,
+.cam-panel {
+  --cam-deep: #0b2d5e;
+  --cam-on-deep: #eaf2fd;
+}
+
 .cam-scene {
   position: relative;
   isolation: isolate;
@@ -786,7 +795,7 @@ h3 {
     120% 90% at 50% -12%,
     color-mix(in srgb, var(--accent) 62%, #ffffff) 0%,
     var(--accent) 34%,
-    var(--ground) 100%
+    var(--cam-deep) 100%
   );
   overflow: hidden;
 }
@@ -1166,6 +1175,7 @@ h3 {
 /* ---- clinic band ---- */
 .cam-clinic {
   padding-block: clamp(40px, 6vw, 86px);
+  background: var(--cam-deep);
 }
 .cam-clinic-frame {
   position: relative;
@@ -1336,6 +1346,34 @@ h3 {
 .cam-specialists {
   padding-block: clamp(40px, 6vw, 86px);
   overflow: hidden;
+  background: var(--cam-deep);
+}
+.cam-specialists .cam-title,
+.cam-ba .cam-centred .cam-title {
+  color: var(--cam-on-deep);
+}
+.cam-specialists .cam-intro,
+.cam-ba .cam-intro {
+  color: color-mix(in srgb, var(--cam-on-deep) 70%, transparent);
+}
+.cam-specialists .cam-eyebrow,
+.cam-ba .cam-eyebrow {
+  color: color-mix(in srgb, var(--brand) 30%, #ffffff);
+}
+.cam-specialists .cam-spec-nav button {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--cam-on-deep) 34%, transparent);
+  color: var(--cam-on-deep);
+}
+.cam-specialists .cam-spec-nav button:hover:not(:disabled) {
+  border-color: var(--cam-on-deep);
+  color: #fff;
+}
+.cam-spec-count {
+  color: color-mix(in srgb, var(--cam-on-deep) 62%, transparent);
+}
+.cam-faces img {
+  border-color: var(--cam-deep);
 }
 .cam-spec-grid {
   display: grid;
@@ -1495,9 +1533,9 @@ h3 {
   align-content: start;
 }
 .cam-panel {
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, #ffffff 12%, transparent);
   border-radius: var(--radius);
-  background: var(--ground);
+  background: var(--cam-deep);
   color: #fff;
   padding: 18px 20px;
   margin: 0;
@@ -1740,6 +1778,26 @@ h3 {
 /* ---- before / after ---- */
 .cam-ba {
   padding-block: clamp(40px, 6vw, 86px);
+  background: var(--cam-deep);
+}
+.cam-ba .cam-ba-title,
+.cam-ba .cam-ba-flag {
+  color: var(--cam-on-deep);
+}
+.cam-ba .cam-ba-story,
+.cam-ba .cam-ba-did {
+  color: color-mix(in srgb, var(--cam-on-deep) 76%, transparent);
+}
+.cam-ba .cam-metric-label,
+.cam-ba .cam-ba-caption {
+  color: color-mix(in srgb, var(--cam-on-deep) 58%, transparent);
+}
+.cam-ba .cam-tab {
+  color: color-mix(in srgb, var(--cam-on-deep) 62%, transparent);
+}
+.cam-ba .cam-tab.is-on {
+  color: var(--cam-on-deep);
+  border-bottom-color: color-mix(in srgb, var(--brand) 40%, #ffffff);
 }
 .cam-tabs {
   display: flex;
@@ -1834,16 +1892,13 @@ h3 {
 .cam-ba-clip {
   position: absolute;
   inset: 0;
-  width: var(--split);
-  overflow: hidden;
+  clip-path: inset(0 calc(100% - var(--split)) 0 0);
 }
 .cam-ba-clip img {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  width: auto;
-  max-width: none;
   display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .cam-ba-stamp {
   position: absolute;

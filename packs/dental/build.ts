@@ -271,7 +271,7 @@ export function buildDentalSite(lead: BuildInput, preset = "cam"): SiteContent {
       },
       {
         type: "clinic",
-        title: "Kliniğimiz",
+        title: `${business.neighborhood}’de ağız ve diş sağlığı`,
         body: `${business.neighborhood} Mahallesi’ndeki kliniğimizde muayeneden implanta, ortodontiden estetik uygulamalara kadar ağız ve diş sağlığınızı tek yerde sürdürüyoruz. Her tedavi önce muayenede planlanır.`,
         image: {
           src: facts.photo,
@@ -348,8 +348,8 @@ export function buildDentalSite(lead: BuildInput, preset = "cam"): SiteContent {
               src: "/stock/dental/whitening-after.webp",
               alt: "Beyazlatma sonrası diş modeli",
             },
-            procedureDate: "Örnek",
-            photoDate: "Örnek",
+            procedureDate: "Mart 2026 (örnek)",
+            photoDate: "Nisan 2026 (örnek)",
             illustration: true,
           },
         ],

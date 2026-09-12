@@ -75,10 +75,10 @@ export function Planner({
 
         <div className="cam-plan-grid">
           <div className="cam-plan-col">
-            <fieldset className="cam-panel">
-              <legend className="cam-panel-title">
+            <div className="cam-panel" role="radiogroup" aria-labelledby="cam-goal-label">
+              <p className="cam-panel-title" id="cam-goal-label">
                 <span className="cam-step">01</span> Ne yaptırmak istiyorsunuz?
-              </legend>
+              </p>
               {section.goals.map((option) => (
                 <label key={option.id} className="cam-radio">
                   <input
@@ -91,12 +91,12 @@ export function Planner({
                   <span>{option.label}</span>
                 </label>
               ))}
-            </fieldset>
+            </div>
 
-            <fieldset className="cam-panel">
-              <legend className="cam-panel-title">
+            <div className="cam-panel" role="group" aria-labelledby="cam-method-label">
+              <p className="cam-panel-title" id="cam-method-label">
                 <span className="cam-step">02</span> Yöntem
-              </legend>
+              </p>
               <div className="cam-chips">
                 {goal.methods.map((method) => (
                   <button
@@ -110,7 +110,7 @@ export function Planner({
                   </button>
                 ))}
               </div>
-            </fieldset>
+            </div>
           </div>
 
           <div className="cam-panel cam-chart">
@@ -218,22 +218,23 @@ export function Planner({
    incisors, and each tooth is rotated to face out of the arch, which is what stops the
    row reading as beads on a string.
    -------------------------------------------------------------------------- */
-const CHART = { cx: 190, cy: 150, rx: 150, ry: 104, from: 198, to: 342 };
+const CHART = { cx: 190, cy: 132, rx: 150, ry: 96, from: 196, to: 344, mirror: 320 };
 
 function toothGeometry(index: number, count: number, lower: boolean) {
   const t = count === 1 ? 0.5 : index / (count - 1);
   const degrees = CHART.from + (CHART.to - CHART.from) * t;
   const radians = (degrees * Math.PI) / 180;
   const x = CHART.cx + CHART.rx * Math.cos(radians);
-  const y = CHART.cy + CHART.ry * Math.sin(radians) * (lower ? -1 : 1);
-  // Distance from the midline, 0 at the central incisors and 7 at the wisdom teeth.
+  const upper = CHART.cy + CHART.ry * Math.sin(radians);
+  // Distance from the midline, 0 at the central incisors and 1 at the wisdom teeth.
   const fromMidline = Math.abs(t - 0.5) * 2;
   return {
     x,
-    y: lower ? y + 150 : y,
-    width: 13 + fromMidline * 9,
-    height: 17 + fromMidline * 5,
-    angle: degrees + 90 + (lower ? 180 : 0),
+    // The lower arch is the upper one reflected, which is what the two jaws are.
+    y: lower ? CHART.mirror - upper : upper,
+    width: 15 + fromMidline * 10,
+    height: 20 + fromMidline * 7,
+    angle: (degrees + 90) * (lower ? -1 : 1),
   };
 }
 

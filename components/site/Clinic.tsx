@@ -31,7 +31,7 @@ export function Clinic({ section }: { section: SectionOf<"clinic"> }) {
           <span aria-hidden="true" className="cam-clinic-wash" />
 
           <div className="cam-clinic-copy">
-            <p className="cam-clinic-eyebrow">Kliniğimiz</p>
+            <p className="cam-clinic-eyebrow">Hakkımızda</p>
             <Reveal>
               <h2 className="cam-clinic-title">{section.title}</h2>
               <p className="cam-clinic-body">{section.body}</p>

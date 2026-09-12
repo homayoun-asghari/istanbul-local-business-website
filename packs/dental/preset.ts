@@ -35,12 +35,17 @@ export const cam: Preset = {
     ],
   },
   tokens: {
-    ground: "#0B2D5E",
+    /**
+     * The page is light and the deep blue is painted on by the sections that want it.
+     * The other way round — a blue `ground` — makes every generic section this pack
+     * shares with beauty (booking, hours, contact, footer) render dark ink on dark blue.
+     */
+    ground: "#EEF4FC",
     surface: "#FFFFFF",
     ink: "#12386B",
     inkSoft: "#43618C",
-    muted: "#7D93B2",
-    line: "#DCE7F5",
+    muted: "#7188A8",
+    line: "#D7E3F3",
     brand: "#1D6FE0",
     brandInk: "#FFFFFF",
     accent: "#2F83E8",
