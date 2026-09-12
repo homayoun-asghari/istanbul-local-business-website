@@ -15,7 +15,7 @@ export type Preset = {
    * preset shipped with; "chrome" replaces it with a pinned, animated scene in which the
    * business photo does not appear above the fold at all.
    */
-  hero?: "classic" | "chrome" | "kesim" | "gece" | "kemer" | "makro" | "menu" | "sade";
+  hero?: "classic" | "chrome" | "kesim" | "gece" | "kemer" | "makro" | "menu" | "sade" | "cam";
   /**
    * Photography the preset owns rather than the business.
    *

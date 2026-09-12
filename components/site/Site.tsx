@@ -7,6 +7,11 @@ import { Proof } from "./Proof";
 import { Emergency } from "./Emergency";
 import { PriceList } from "./PriceList";
 import { Team } from "./Team";
+import { Specialists } from "./Specialists";
+import { Clinic } from "./Clinic";
+import { Treatments } from "./Treatments";
+import { Planner } from "./Planner";
+import { BeforeAfter } from "./BeforeAfter";
 import { InstagramStrip } from "./InstagramStrip";
 import { Booking } from "./Booking";
 import { Services } from "./Services";
@@ -39,7 +44,7 @@ export function Site({
     withPresetPhotography(content.sections, preset.stock?.tiles, preset.stock?.staff),
   );
   // The chrome hero carries its own navigation, so the shared header would be a second one.
-  const SALON_HEROES = new Set(["kesim", "gece", "kemer", "makro", "menu", "sade"]);
+  const SALON_HEROES = new Set(["kesim", "gece", "kemer", "makro", "menu", "sade", "cam"]);
   const ownsHeader = preset.hero === "chrome" || SALON_HEROES.has(preset.hero ?? "");
 
   return (
@@ -68,7 +73,20 @@ export function Site({
             case "pricelist":
               return <PriceList key={key} section={section} />;
             case "team":
-              return <Team key={key} section={section} />;
+              // Cam runs the same people as a carousel that bleeds off the right edge.
+              return preset.hero === "cam" ? (
+                <Specialists key={key} section={section} />
+              ) : (
+                <Team key={key} section={section} />
+              );
+            case "clinic":
+              return <Clinic key={key} section={section} />;
+            case "treatments":
+              return <Treatments key={key} section={section} />;
+            case "planner":
+              return <Planner key={key} section={section} content={content} />;
+            case "beforeAfter":
+              return <BeforeAfter key={key} section={section} />;
             case "instagram":
               return <InstagramStrip key={key} section={section} content={content} />;
             case "booking":

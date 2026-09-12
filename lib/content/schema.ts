@@ -67,6 +67,8 @@ export const BusinessSchema = z.object({
   lng: z.number(),
   mapsUrl: z.string().url(),
   instagram: z.string().url().optional(),
+  /** Who to contact about the site itself — required of a health facility (m.5/1-i). */
+  editor: z.string().min(1).optional(),
 });
 
 /**
@@ -135,7 +137,20 @@ export const SectionSchema = z.discriminatedUnion("type", [
     title: z.string().min(1),
     intro: z.string().optional(),
     members: z
-      .array(z.object({ name: z.string().min(1), role: z.string().min(1), image: ImageSchema }))
+      .array(
+        z.object({
+          name: z.string().min(1),
+          /**
+           * A dental site may only use a title that exists in law (m.5/1-d), so the
+           * dental pack draws this from a fixed list rather than writing one.
+           */
+          role: z.string().min(1),
+          image: ImageSchema,
+          bio: z.string().optional(),
+          /** "2014'ten beri" — a fact, not a claim. */
+          since: z.string().optional(),
+        }),
+      )
       .min(1),
     placeholder,
   }),
@@ -161,6 +176,113 @@ export const SectionSchema = z.discriminatedUnion("type", [
     note: z.string().min(1),
     placeholder,
   }),
+  /**
+   * The clinic band: the business's own photograph under a flood of the brand colour,
+   * with four figures along the bottom.
+   *
+   * Those figures are deliberately not a rating. A private health facility may not
+   * publish review counts, star ratings or satisfaction figures (m.5/1-e), so what sits
+   * here has to be checkable and neutral — the year it opened, how many dentists work
+   * there, how many treatments it offers.
+   */
+  z.object({
+    type: z.literal("clinic"),
+    title: z.string().min(1),
+    body: z.string().min(1),
+    image: ImageSchema,
+    facts: z
+      .array(z.object({ value: z.string().min(1), label: z.string().min(1) }))
+      .min(2)
+      .max(4),
+    placeholder,
+  }),
+  /**
+   * Treatment tiles. Unlike `services`, every item carries an image, because this pack
+   * ships its own photography — a row of glass dental objects that needs no clinic to
+   * have photographed anything.
+   */
+  z.object({
+    type: z.literal("treatments"),
+    title: z.string().min(1),
+    intro: z.string().optional(),
+    items: z
+      .array(z.object({ name: z.string().min(1), note: z.string().optional(), image: ImageSchema }))
+      .min(3),
+    placeholder,
+  }),
+  /**
+   * The treatment planner: pick a goal, a method and the teeth, get the shape of the
+   * treatment and a prefilled WhatsApp message.
+   *
+   * It ends in a message and never in a number. Price lists, discounts and campaign
+   * announcements are all prohibited (m.5/1-l, m.5/1-m), which is why this section
+   * exists at all — it is what a dental site has instead of a price list.
+   */
+  z.object({
+    type: z.literal("planner"),
+    title: z.string().min(1),
+    intro: z.string().optional(),
+    goals: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          label: z.string().min(1),
+          methods: z
+            .array(
+              z.object({
+                id: z.string().min(1),
+                label: z.string().min(1),
+                /** How many appointments and over how long: information, not a price. */
+                visits: z.tuple([z.number().int().positive(), z.number().int().positive()]),
+                weeks: z.tuple([z.number().int().positive(), z.number().int().positive()]),
+                /** Implants scale with the number of teeth; a cleaning does not. */
+                perTooth: z.boolean().default(false),
+                steps: z.array(z.string().min(1)).min(1),
+                /** Matched against a team member's role to suggest who would do it. */
+                specialist: z.string().optional(),
+              }),
+            )
+            .min(1),
+        }),
+      )
+      .min(1),
+    note: z.string().min(1),
+    placeholder,
+  }),
+  /**
+   * Before and after.
+   *
+   * Prohibited outright until 12 November 2025 and permitted since, under conditions
+   * (m.7/1): consent on the Ek-1 form, the same setting and technical conditions in both
+   * frames, no filter or retouching, *both* the procedure date and the photograph date
+   * shown, comments disabled, and a line saying results differ from person to person.
+   *
+   * Every one of those fields is required here rather than optional, because a pair
+   * missing its dates is not a legal pair.
+   */
+  z.object({
+    type: z.literal("beforeAfter"),
+    title: z.string().min(1),
+    intro: z.string().optional(),
+    disclaimer: z.string().min(1),
+    cases: z
+      .array(
+        z.object({
+          treatment: z.string().min(1),
+          title: z.string().min(1),
+          story: z.string().min(1),
+          did: z.array(z.string().min(1)).min(1),
+          before: ImageSchema,
+          after: ImageSchema,
+          procedureDate: z.string().min(1),
+          photoDate: z.string().min(1),
+          /** A rendering rather than a patient. Says so on the frame when true. */
+          illustration: z.boolean().default(false),
+        }),
+      )
+      .min(1),
+    placeholder,
+  }),
   z.object({ type: z.literal("hours"), title: z.string().min(1), placeholder }),
   z.object({ type: z.literal("contact"), title: z.string().min(1), placeholder }),
 ]);
@@ -171,13 +293,19 @@ export const SiteContentSchema = z.object({
     .string()
     .min(1)
     .regex(/^[a-z0-9-]+$/, "slug must be lowercase letters, digits and hyphens"),
-  pack: z.enum(["beauty", "vet"]),
+  pack: z.enum(["beauty", "vet", "dental"]),
   preset: z.string().min(1),
   business: BusinessSchema,
   hours: WeekHoursSchema,
   sections: z.array(SectionSchema).min(1),
   /** Prefilled Turkish text for the WhatsApp deep link. */
   whatsappMessage: z.string().min(1),
+  /**
+   * A private health facility's site must show when it was last updated and how to
+   * reach whoever edits it (m.5/1-i). Optional here only because the beauty and vet
+   * rows predate it; the dental pack always sets both.
+   */
+  updatedAt: z.string().min(1).optional(),
   seo: z.object({ title: z.string().min(1), description: z.string().min(1) }),
 });
 
