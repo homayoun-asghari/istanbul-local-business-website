@@ -3,8 +3,10 @@ import type { BuildInput } from "./build";
 import type { Preset } from "./types";
 import { BEAUTY_PRESETS } from "./beauty/preset";
 import { VET_PRESETS } from "./vet/preset";
+import { DENTAL_PRESETS } from "./dental/preset";
 import { buildBeautySite } from "./beauty/build";
 import { buildVetSite } from "./vet/build";
+import { buildDentalSite } from "./dental/build";
 
 /**
  * Adding an industry is adding an entry here plus a folder — never a change to
@@ -27,12 +29,19 @@ export const PACKS: Record<PackId, Pack> = {
     build: buildBeautySite,
   },
   vet: { id: "vet", label: "Veteriner", presets: VET_PRESETS, build: buildVetSite },
+  dental: {
+    id: "dental",
+    label: "Ağız ve Diş Sağlığı",
+    presets: DENTAL_PRESETS,
+    build: buildDentalSite,
+  },
 };
 
 /** Industries the sheet contains that have no pack yet simply cannot be built. */
 export function packForIndustry(industry: string): Pack | null {
   if (industry === "beauty") return PACKS.beauty;
   if (industry === "vet") return PACKS.vet;
+  if (industry === "dental") return PACKS.dental;
   return null;
 }
 

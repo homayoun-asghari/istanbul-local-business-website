@@ -149,6 +149,53 @@ function sectionFromFields(section: Section, index: number, fields: Fields): Sec
     case "proof":
       // Renders entirely from business.rating / reviewCount — nothing to edit here.
       return section;
+    case "clinic": {
+      const edited = rows(fields, `section.${index}.fact`)
+        .map((row) => ({ value: (row.value ?? "").trim(), label: (row.label ?? "").trim() }))
+        .filter((fact) => fact.value.length > 0 && fact.label.length > 0);
+      return {
+        ...section,
+        title: at("title", section.title),
+        body: at("body", section.body),
+        image: {
+          ...section.image,
+          src: at("image.src", section.image.src),
+          alt: at("image.alt", section.image.alt),
+        },
+        facts: edited.length > 0 ? edited : section.facts,
+      };
+    }
+    case "treatments": {
+      const edited = rows(fields, `section.${index}.item`)
+        .map((row, position) => ({
+          name: (row.name ?? "").trim(),
+          note: (row.note ?? "").trim() || undefined,
+          image: section.items[position]?.image ?? section.items[0].image,
+        }))
+        .filter((item) => item.name.length > 0);
+      return {
+        ...section,
+        title: at("title", section.title),
+        intro: at("intro", section.intro ?? "") || undefined,
+        items: edited.length > 0 ? edited : section.items,
+      };
+    }
+    // The planner's goals and the before/after pairs are structured data, not prose. The
+    // studio edits what surrounds them; the shapes themselves come from the pack.
+    case "planner":
+      return {
+        ...section,
+        title: at("title", section.title),
+        intro: at("intro", section.intro ?? "") || undefined,
+        note: at("note", section.note),
+      };
+    case "beforeAfter":
+      return {
+        ...section,
+        title: at("title", section.title),
+        intro: at("intro", section.intro ?? "") || undefined,
+        disclaimer: at("disclaimer", section.disclaimer),
+      };
     case "hours":
     case "contact":
       return { ...section, title: at("title", section.title) };
