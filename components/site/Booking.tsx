@@ -28,7 +28,7 @@ export function Booking({
   const services = content.sections.flatMap((s) =>
     s.type === "services"
       ? s.items.map((i) => i.name)
-      : s.type === "pricelist"
+      : s.type === "pricelist" || s.type === "treatments"
         ? s.items.map((i) => i.name)
         : [],
   );

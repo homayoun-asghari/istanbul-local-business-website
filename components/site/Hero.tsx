@@ -10,6 +10,7 @@ import { Kemer } from "./heroes/Kemer";
 import { Makro } from "./heroes/Makro";
 import { Menu } from "./heroes/Menu";
 import { Sade } from "./heroes/Sade";
+import { Cam } from "./heroes/Cam";
 
 export function Hero({
   section,
@@ -29,6 +30,7 @@ export function Hero({
   if (variant === "makro") return <Makro section={section} content={content} now={now} />;
   if (variant === "menu") return <Menu section={section} content={content} now={now} />;
   if (variant === "sade") return <Sade section={section} content={content} now={now} />;
+  if (variant === "cam") return <Cam section={section} content={content} now={now} />;
 
   const { business } = content;
   const state = isOpenNow(content.hours, now);
