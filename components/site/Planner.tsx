@@ -34,7 +34,7 @@ export function Planner({
   const [goalId, setGoalId] = useState(section.goals[0].id);
   const [methodId, setMethodId] = useState(section.goals[0].methods[0].id);
   const [teeth, setTeeth] = useState<number[]>([]);
-  const [view, setView] = useState<"render" | "schema">("render");
+  const [view, setView] = useState<"front" | "schema">("front");
 
   const goal = section.goals.find((candidate) => candidate.id === goalId) ?? section.goals[0];
   const plan = useMemo(
@@ -137,13 +137,13 @@ export function Planner({
             <div className="cam-views" role="group" aria-label="Görünüm">
               <button
                 type="button"
-                className={`cam-view${view === "render" ? " is-on" : ""}`}
-                aria-pressed={view === "render"}
-                onClick={() => setView("render")}
+                className={`cam-view${view === "front" ? " is-on" : ""}`}
+                aria-pressed={view === "front"}
+                onClick={() => setView("front")}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/stock/dental/arch-front.webp" alt="" aria-hidden="true" />
-                <em>Model</em>
+                <em>Önden</em>
               </button>
               <button
                 type="button"
@@ -153,7 +153,7 @@ export function Planner({
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/stock/dental/arch-open.webp" alt="" aria-hidden="true" />
-                <em>Şema</em>
+                <em>Üstten</em>
               </button>
             </div>
 
@@ -288,31 +288,41 @@ function Gauge({ fraction, label }: { fraction: number; label: string }) {
 /* --------------------------------------------------------------------------
    The picker.
 
-   The reference does not draw a diagram: it shows a 3D model of both arches with a
-   360° arc under it and two thumbnails that switch the view. So this shows the render,
-   and the selectable teeth are a hit map laid over it.
+   Drawn, not overlaid. Four attempts to calibrate a hit map onto the 3D render failed
+   in four different ways — placed by eye it drifted, seam detection found 25 seams in a
+   row of 16 teeth, the incisal-edge trace came back degenerate, and the rows were sitting
+   on the gum ring rather than the crowns. A glass render's internal reflections defeat
+   every one of them, and an approximate hit map on a picture of teeth is exactly what
+   "the selection is not matching the exact teeth" means.
 
-   The map is not placed by eye. It is the same arch model as the schema below, drawn in
-   front projection: a tooth at angle θ around the arch lands at cos θ across the frame,
-   and its crown is foreshortened by |sin θ| — which is why the molars at the edges are
-   slivers and the incisors at the front are full width, exactly as they are in the
-   render. One anatomy, two projections.
+   So each tooth is a real shape here. Selection lands on it by construction, because the
+   thing you click and the thing you see are the same element.
 
-   Widths and depths are average adult crown dimensions in millimetres, FDI position 1
-   (central incisor) through 8 (third molar). Using the real numbers is why the schema
-   reads as a jaw rather than as beads on a string.
+   The anatomy is the same model the schema uses: a tooth at angle θ around the arch
+   lands at sin θ across the frame and is foreshortened by cos θ, so the molars at the
+   edges are slivers and the incisors at the front are full width. Crown widths and
+   heights are average adult dimensions in millimetres, FDI position 1 through 8.
    -------------------------------------------------------------------------- */
 const UPPER_W = [8.6, 6.6, 7.6, 7.1, 6.6, 10.4, 9.8, 9.0];
 const LOWER_W = [5.3, 5.9, 6.8, 7.0, 7.1, 11.0, 10.5, 9.5];
 const UPPER_D = [7.1, 6.4, 8.0, 9.2, 9.2, 11.3, 11.3, 10.5];
 const LOWER_D = [5.9, 6.3, 7.9, 7.9, 8.7, 10.7, 10.5, 9.8];
+/** Clinical crown height — why the central incisors dominate a smile. */
+const UPPER_H = [10.5, 9.0, 10.0, 8.5, 8.5, 7.6, 7.2, 6.6];
+const LOWER_H = [9.0, 9.4, 10.1, 8.6, 8.0, 7.6, 7.0, 6.4];
 
 const MM = 2.35;
 const GAP = 0.9;
-const ARCH = { cx: 190, rx: 128, ry: 92, upperCy: 140, lowerCy: 200 };
+const ARCH = { cx: 190, rx: 128, ry: 92, upperCy: 140, lowerCy: 188 };
+/**
+ * Front elevation. One scale for width and height — they are both millimetres, and
+ * scaling them differently is what turned a row of crowns into a barcode.
+ */
+const FRONT = { cx: 200, halfSpan: 180, upperGum: 40, lowerGum: 132, mm: 4.4 };
 
 type Tooth = {
   fdi: number;
+  upper: boolean;
   /** Occlusal schema, in the 380×340 viewBox. */
   x: number;
   y: number;
@@ -320,10 +330,12 @@ type Tooth = {
   h: number;
   r: number;
   angle: number;
-  /** Front projection, as fractions of the render's box. */
+  /** Front elevation, in the 400×210 viewBox. */
   fx: number;
   fw: number;
-  upper: boolean;
+  fh: number;
+  side: -1 | 1;
+  order: number;
 };
 
 /** How fast a point moves along the ellipse per radian — the spacing divides by it. */
@@ -334,6 +346,7 @@ function speed(theta: number) {
 function buildArch(lower: boolean): Tooth[] {
   const widths = lower ? LOWER_W : UPPER_W;
   const depths = lower ? LOWER_D : UPPER_D;
+  const heights = lower ? LOWER_H : UPPER_H;
   const cy = lower ? ARCH.lowerCy : ARCH.upperCy;
   const teeth: Tooth[] = [];
 
@@ -344,10 +357,10 @@ function buildArch(lower: boolean): Tooth[] {
       const w = widths[position] * MM;
       const h = depths[position] * MM;
       const quadrant = lower ? (side < 0 ? 4 : 3) : side < 0 ? 1 : 2;
-      // Angle measured from the midline, which is what the front view projects.
       const fromFront = theta - Math.PI * 1.5;
       teeth.push({
         fdi: quadrant * 10 + position + 1,
+        upper: !lower,
         x: ARCH.cx + ARCH.rx * Math.cos(theta),
         y: cy + ARCH.ry * Math.sin(theta) * (lower ? -1 : 1),
         w,
@@ -355,9 +368,12 @@ function buildArch(lower: boolean): Tooth[] {
         // Incisors are near-rectangular; molars are all but square.
         r: 2 + position * 0.9,
         angle: lower ? -((theta * 180) / Math.PI + 90) : (theta * 180) / Math.PI + 90,
-        fx: fromFront,
-        fw: 0,
-        upper: !lower,
+        // Placed by layOutFront, which walks the row so the crowns touch.
+        fx: 0,
+        fw: widths[position] * FRONT.mm * Math.max(0.26, Math.abs(Math.cos(fromFront))),
+        fh: heights[position] * FRONT.mm * (0.86 + 0.14 * Math.abs(Math.cos(fromFront))),
+        side,
+        order: position,
       });
       const next = widths[Math.min(position + 1, 7)] * MM;
       theta += (side * (w / 2 + next / 2 + GAP)) / speed(theta);
@@ -366,58 +382,177 @@ function buildArch(lower: boolean): Tooth[] {
   return teeth;
 }
 
-const TEETH = [...buildArch(false), ...buildArch(true)];
-export const ALL_FDI = TEETH.map((tooth) => tooth.fdi);
-
 /**
- * Where the crowns actually are in the render, measured off it rather than guessed:
- * the silhouette of the tooth mass spans 0.043–0.954 across, the upper crowns run
- * 0.289–0.429 down and the lower 0.431–0.515 at the midline, where the uppers overlap
- * them. Every number below came from sampling the image.
- */
-const ROW = {
-  left: 0.045,
-  right: 0.952,
-  upperY: 0.359,
-  upperH: 0.132,
-  lowerY: 0.497,
-  lowerH: 0.104,
-};
-
-/**
- * Project one row of sixteen teeth onto the front view and tile it.
+ * Place one row across the frame by walking outward from the midline and adding each
+ * crown's projected width, so neighbours touch exactly. Then scale the row to the frame.
  *
- * A tooth at angle θ around the arch lands at sin θ across the frame. Rather than draw
- * each crown at its own width — which leaves gaps a click can fall into, and which was
- * landing a few pixels off anyway — the slices meet at the midpoints between
- * neighbours, so the row is covered end to end and the nearest tooth always wins.
+ * Projecting each tooth independently onto sin θ and drawing it at its own width leaves
+ * gaps between some pairs and overlaps between others — which is what "the selection is
+ * a little off the teeth" looked like.
  */
-function projectRow(row: Tooth[]): { fdi: number; x0: number; x1: number }[] {
-  const withX = row
-    .map((tooth) => ({ fdi: tooth.fdi, sin: Math.sin(tooth.fx) }))
-    .sort((a, b) => a.sin - b.sin);
-  const reach = Math.max(...withX.map((t) => Math.abs(t.sin)));
-  const half = (ROW.right - ROW.left) / 2;
-  const centre = (ROW.right + ROW.left) / 2;
-  const xs = withX.map((t) => centre + (t.sin / reach) * half);
-  return withX.map((t, i) => ({
-    fdi: t.fdi,
-    x0: i === 0 ? ROW.left : (xs[i - 1] + xs[i]) / 2,
-    x1: i === xs.length - 1 ? ROW.right : (xs[i] + xs[i + 1]) / 2,
-  }));
+function layOutFront(row: Tooth[]) {
+  for (const side of [-1, 1] as const) {
+    const arm = row.filter((tooth) => tooth.side === side).sort((a, b) => a.order - b.order);
+    let edge = 0;
+    for (const tooth of arm) {
+      tooth.fx = edge + tooth.fw / 2;
+      edge += tooth.fw;
+    }
+    const scale = FRONT.halfSpan / edge;
+    for (const tooth of arm) {
+      tooth.fx = FRONT.cx + side * tooth.fx * scale;
+      tooth.fw *= scale;
+    }
+  }
 }
 
-const FRONT = [
-  ...projectRow(TEETH.filter((t) => t.upper)).map((s) => ({ ...s, upper: true })),
-  ...projectRow(TEETH.filter((t) => !t.upper)).map((s) => ({ ...s, upper: false })),
+const TEETH = [...buildArch(false), ...buildArch(true)];
+layOutFront(TEETH.filter((tooth) => tooth.upper));
+layOutFront(TEETH.filter((tooth) => !tooth.upper));
+export const ALL_FDI = TEETH.map((tooth) => tooth.fdi);
+/** Back teeth first, so the front ones draw over them the way they occlude. */
+const FRONT_ORDER = [...TEETH].sort(
+  (a, b) => Math.abs(b.fx - FRONT.cx) - Math.abs(a.fx - FRONT.cx),
+);
+
+/**
+ * The biting edge, by tooth type. Each entry is [x across the crown, from -1 at the
+ * mesial edge to 1 at the distal, how far the edge is lifted off its lowest point as a
+ * fraction of crown height].
+ *
+ * This table is the difference between a row of teeth and a comb. An incisor is a
+ * straight chisel, a canine comes to a single point, a premolar carries two cusps and a
+ * molar four — draw them all as rounded rectangles and the eye reads a fence.
+ */
+const EDGE: [number, number][][] = [
+  // central incisor — flat, with the mesial corner sharper than the distal
+  [
+    [-1, 0.08],
+    [-0.74, 0],
+    [0.7, 0.01],
+    [1, 0.11],
+  ],
+  // lateral incisor — shorter, and rounder at both corners
+  [
+    [-1, 0.12],
+    [-0.62, 0],
+    [0.6, 0.03],
+    [1, 0.16],
+  ],
+  // canine — one cusp, a little mesial of centre. Barely a point: pull the tip much
+  // further and the arch grows fangs.
+  [
+    [-1, 0.2],
+    [-0.52, 0.07],
+    [-0.06, 0],
+    [0.48, 0.09],
+    [1, 0.24],
+  ],
+  // first premolar — buccal cusp dominant, a groove, then the palatal cusp
+  [
+    [-1, 0.17],
+    [-0.5, 0.01],
+    [0, 0.12],
+    [0.5, 0.04],
+    [1, 0.19],
+  ],
+  // second premolar
+  [
+    [-1, 0.17],
+    [-0.48, 0.03],
+    [0, 0.11],
+    [0.48, 0.04],
+    [1, 0.19],
+  ],
+  // molars — four cusps around a fissure, flattening as they go back
+  [
+    [-1, 0.18],
+    [-0.6, 0.02],
+    [-0.2, 0.15],
+    [0.22, 0.03],
+    [0.62, 0.14],
+    [1, 0.2],
+  ],
+  [
+    [-1, 0.18],
+    [-0.58, 0.03],
+    [-0.18, 0.14],
+    [0.24, 0.04],
+    [0.6, 0.15],
+    [1, 0.2],
+  ],
+  [
+    [-1, 0.2],
+    [-0.55, 0.05],
+    [-0.15, 0.14],
+    [0.28, 0.06],
+    [0.58, 0.16],
+    [1, 0.22],
+  ],
 ];
+
+/** The gum line rides high over a canine and dips over a lateral incisor. */
+function gumY(tooth: Tooth) {
+  const zenith = tooth.order === 2 ? 1.8 : tooth.order === 1 ? -1.3 : 0;
+  return tooth.upper ? FRONT.upperGum - zenith : FRONT.lowerGum + zenith;
+}
+
+/** A smooth cubic run through a list of points — Catmull-Rom, so the cusps round over. */
+function through(points: [number, number][]) {
+  const at = (i: number) => points[Math.max(0, Math.min(points.length - 1, i))];
+  const out: string[] = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const [ax, ay] = at(i - 1);
+    const [bx, by] = at(i);
+    const [cx, cy] = at(i + 1);
+    const [dx, dy] = at(i + 2);
+    out.push(
+      `C${(bx + (cx - ax) / 6).toFixed(1)} ${(by + (cy - ay) / 6).toFixed(1)} ` +
+        `${(cx - (dx - bx) / 6).toFixed(1)} ${(cy - (dy - by) / 6).toFixed(1)} ` +
+        `${cx.toFixed(1)} ${cy.toFixed(1)}`,
+    );
+  }
+  return out.join(" ");
+}
+
+/**
+ * One crown: narrow at the neck, widest at the contact point a third of the way down,
+ * and finished with its own biting edge.
+ */
+function crownPath(tooth: Tooth) {
+  const hw = tooth.fw / 2;
+  const neck = hw * (tooth.order < 3 ? 0.8 : 0.88);
+  const gum = gumY(tooth);
+  // Upper crowns grow down the frame, lower ones up it. One sign handles both.
+  const dir = tooth.upper ? 1 : -1;
+  const edge = gum + dir * tooth.fh;
+  // Mesial is whichever side faces the midline, so the asymmetric profiles mirror.
+  const flip = tooth.side === -1 ? -1 : 1;
+  // A crown turned away from us hides its own cusps. Without this the back molars,
+  // foreshortened to slivers, keep their full relief and the row ends in a sawtooth.
+  const relief = Math.max(0.3, Math.min(1, tooth.fw / 20));
+  const points = EDGE[tooth.order].map(
+    ([across, lift]) =>
+      [tooth.fx + across * flip * hw, edge - dir * lift * relief * tooth.fh] as [number, number],
+  );
+  if (flip === -1) points.reverse();
+  const first = points[0];
+  const bulge = (fraction: number) => (gum + dir * tooth.fh * fraction).toFixed(1);
+  return [
+    `M${(tooth.fx - neck).toFixed(1)} ${gum.toFixed(1)}`,
+    `C${(tooth.fx - hw).toFixed(1)} ${bulge(0.28)} ${(tooth.fx - hw).toFixed(1)} ${bulge(0.6)} ${first[0].toFixed(1)} ${first[1].toFixed(1)}`,
+    through(points),
+    `C${(tooth.fx + hw).toFixed(1)} ${bulge(0.6)} ${(tooth.fx + hw).toFixed(1)} ${bulge(0.28)} ${(tooth.fx + neck).toFixed(1)} ${gum.toFixed(1)}`,
+    "Z",
+  ].join(" ");
+}
 
 function ToothPicker({
   view,
   selected,
   onToggle,
 }: {
-  view: "render" | "schema";
+  view: "front" | "schema";
   selected: number[];
   onToggle: (fdi: number) => void;
 }) {
@@ -437,7 +572,7 @@ function ToothPicker({
 
   if (view === "schema") {
     return (
-      <svg className="cam-arch" viewBox="44 8 292 326" role="group" aria-label="Diş şeması">
+      <svg className="cam-arch" viewBox="44 22 292 292" role="group" aria-label="Diş şeması">
         {TEETH.map((tooth) => (
           <g
             key={tooth.fdi}
@@ -465,29 +600,70 @@ function ToothPicker({
   }
 
   return (
-    <div className="cam-model">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/stock/dental/arch-front.webp" alt="Üst ve alt çene modeli" />
-      <svg className="cam-hitmap" viewBox="0 0 100 100" preserveAspectRatio="none">
-        {FRONT.map((slice) => {
-          const tooth = TEETH.find((candidate) => candidate.fdi === slice.fdi)!;
-          const y = slice.upper ? ROW.upperY : ROW.lowerY;
-          const h = (slice.upper ? ROW.upperH : ROW.lowerH) * 100;
-          const w = (slice.x1 - slice.x0) * 100;
-          return (
-            <rect
-              key={slice.fdi}
-              className={`cam-hit${selected.includes(slice.fdi) ? " is-on" : ""}`}
-              x={slice.x0 * 100}
-              y={y * 100 - h / 2}
-              width={w}
-              height={h}
-              rx={Math.min(w * 0.3, 2.2)}
+    <svg className="cam-arch cam-front" viewBox="0 0 400 186" role="group" aria-label="Diş modeli">
+      <defs>
+        {/* Enamel is densest at the neck and translucent at the biting edge, which is
+            what gives a real crown its glassy tip. */}
+        <linearGradient id="cam-enamel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#a9cdf0" />
+          <stop offset="38%" stopColor="#e8f4ff" />
+          <stop offset="100%" stopColor="#ffffff" />
+        </linearGradient>
+        <linearGradient id="cam-enamel-low" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stopColor="#a9cdf0" />
+          <stop offset="38%" stopColor="#e8f4ff" />
+          <stop offset="100%" stopColor="#ffffff" />
+        </linearGradient>
+        <linearGradient id="cam-gum" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(150,200,246,0.46)" />
+          <stop offset="100%" stopColor="rgba(150,200,246,0.14)" />
+        </linearGradient>
+        {/* Darkest at the back of the mouth, where no light reaches. */}
+        <radialGradient id="cam-mouth" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="rgba(7,27,56,0.8)" />
+          <stop offset="72%" stopColor="rgba(7,27,56,0.72)" />
+          <stop offset="100%" stopColor="rgba(7,27,56,0)" />
+        </radialGradient>
+        <radialGradient id="cam-bloom" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="rgba(168,214,252,0.5)" />
+          <stop offset="100%" stopColor="rgba(168,214,252,0)" />
+        </radialGradient>
+      </defs>
+
+      <ellipse cx="200" cy="90" rx="196" ry="86" fill="url(#cam-bloom)" />
+
+      {/* The mouth behind the rows. A soft lens, not an outline traced round the
+          crowns: the teeth are drawn over it, so they cut their own silhouette into it,
+          and the dark that remains is exactly the gap between the two arches — shut at
+          the incisors, open at the molars. Tracing the crowns instead doubles the
+          contrast on every cusp and turns the canines into fangs. */}
+      <ellipse cx="200" cy="94" rx="186" ry="31" fill="url(#cam-mouth)" />
+
+      {/* The ridges the crowns sit in. */}
+      <rect x="10" y="2" width="380" height="44" rx="19" fill="url(#cam-gum)" />
+      <rect x="10" y="126" width="380" height="48" rx="21" fill="url(#cam-gum)" />
+
+      <g className="cam-crowns">
+        {FRONT_ORDER.map((tooth) => (
+          <g key={tooth.fdi}>
+            <path
+              className={`cam-crown${selected.includes(tooth.fdi) ? " is-on" : ""}`}
+              d={crownPath(tooth)}
+              fill={tooth.upper ? "url(#cam-enamel)" : "url(#cam-enamel-low)"}
               {...hit(tooth)}
             />
-          );
-        })}
-      </svg>
-    </div>
+            {/* The specular running down the face of the crown. */}
+            <rect
+              className="cam-shine"
+              x={tooth.fx - tooth.fw * 0.2}
+              y={gumY(tooth) + (tooth.upper ? 5 : -tooth.fh + 4)}
+              width={Math.max(1.2, tooth.fw * 0.17)}
+              height={Math.max(3, tooth.fh - 12)}
+              rx={Math.max(0.6, tooth.fw * 0.085)}
+            />
+          </g>
+        ))}
+      </g>
+    </svg>
   );
 }
