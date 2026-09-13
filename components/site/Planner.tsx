@@ -242,13 +242,7 @@ function Gauge({ fraction, label }: { fraction: number; label: string }) {
         strokeDasharray={LENGTH}
         strokeDashoffset={LENGTH * (1 - Math.min(1, Math.max(0, fraction)))}
       />
-      <text className="cam-gauge-end" x="14" y="82">
-        kısa
-      </text>
-      <text className="cam-gauge-end" x="126" y="82" textAnchor="end">
-        uzun
-      </text>
-      <text className="cam-gauge-value" x="70" y="66" textAnchor="middle">
+      <text className="cam-gauge-value" x="70" y="64" textAnchor="middle">
         {label}
       </text>
     </svg>

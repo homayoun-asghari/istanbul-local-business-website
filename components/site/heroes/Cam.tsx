@@ -48,8 +48,6 @@ export function Cam({
 
   return (
     <ScrollScene className="cam-hero">
-      <span aria-hidden="true" className="cam-glow" />
-
       <header className="cam-nav">
         <a href="#" className="cam-brand">
           <ToothMark />
@@ -86,7 +84,7 @@ export function Cam({
           <h2 className="cam-h2">
             {business.district}’de
             <br />
-            ağız ve diş sağlığı
+            diş sağlığı
           </h2>
           <div className="cam-actions">
             <a
@@ -108,8 +106,13 @@ export function Cam({
           </div>
         </div>
 
-        <p aria-hidden="true" className="cam-ghost">
-          {business.name} · {business.neighborhood}, {business.district}
+        {/* The clinic's own name, sized off its own length so a long one still fits. */}
+        <p
+          aria-hidden="true"
+          className="cam-ghost"
+          style={{ ["--ghost-len" as string]: business.name.length }}
+        >
+          {business.name}
         </p>
       </div>
     </ScrollScene>

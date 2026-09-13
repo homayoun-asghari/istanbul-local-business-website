@@ -815,19 +815,6 @@ h3 {
   padding: calc(var(--c) * 0.022) calc(var(--c) * 0.022) 0;
   overflow: hidden;
 }
-.cam-glow {
-  position: absolute;
-  left: 50%;
-  top: 40%;
-  width: calc(var(--c) * 0.78);
-  aspect-ratio: 1;
-  translate: -50% calc(-50% + var(--sy) * -90px);
-  background: radial-gradient(closest-side, rgba(139, 197, 247, 0.34), transparent 70%);
-  filter: blur(10px);
-  z-index: 0;
-  pointer-events: none;
-  animation: cam-breathe 9s ease-in-out infinite;
-}
 
 .cam-nav {
   position: relative;
@@ -893,10 +880,11 @@ h3 {
 }
 @media (min-width: 900px) {
   .cam-stage {
-    /* 45% / 10% / 45%: the outer columns overlap the middle, which is what lets the
-       molar sit in front of the headline instead of beside it. */
-    grid-template-columns: 45% 10% 45%;
-    min-height: calc(var(--c) * 0.5);
+    /* The outer columns overlap the middle: measured off the reference, the right
+       block starts at ~62% of the card while the molar runs 25%–75%, so the glass
+       crosses the type rather than clearing it. */
+    grid-template-columns: 44% 18% 38%;
+    min-height: calc(var(--c) * 0.47);
   }
   .cam-left,
   .cam-right {
@@ -904,9 +892,12 @@ h3 {
   }
   .cam-left {
     grid-column: 1;
+    align-self: start;
+    padding-top: calc(var(--c) * 0.035);
   }
   .cam-right {
     grid-column: 3;
+    align-self: center;
   }
   .cam-molar {
     grid-row: 1;
@@ -925,18 +916,19 @@ h3 {
   color: var(--ink);
   margin: 0;
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 .cam-h1 {
   max-width: 11ch;
   animation: cam-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
 }
 .cam-h2 {
+  max-width: 9ch;
   animation: cam-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.46s both;
 }
 .cam-lede {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   margin: calc(var(--c) * 0.026) 0 0;
   max-width: 34ch;
   font-size: calc(var(--c) * 0.0105);
@@ -956,7 +948,7 @@ h3 {
      so a transparent object needs no cut-out at all. */
   mix-blend-mode: multiply;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   translate: 0 calc(var(--sy) * -120px);
   animation:
     cam-molar-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both,
@@ -970,7 +962,7 @@ h3 {
   gap: 12px;
   margin-top: calc(var(--c) * 0.028);
   position: relative;
-  z-index: 2;
+  z-index: 3;
   animation: cam-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.54s both;
 }
 .cam-cta {
@@ -1008,7 +1000,7 @@ h3 {
 }
 .cam-open {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   margin-top: calc(var(--c) * 0.02);
   color: var(--ink-soft);
   font-size: calc(var(--c) * 0.0098);
@@ -1024,7 +1016,7 @@ h3 {
   z-index: -1;
   margin: 0;
   font-family: var(--font-display-active), sans-serif;
-  font-size: calc(var(--c) * 0.095);
+  font-size: min(calc(var(--c) * 0.095), calc(var(--c) * 1.9 / var(--ghost-len, 30)));
   font-weight: 500;
   letter-spacing: -0.035em;
   line-height: 1;
@@ -1219,7 +1211,8 @@ h3 {
 }
 .cam-fact-value {
   font-family: var(--font-display-active), sans-serif;
-  font-size: clamp(26px, 3.1vw, 46px);
+  font-size: clamp(22px, 2.4vw, 36px);
+  text-wrap: balance;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.05;
@@ -1472,8 +1465,7 @@ h3 {
   min-width: 0;
 }
 .cam-panel-title {
-  display: flex;
-  align-items: baseline;
+  display: block;
   gap: 8px;
   padding: 0;
   margin: 0 0 18px;
@@ -1485,9 +1477,10 @@ h3 {
 }
 .cam-step {
   font-variant-numeric: tabular-nums;
+  margin-right: 7px;
 }
 .cam-clear {
-  margin-left: auto;
+  float: right;
   background: none;
   border: 0;
   color: rgba(255, 255, 255, 0.72);
@@ -1661,7 +1654,7 @@ h3 {
 .cam-gauge-value {
   fill: var(--ink);
   font-family: var(--font-display-active), sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
 }
 .cam-gauge-end {

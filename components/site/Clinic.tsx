@@ -1,5 +1,4 @@
 import type { SectionOf } from "@/lib/content/schema";
-import { Container } from "./primitives";
 import { Reveal } from "./Reveal";
 
 /**
@@ -18,36 +17,34 @@ import { Reveal } from "./Reveal";
 export function Clinic({ section }: { section: SectionOf<"clinic"> }) {
   return (
     <section id="klinik" className="cam-clinic">
-      <Container>
-        <div className="cam-clinic-frame">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={section.image.src}
-            alt={section.image.alt}
-            className="cam-clinic-photo"
-            loading="lazy"
-            decoding="async"
-          />
-          <span aria-hidden="true" className="cam-clinic-wash" />
+      <div className="cam-clinic-frame">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={section.image.src}
+          alt={section.image.alt}
+          className="cam-clinic-photo"
+          loading="lazy"
+          decoding="async"
+        />
+        <span aria-hidden="true" className="cam-clinic-wash" />
 
-          <div className="cam-clinic-copy">
-            <p className="cam-clinic-eyebrow">Hakkımızda</p>
-            <Reveal>
-              <h2 className="cam-clinic-title">{section.title}</h2>
-              <p className="cam-clinic-body">{section.body}</p>
-            </Reveal>
-          </div>
-
-          <dl className="cam-facts">
-            {section.facts.map((fact, index) => (
-              <Reveal key={fact.label} delay={index * 70} className="cam-fact">
-                <dt className="cam-fact-value">{fact.value}</dt>
-                <dd className="cam-fact-label">{fact.label}</dd>
-              </Reveal>
-            ))}
-          </dl>
+        <div className="cam-clinic-copy">
+          <p className="cam-clinic-eyebrow">Hakkımızda</p>
+          <Reveal>
+            <h2 className="cam-clinic-title">{section.title}</h2>
+            <p className="cam-clinic-body">{section.body}</p>
+          </Reveal>
         </div>
-      </Container>
+
+        <dl className="cam-facts">
+          {section.facts.map((fact, index) => (
+            <Reveal key={fact.label} delay={index * 70} className="cam-fact">
+              <dt className="cam-fact-value">{fact.value}</dt>
+              <dd className="cam-fact-label">{fact.label}</dd>
+            </Reveal>
+          ))}
+        </dl>
+      </div>
     </section>
   );
 }
