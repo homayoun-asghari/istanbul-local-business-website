@@ -5,7 +5,9 @@
 Two surfaces, one codebase.
 
 **The sales surface** is one Next.js app on one free Vercel project. Every prospect demo is a
-row in Neon, served at `vitrin.vercel.app/<slug>`. Publishing a demo is an insert plus a
+row in Neon, served at `vitrin-liart.vercel.app/<slug>` — the project's production
+alias. `vitrin.vercel.app` is **not ours**: it belongs to an unrelated account and
+serves a Persian site, so a lead sent that link sees somebody else's page. Publishing a demo is an insert plus a
 revalidate — seconds, not a deploy.
 
 **The delivery surface** is a standalone repository generated per sale by `npm run eject`. It
