@@ -6,13 +6,13 @@ import { Reveal } from "./Reveal";
  * Treatment tiles — the five glass objects, centred heading above them.
  *
  * Unlike `services`, every item here carries an image, because this pack ships its own
- * photography. The middle tile sits lifted, which is how the reference marks the
- * treatment the clinic most wants booked without writing "most popular" on it — a
- * comparative claim a clinic may not make (m.5/1-c).
+ * photography.
+ *
+ * At rest the five are equal. Hovering one expands it and slides its description in
+ * beside the object while the others compress — which is what the reference does, and
+ * why a permanently lifted middle tile read as a bug rather than as emphasis.
  */
 export function Treatments({ section }: { section: SectionOf<"treatments"> }) {
-  const middle = Math.floor(section.items.length / 2);
-
   return (
     <section id="tedaviler" className="cam-treatments">
       <Container>
@@ -24,19 +24,19 @@ export function Treatments({ section }: { section: SectionOf<"treatments"> }) {
 
         <ul className="cam-treat-grid">
           {section.items.map((item, index) => (
-            <Reveal
-              as="li"
-              key={item.name}
-              delay={index * 60}
-              className={`cam-treat${index === middle ? " is-lifted" : ""}`}
-            >
+            <Reveal as="li" key={item.name} delay={index * 60} className="cam-treat">
               <figure className="cam-treat-figure">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={item.image.src} alt={item.image.alt} loading="lazy" decoding="async" />
                 <figcaption>
                   <b>{item.name}</b>
-                  {item.note ? <span>{item.note}</span> : null}
                 </figcaption>
+                {item.note ? (
+                  <div className="cam-treat-reveal" aria-hidden="true">
+                    <b>{item.name}</b>
+                    <p>{item.note}</p>
+                  </div>
+                ) : null}
               </figure>
             </Reveal>
           ))}
