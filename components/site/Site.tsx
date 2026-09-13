@@ -46,55 +46,79 @@ export function Site({
   // The chrome hero carries its own navigation, so the shared header would be a second one.
   const SALON_HEROES = new Set(["kesim", "gece", "kemer", "makro", "menu", "sade", "cam"]);
   const ownsHeader = preset.hero === "chrome" || SALON_HEROES.has(preset.hero ?? "");
+  /**
+   * Cam is one continuous blue page with every section floating on it as a white card —
+   * not a stack of alternating full-bleed bands. Wrapping here rather than inside each
+   * component is what lets the sections this pack shares with beauty (booking, hours,
+   * contact) join the rhythm without being rewritten.
+   */
+  const sheeted = preset.hero === "cam";
+  const sheet = (node: React.ReactNode, key: string) =>
+    sheeted ? (
+      <div className="cam-sheet" key={key}>
+        {node}
+      </div>
+    ) : (
+      node
+    );
 
   return (
-    <div style={presetCssVars(preset) as React.CSSProperties} className="bg-ground text-ink">
+    <div
+      style={presetCssVars(preset) as React.CSSProperties}
+      className={`bg-ground text-ink${sheeted ? " cam-page" : ""}`}
+    >
       {ownsHeader ? null : <Header content={content} />}
       <main>
         {sections.map((section, index) => {
           const key = `${section.type}-${index}`;
           switch (section.type) {
             case "hero":
-              return <Hero key={key} section={section} content={content} now={now} />;
+              return sheet(<Hero key={key} section={section} content={content} now={now} />, key);
             case "proof":
-              return <Proof key={key} content={content} />;
+              return sheet(<Proof key={key} content={content} />, key);
             case "emergency":
-              return <Emergency key={key} section={section} content={content} />;
+              return sheet(<Emergency key={key} section={section} content={content} />, key);
             case "services":
-              return <Services key={key} section={section} />;
+              return sheet(<Services key={key} section={section} />, key);
             case "about":
-              return <About key={key} section={section} />;
+              return sheet(<About key={key} section={section} />, key);
             case "gallery":
-              return <Gallery key={key} section={section} />;
+              return sheet(<Gallery key={key} section={section} />, key);
             case "hours":
-              return <HoursSection key={key} section={section} content={content} now={now} />;
+              return sheet(
+                <HoursSection key={key} section={section} content={content} now={now} />,
+                key,
+              );
             case "contact":
-              return <Contact key={key} section={section} content={content} />;
+              return sheet(<Contact key={key} section={section} content={content} />, key);
             case "pricelist":
-              return <PriceList key={key} section={section} />;
+              return sheet(<PriceList key={key} section={section} />, key);
             case "team":
               // Cam runs the same people as a carousel that bleeds off the right edge.
-              return preset.hero === "cam" ? (
-                <Specialists key={key} section={section} />
-              ) : (
-                <Team key={key} section={section} />
+              return sheet(
+                preset.hero === "cam" ? (
+                  <Specialists section={section} />
+                ) : (
+                  <Team section={section} />
+                ),
+                key,
               );
             case "clinic":
-              return <Clinic key={key} section={section} />;
+              return sheet(<Clinic key={key} section={section} />, key);
             case "treatments":
-              return <Treatments key={key} section={section} />;
+              return sheet(<Treatments key={key} section={section} />, key);
             case "planner":
-              return <Planner key={key} section={section} content={content} />;
+              return sheet(<Planner key={key} section={section} content={content} />, key);
             case "beforeAfter":
-              return <BeforeAfter key={key} section={section} />;
+              return sheet(<BeforeAfter key={key} section={section} />, key);
             case "instagram":
-              return <InstagramStrip key={key} section={section} content={content} />;
+              return sheet(<InstagramStrip key={key} section={section} content={content} />, key);
             case "booking":
-              return <Booking key={key} section={section} content={content} />;
+              return sheet(<Booking key={key} section={section} content={content} />, key);
           }
         })}
       </main>
-      <Footer content={content} year={now.getUTCFullYear()} />
+      {sheet(<Footer content={content} year={now.getUTCFullYear()} />, "footer")}
       <ContactBar content={content} />
       {trackAs ? <Signals slug={trackAs} /> : null}
     </div>

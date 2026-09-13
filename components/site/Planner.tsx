@@ -77,7 +77,7 @@ export function Planner({
           <div className="cam-plan-col">
             <div className="cam-panel" role="radiogroup" aria-labelledby="cam-goal-label">
               <p className="cam-panel-title" id="cam-goal-label">
-                <span className="cam-step">01</span> Ne yaptırmak istiyorsunuz?
+                <span className="cam-step">01.</span> Ne yaptırmak istiyorsunuz?
               </p>
               {section.goals.map((option) => (
                 <label key={option.id} className="cam-radio">
@@ -95,7 +95,7 @@ export function Planner({
 
             <div className="cam-panel" role="group" aria-labelledby="cam-method-label">
               <p className="cam-panel-title" id="cam-method-label">
-                <span className="cam-step">02</span> Yöntem
+                <span className="cam-step">02.</span> Yöntem
               </p>
               <div className="cam-chips">
                 {goal.methods.map((method) => (
@@ -115,7 +115,7 @@ export function Planner({
 
           <div className="cam-panel cam-chart">
             <div className="cam-panel-title">
-              <span className="cam-step">03</span> Hangi bölge?
+              <span className="cam-step">03.</span> Hangi bölge?
               <button type="button" className="cam-clear" onClick={() => setTeeth([])}>
                 Temizle
               </button>
@@ -135,52 +135,53 @@ export function Planner({
           <div className="cam-plan-col">
             <div className="cam-panel cam-result">
               <p className="cam-panel-title">
-                <span className="cam-step">04</span> Planınız
+                <span className="cam-step">04.</span> Planınız
               </p>
 
               {plan ? (
                 <>
-                  <div className="cam-metric">
-                    <span className="cam-metric-label">Seans</span>
-                    <span className="cam-metric-value">
-                      {formatRange(plan.method.visits, "seans")}
-                    </span>
-                    <span className="cam-dots" aria-hidden="true">
-                      {Array.from({ length: 8 }, (_, index) => (
-                        <i key={index} className={index < plan.method.visits[1] ? "is-on" : ""} />
-                      ))}
-                    </span>
+                  <div className="cam-result-row">
+                    <div className="cam-card-sm">
+                      <h4>Tedavi süresi</h4>
+                      <Gauge
+                        fraction={durationFraction(plan.method.weeks)}
+                        label={formatRange(plan.method.weeks, "hafta")}
+                      />
+                      <p className="cam-card-note">Muayeneye göre değişir</p>
+                    </div>
+                    <div className="cam-card-sm">
+                      <h4>Seans sayısı</h4>
+                      <div className="cam-blocks" aria-hidden="true">
+                        {Array.from({ length: 8 }, (_, index) => (
+                          <i key={index} className={index < plan.method.visits[1] ? "is-on" : ""} />
+                        ))}
+                      </div>
+                      <p className="cam-card-big">{formatRange(plan.method.visits, "seans")}</p>
+                    </div>
                   </div>
 
-                  <div className="cam-metric">
-                    <span className="cam-metric-label">Süre</span>
-                    <span className="cam-metric-value">
-                      {formatRange(plan.method.weeks, "hafta")}
-                    </span>
-                    <span className="cam-bar" aria-hidden="true">
-                      <i style={{ width: `${durationFraction(plan.method.weeks) * 100}%` }} />
-                    </span>
-                  </div>
+                  {specialist ? (
+                    <div className="cam-card-sm">
+                      <h4>Önerilen hekim</h4>
+                      <div className="cam-suggest">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={specialist.image.src} alt="" aria-hidden="true" />
+                        <div>
+                          <b>{specialist.name}</b>
+                          <span>{specialist.role}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
 
-                  <div className="cam-steps">
-                    <span className="cam-metric-label">Nasıl ilerler</span>
-                    <ol>
+                  <div className="cam-card-sm">
+                    <h4>Nasıl ilerler</h4>
+                    <ol className="cam-steps-list">
                       {plan.method.steps.map((step) => (
                         <li key={step}>{step}</li>
                       ))}
                     </ol>
                   </div>
-
-                  {specialist ? (
-                    <div className="cam-suggest">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={specialist.image.src} alt="" aria-hidden="true" />
-                      <div>
-                        <b>{specialist.name}</b>
-                        <span>{specialist.role}</span>
-                      </div>
-                    </div>
-                  ) : null}
 
                   {plan.manyTeeth ? (
                     <p className="cam-many">
@@ -207,6 +208,50 @@ export function Planner({
         </div>
       </Container>
     </section>
+  );
+}
+
+/**
+ * A semicircular gauge. One path, stroke-dashed to the fraction, so what is drawn and
+ * what is written can never disagree.
+ */
+function Gauge({ fraction, label }: { fraction: number; label: string }) {
+  const R = 54;
+  const LENGTH = Math.PI * R;
+  return (
+    <svg className="cam-gauge" viewBox="0 0 140 84" role="img" aria-label={label}>
+      <defs>
+        <linearGradient id="cam-gauge-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#8cc2f5" />
+          <stop offset="100%" stopColor="#1c62c8" />
+        </linearGradient>
+      </defs>
+      <path
+        className="cam-gauge-track"
+        d={`M 16 70 A ${R} ${R} 0 0 1 124 70`}
+        fill="none"
+        strokeWidth="11"
+        strokeLinecap="round"
+      />
+      <path
+        className="cam-gauge-fill"
+        d={`M 16 70 A ${R} ${R} 0 0 1 124 70`}
+        fill="none"
+        strokeWidth="11"
+        strokeLinecap="round"
+        strokeDasharray={LENGTH}
+        strokeDashoffset={LENGTH * (1 - Math.min(1, Math.max(0, fraction)))}
+      />
+      <text className="cam-gauge-end" x="14" y="82">
+        kısa
+      </text>
+      <text className="cam-gauge-end" x="126" y="82" textAnchor="end">
+        uzun
+      </text>
+      <text className="cam-gauge-value" x="70" y="66" textAnchor="middle">
+        {label}
+      </text>
+    </svg>
   );
 }
 
