@@ -1518,14 +1518,19 @@ h3 {
 }
 @media (min-width: 980px) {
   .cam-plan-grid {
-    grid-template-columns: 0.82fr 1.02fr 1.16fr;
+    grid-template-columns: 0.84fr 1.04fr 1.12fr;
+    /* Each panel is the height of what is in it, and the three columns end wherever
+       they end. Stretching them instead — which is what "some boxes are tall and some
+       are short" was an attempt to fix — inflates the shortest panel into a void, and
+       the reference does not do it: its 01/02/03 column plainly stops above the other
+       two. */
     align-items: start;
   }
 }
 .cam-plan-col {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: clamp(12px, 1.3vw, 18px);
-  align-content: start;
 }
 .cam-panel {
   border: 0;
@@ -1606,7 +1611,8 @@ h3 {
   background: #ccdae9;
   color: #234170;
   border-radius: 9px;
-  padding: 9px 16px;
+  padding: 9px 13px;
+  white-space: nowrap;
   font-family: var(--font-body-active), sans-serif;
   font-size: 14px;
   font-weight: 600;
@@ -1636,48 +1642,57 @@ h3 {
   display: block;
 }
 
-/* The 3D model, with the hit map stretched over it. */
-.cam-model {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  aspect-ratio: 1;
+/* The drawn front model. Each crown is a real path, so what you click is what you see. */
+.cam-front {
+  max-width: 420px;
 }
-.cam-model img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  /* The render's own ground is the panel blue, so it needs no cut-out. */
-  border-radius: 12px;
+.cam-crowns {
+  filter: drop-shadow(0 3px 6px rgba(6, 28, 62, 0.34));
 }
-.cam-hitmap {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+.cam-shine {
+  fill: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
 }
-.cam-hit {
-  fill: rgba(255, 255, 255, 0);
-  stroke: rgba(255, 255, 255, 0);
-  stroke-width: 0.4;
+.cam-crown {
+  stroke: rgba(122, 172, 220, 0.7);
+  stroke-width: 0.7;
   cursor: pointer;
   transition:
     fill 0.2s ease,
-    stroke 0.2s ease;
+    stroke 0.2s ease,
+    filter 0.2s ease;
 }
-.cam-hit:hover {
-  fill: rgba(255, 255, 255, 0.26);
-  stroke: rgba(255, 255, 255, 0.6);
-}
-.cam-hit.is-on {
-  fill: rgba(211, 247, 254, 0.62);
+.cam-crown:hover {
+  filter: brightness(1.06);
   stroke: #ffffff;
+  stroke-width: 1.4;
 }
-.cam-hit:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 1px;
+.cam-crown.is-on {
+  fill: #4aa3f5;
+  stroke: #ffffff;
+  stroke-width: 1.6;
+}
+/* An outline on an SVG node draws round its bounding box and reads as a badge floating
+   over the model. The focus state belongs on the tooth itself. */
+/*
+ * The focus ring has to go on :focus, not only on :focus-visible.
+ *
+ * A browser draws its default ring round an SVG element's BOUNDING BOX, and a tooth's
+ * bounding box is a tall narrow rounded rectangle — which is what the blue-and-white "0"
+ * that appeared after every click actually was. :focus-visible alone does not catch it,
+ * because a mouse click leaves the element focused without matching that pseudo-class.
+ *
+ * Keyboard focus still gets an indicator; it is a heavier stroke on the crown itself, so
+ * it follows the tooth rather than the box around it.
+ */
+.cam-crown:focus,
+.cam-tooth:focus {
+  outline: none;
+}
+.cam-crown:focus-visible,
+.cam-tooth:focus-visible {
+  stroke: #ffffff;
+  stroke-width: 2.4;
 }
 
 /* The arc under the model. The reference labels it 360°; ours does not rotate, so it
@@ -1800,14 +1815,12 @@ h3 {
 .cam-tooth:hover {
   fill: rgba(255, 255, 255, 0.45);
 }
+/* The same blue as a selected crown in the front view — one colour means "chosen". */
 .cam-tooth.is-on {
-  fill: #d3f7fe;
+  fill: #4aa3f5;
   stroke: #ffffff;
 }
-.cam-tooth:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-}
+
 .cam-arch-label {
   fill: rgba(255, 255, 255, 0.55);
   font-size: 11px;
@@ -1824,13 +1837,20 @@ h3 {
 
 /* The result panel is blue like the others; everything inside it is a white card. */
 .cam-result {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 .cam-result-row {
   display: grid;
   gap: 12px;
   grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+.cam-result-row > .cam-card-sm {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .cam-card-sm {
   background: #fff;
