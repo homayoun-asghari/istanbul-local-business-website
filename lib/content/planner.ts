@@ -97,13 +97,22 @@ export function durationFraction(weeks: readonly [number, number]): number {
  * Written as a person would write it, in the first person, because it opens in their own
  * WhatsApp and they are the one sending it. It states no price and asks for none.
  */
-export function plannerMessage(content: SiteContent, result: PlannerResult): string {
+export function plannerMessage(
+  content: SiteContent,
+  result: PlannerResult,
+  visitor: { firstVisit?: boolean } = {},
+): string {
   const lines = [
     `Merhaba, ${content.business.name} web sitesindeki tedavi planlayıcıyı doldurdum.`,
     "",
     `İstediğim: ${result.goal.label}`,
     `Yöntem: ${result.method.label}`,
   ];
+  if (visitor.firstVisit !== undefined) {
+    lines.push(
+      visitor.firstVisit ? "Kliniğinize ilk kez geleceğim." : "Daha önce kliniğinize geldim.",
+    );
+  }
   if (result.teeth.length > 0) {
     const listed = result.teeth.map((fdi) => `${fdi} (${toothLabel(fdi)})`).join(", ");
     lines.push(`Bölge: ${listed}`);

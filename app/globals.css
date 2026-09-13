@@ -1507,467 +1507,648 @@ h3 {
 }
 
 /* ---- planner ----------------------------------------------------------------
-   The reference's panels are #3E66A3, a medium blue, and its result panel holds
-   WHITE sub-cards. The first pass used a near-black navy with tiny uppercase
-   labels, which is why it read as a different component wearing the same layout.
+   Measured off the reference frame (Screen Recording 2026-09-12 at 4.39.44 PM, 15.0 s),
+   where the planner grid is 1694 px wide. Every size below is written in that frame's
+   pixels times --u — one reference pixel at the current grid width — so the planner is
+   the reference at every width instead of an approximation of it at one.
+
+   --u is a container unit and resolves where it is used, against .cam-plan.
    ---------------------------------------------------------------------------- */
+.cam-plan {
+  width: min(calc(100% - 40px), 1560px);
+  margin-inline: auto;
+  container-type: inline-size;
+}
+.cam-plan-head,
+.cam-plan-grid {
+  --u: 0.72px;
+}
+@media (min-width: 1100px) {
+  .cam-plan {
+    /* The reference grid fills 96.4% of its card. */
+    width: min(96.4%, 1560px);
+  }
+  .cam-plan-head,
+  .cam-plan-grid {
+    --u: calc(100cqi / 1694);
+  }
+}
+
+.cam-plan-head {
+  text-align: center;
+  margin-bottom: calc(77 * var(--u));
+}
+.cam-plan-eyebrow {
+  margin: 0;
+  font-family: var(--font-body-active), sans-serif;
+  font-size: max(11px, calc(20 * var(--u)));
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #5b6f94;
+}
+.cam-plan-title {
+  margin: calc(14 * var(--u)) 0 0;
+  font-family: var(--font-display-active), sans-serif;
+  font-size: max(30px, calc(64 * var(--u)));
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: #1b3e80;
+}
+.cam-plan-intro {
+  margin: calc(34 * var(--u)) auto 0;
+  max-width: max(300px, calc(600 * var(--u)));
+  font-size: max(14px, calc(22 * var(--u)));
+  line-height: 1.24;
+  color: #3e4b5e;
+  text-wrap: balance;
+}
+
 .cam-plan-grid {
   display: grid;
-  gap: clamp(12px, 1.3vw, 18px);
-  margin-top: clamp(28px, 3.6vw, 46px);
+  gap: calc(14 * var(--u));
 }
-@media (min-width: 980px) {
+@media (min-width: 1100px) {
   .cam-plan-grid {
-    grid-template-columns: 0.84fr 1.04fr 1.12fr;
-    /* Each panel is the height of what is in it, and the three columns end wherever
-       they end. Stretching them instead — which is what "some boxes are tall and some
-       are short" was an attempt to fix — inflates the shortest panel into a void, and
-       the reference does not do it: its 01/02/03 column plainly stops above the other
-       two. */
-    align-items: start;
+    grid-template-columns: minmax(0, 408fr) minmax(0, 694fr) minmax(0, 550fr);
+    column-gap: calc(21 * var(--u));
+    /* The three columns start and end on one line, as the reference's do. */
+    grid-template-rows: minmax(calc(664 * var(--u)), auto);
+    align-items: stretch;
   }
 }
 .cam-plan-col {
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 1.3vw, 18px);
+  gap: calc(14 * var(--u));
 }
+@media (min-width: 1100px) {
+  /* Basis zero and grow in the reference's proportions: the three boxes share the
+     column 284 : 160 : 195, and a box only grows past its share if its content needs it. */
+  .cam-p-goal {
+    flex: 284 1 0;
+  }
+  .cam-p-method {
+    flex: 160 1 0;
+  }
+  .cam-p-visit {
+    flex: 195 1 0;
+  }
+}
+
 .cam-panel {
-  border: 0;
-  border-radius: 18px;
-  background: var(--cam-panel, #3e66a3);
-  color: #fff;
-  padding: clamp(18px, 1.9vw, 26px);
+  position: relative;
   margin: 0;
   min-width: 0;
+  border: 0;
+  border-radius: calc(16 * var(--u));
+  background: #3f65a3;
+  color: #fff;
+  padding: calc(31 * var(--u)) calc(38 * var(--u)) calc(25 * var(--u));
 }
 .cam-panel-title {
-  display: block;
-  gap: 8px;
-  padding: 0;
-  margin: 0 0 18px;
+  margin: 0;
   font-family: var(--font-display-active), sans-serif;
-  font-size: clamp(18px, 1.55vw, 24px);
-  font-weight: 700;
+  font-size: max(17px, calc(30 * var(--u)));
+  font-weight: 600;
+  line-height: 1.2;
   letter-spacing: -0.02em;
   color: #fff;
-}
-.cam-step {
-  font-variant-numeric: tabular-nums;
-  margin-right: 7px;
+  white-space: nowrap;
 }
 
 .cam-radio {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 9px 0;
-  font-size: 15.5px;
-  color: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-}
-.cam-radio input {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.55);
-  flex: none;
-  display: grid;
-  place-content: center;
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
-}
-.cam-radio input::after {
-  content: "";
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #1c62c8;
-  transform: scale(0);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.cam-radio input:checked {
-  border-color: #fff;
-  background: #79bef9;
-}
-.cam-radio input:checked::after {
-  transform: scale(1);
-}
-.cam-radio:has(input:checked) {
-  color: #fff;
-  font-weight: 600;
-}
-
-.cam-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-}
-.cam-chip {
-  border: 0;
-  background: #ccdae9;
-  color: #234170;
-  border-radius: 9px;
-  padding: 9px 13px;
-  white-space: nowrap;
-  font-family: var(--font-body-active), sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 0.25s ease,
-    color 0.25s ease;
-}
-.cam-chip:hover {
-  background: #dceafa;
-}
-.cam-chip.is-on {
-  background: #d3f7fe;
-  color: #10406f;
-}
-
-.cam-chart {
-  display: flex;
-  flex-direction: column;
-}
-.cam-arch {
-  width: 100%;
-  height: auto;
-  max-width: 400px;
-  overflow: visible;
-  margin: 6px auto 0;
-  display: block;
-}
-
-/* The drawn front model. Each crown is a real path, so what you click is what you see. */
-.cam-front {
-  max-width: 420px;
-}
-.cam-crowns {
-  filter: drop-shadow(0 3px 6px rgba(6, 28, 62, 0.34));
-}
-.cam-shine {
-  fill: rgba(255, 255, 255, 0.5);
-  pointer-events: none;
-}
-.cam-crown {
-  stroke: rgba(122, 172, 220, 0.7);
-  stroke-width: 0.7;
-  cursor: pointer;
-  transition:
-    fill 0.2s ease,
-    stroke 0.2s ease,
-    filter 0.2s ease;
-}
-.cam-crown:hover {
-  filter: brightness(1.06);
-  stroke: #ffffff;
-  stroke-width: 1.4;
-}
-.cam-crown.is-on {
-  fill: #4aa3f5;
-  stroke: #ffffff;
-  stroke-width: 1.6;
-}
-/* An outline on an SVG node draws round its bounding box and reads as a badge floating
-   over the model. The focus state belongs on the tooth itself. */
-/*
- * The focus ring has to go on :focus, not only on :focus-visible.
- *
- * A browser draws its default ring round an SVG element's BOUNDING BOX, and a tooth's
- * bounding box is a tall narrow rounded rectangle — which is what the blue-and-white "0"
- * that appeared after every click actually was. :focus-visible alone does not catch it,
- * because a mouse click leaves the element focused without matching that pseudo-class.
- *
- * Keyboard focus still gets an indicator; it is a heavier stroke on the crown itself, so
- * it follows the tooth rather than the box around it.
- */
-.cam-crown:focus,
-.cam-tooth:focus {
-  outline: none;
-}
-.cam-crown:focus-visible,
-.cam-tooth:focus-visible {
-  stroke: #ffffff;
-  stroke-width: 2.4;
-}
-
-/* The arc under the model. The reference labels it 360°; ours does not rotate, so it
-   says what it actually is. */
-.cam-arc {
-  position: relative;
-  width: min(260px, 78%);
-  margin: 2px auto 0;
-  text-align: center;
-}
-.cam-arc svg {
-  display: block;
-  width: 100%;
-  height: 34px;
-}
-.cam-arc path {
-  stroke: rgba(255, 255, 255, 0.34);
-}
-.cam-arc span {
-  display: block;
-  margin-top: -6px;
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.66);
-}
-
-.cam-views {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 12px;
-}
-.cam-view {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 6px 6px 4px;
-  width: 84px;
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
-}
-.cam-view:hover {
-  border-color: rgba(255, 255, 255, 0.45);
-}
-.cam-view.is-on {
-  border-color: #ffffff;
-  background: rgba(255, 255, 255, 0.18);
-}
-.cam-view img {
-  width: 100%;
-  height: 44px;
-  object-fit: cover;
-  border-radius: 7px;
-  display: block;
-}
-.cam-view em {
-  display: block;
-  margin-top: 4px;
-  font-style: normal;
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* "Hepsi" — the reference's All checkbox, top right of the panel. */
-.cam-all {
-  float: right;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-body-active), sans-serif;
-  font-size: 13px;
-  font-weight: 500;
+  gap: calc(14 * var(--u));
+  height: calc(44.4 * var(--u));
+  font-size: max(13px, calc(21 * var(--u)));
   color: rgba(255, 255, 255, 0.86);
   cursor: pointer;
 }
-.cam-all input {
+.cam-panel-title + .cam-radio {
+  margin-top: calc(15 * var(--u));
+}
+.cam-radio input {
   appearance: none;
-  width: 17px;
-  height: 17px;
-  border-radius: 4px;
-  border: 1.6px solid rgba(255, 255, 255, 0.6);
-  display: grid;
-  place-content: center;
+  margin: 0;
+  flex: none;
+  width: max(16px, calc(26 * var(--u)));
+  height: max(16px, calc(26 * var(--u)));
+  border-radius: 50%;
+  border: max(2px, calc(3 * var(--u))) solid #96acce;
+  background: transparent;
   cursor: pointer;
   transition:
     background 0.2s ease,
     border-color 0.2s ease;
 }
+.cam-radio input:checked {
+  background: #79bef8;
+  border-color: #c9d6ea;
+}
+.cam-radio input:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.cam-radio:has(input:checked) {
+  color: #fff;
+  font-weight: 700;
+}
+
+.cam-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: calc(10.6 * var(--u));
+  margin-top: calc(24 * var(--u));
+}
+.cam-chip {
+  flex: 1 1 0;
+  min-width: 0;
+  height: max(24px, calc(35 * var(--u)));
+  padding: 0 calc(19 * var(--u));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(6 * var(--u));
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: var(--font-body-active), sans-serif;
+  font-size: max(12px, calc(19 * var(--u)));
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+.cam-chips.is-tight .cam-chip {
+  flex: 0 1 auto;
+  padding: 0 calc(11 * var(--u));
+}
+.cam-chip:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.cam-chip.is-on {
+  background: #6cb8f7;
+  border-color: #6cb8f7;
+}
+
+/* ---- the model panel ---- */
+.cam-p-teeth {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.cam-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(31 * var(--u)) calc(37 * var(--u)) 0 calc(38 * var(--u));
+}
+.cam-all {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  font-size: max(13px, calc(21 * var(--u)));
+  color: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+}
+.cam-all input {
+  appearance: none;
+  margin: 0;
+  width: max(15px, calc(24 * var(--u)));
+  height: max(15px, calc(24 * var(--u)));
+  border-radius: calc(4 * var(--u));
+  border: max(1.5px, calc(2.4 * var(--u))) solid #b7c6de;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+}
 .cam-all input::after {
   content: "";
-  width: 9px;
-  height: 5px;
-  border-left: 2px solid #1c62c8;
-  border-bottom: 2px solid #1c62c8;
+  width: 42%;
+  height: 22%;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
   rotate: -45deg;
-  translate: 0 -1px;
-  transform: scale(0);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  translate: 0 -15%;
+  scale: 0;
+  transition: scale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .cam-all input:checked {
-  background: #d3f7fe;
-  border-color: #fff;
+  background: #6cb8f7;
+  border-color: #6cb8f7;
 }
 .cam-all input:checked::after {
-  transform: scale(1);
+  scale: 1;
 }
-.cam-tooth {
-  fill: rgba(255, 255, 255, 0.24);
-  stroke: rgba(255, 255, 255, 0.5);
-  stroke-width: 1;
-  cursor: pointer;
-  transition:
-    fill 0.22s ease,
-    stroke 0.22s ease;
-}
-.cam-tooth:hover {
-  fill: rgba(255, 255, 255, 0.45);
-}
-/* The same blue as a selected crown in the front view — one colour means "chosen". */
-.cam-tooth.is-on {
-  fill: #4aa3f5;
-  stroke: #ffffff;
+.cam-all input:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
-.cam-arch-label {
+/* The stage runs 84 → 500 in the reference panel, edge to edge. Everything on it is a
+   share of its own box, so the model, the arc and its label keep their places. */
+.cam-stage {
+  position: relative;
+  aspect-ratio: 694 / 416;
+  margin-top: calc(17 * var(--u));
+}
+.cam-orbit {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: 70.2%;
+  height: auto;
+  overflow: visible;
+}
+.cam-orbit path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.36);
+  stroke-width: 1.2;
+}
+.cam-orbit circle {
   fill: rgba(255, 255, 255, 0.55);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  font-family: var(--font-body-active), sans-serif;
 }
-.cam-chart-note {
-  margin: 14px 0 0;
-  font-size: 13px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.78);
-  min-height: 2.6em;
+.cam-orbit-label {
+  position: absolute;
+  left: 50%;
+  top: 93.5%;
+  translate: -50% -50%;
+  padding: 0 calc(10 * var(--u));
+  background: #3f65a3;
+  font-size: max(12px, calc(21 * var(--u)));
+  color: rgba(255, 255, 255, 0.88);
+  white-space: nowrap;
 }
-
-/* The result panel is blue like the others; everything inside it is a white card. */
-.cam-result {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.cam-model {
+  position: absolute;
+  left: 23.78%;
+  top: 3.1%;
+  width: 52.45%;
+  aspect-ratio: 1;
 }
-.cam-result-row {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: 1fr 1fr;
-  align-items: stretch;
-}
-.cam-result-row > .cam-card-sm {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.cam-card-sm {
-  background: #fff;
-  border-radius: 13px;
-  padding: 15px 16px;
-  color: var(--ink);
-  min-width: 0;
-}
-.cam-card-sm h4 {
-  margin: 0 0 12px;
-  font-family: var(--font-display-active), sans-serif;
-  font-size: 14.5px;
-  font-weight: 700;
-  letter-spacing: -0.012em;
-  color: var(--ink);
-}
-.cam-gauge {
+.cam-model img {
   display: block;
   width: 100%;
-  max-width: 172px;
-  margin: 0 auto;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
 }
-.cam-gauge-track {
-  stroke: #e3ebf6;
+.cam-teeth {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.cam-t {
+  fill: #fff;
+  fill-opacity: 0;
+  stroke: #fff;
+  stroke-opacity: 0;
+  stroke-width: 2;
+  cursor: pointer;
+  pointer-events: all;
+  transition:
+    fill-opacity 0.3s ease,
+    stroke-opacity 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.cam-t.is-on {
+  fill-opacity: 0.82;
+}
+/* :focus and not only :focus-visible — see Model in Planner.tsx. */
+.cam-t:focus {
+  outline: none;
+}
+.cam-t:focus-visible {
+  stroke-opacity: 0.95;
+}
+
+.cam-views {
+  display: flex;
+  justify-content: center;
+  gap: calc(22 * var(--u));
+  margin-top: auto;
+  padding: calc(18 * var(--u)) 0 calc(35 * var(--u));
+}
+.cam-view {
+  width: max(64px, calc(110 * var(--u)));
+  aspect-ratio: 1;
+  padding: calc(8 * var(--u));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: calc(14 * var(--u));
+  background: rgba(255, 255, 255, 0.13);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+.cam-view:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+}
+.cam-view.is-on {
+  border-color: rgba(255, 255, 255, 0.55);
+}
+.cam-view img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ---- the result panel ---- */
+.cam-p-result {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: calc(34 * var(--u));
+}
+.cam-network {
+  position: absolute;
+  right: calc(-60 * var(--u));
+  top: calc(40 * var(--u));
+  width: calc(200 * var(--u));
+  height: auto;
+  pointer-events: none;
+}
+.cam-network path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 2;
+}
+.cam-network circle {
+  fill: rgba(255, 255, 255, 0.08);
+}
+.cam-cards {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(16 * var(--u));
+  margin-top: calc(24.6 * var(--u));
+}
+@media (min-width: 1100px) {
+  .cam-cards {
+    grid-template-rows: 181fr 126fr 198fr;
+  }
+}
+.cam-card {
+  position: relative;
+  min-width: 0;
+  background: #fff;
+  border-radius: calc(12 * var(--u));
+  padding: calc(14 * var(--u)) calc(14.4 * var(--u));
+  color: #1b3e80;
+}
+.cam-card h4 {
+  margin: 0;
+  font-family: var(--font-display-active), sans-serif;
+  font-size: max(13px, calc(20 * var(--u)));
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: #1b3e80;
+  white-space: nowrap;
+}
+.cam-c-people {
+  grid-column: 1 / -1;
+}
+
+.cam-gauge {
+  position: absolute;
+  left: 50%;
+  top: calc(54 * var(--u));
+  translate: -50% 0;
+  width: calc(152 * var(--u));
+  height: auto;
+  overflow: visible;
+}
+.cam-gauge path {
+  fill: none;
+  stroke-width: 10;
+}
+.cam-gauge-rest {
+  stroke: #0e3474;
 }
 .cam-gauge-fill {
   stroke: url(#cam-gauge-grad);
   transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.cam-gauge-value {
-  fill: var(--ink);
-  font-family: var(--font-display-active), sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-}
-.cam-gauge-end {
-  fill: var(--muted);
-  font-size: 8.5px;
-  font-family: var(--font-body-active), sans-serif;
-}
-.cam-card-note {
-  margin: 8px 0 0;
-  font-size: 11.5px;
-  color: var(--muted);
-  text-align: center;
-}
-.cam-blocks {
+.cam-segments {
   display: flex;
-  gap: 4px;
-  margin-bottom: 12px;
+  gap: calc(3.5 * var(--u));
+  margin-top: calc(26 * var(--u));
+  height: calc(22.4 * var(--u));
 }
-.cam-blocks i {
+.cam-segments i {
   flex: 1;
-  height: 22px;
-  border-radius: 4px;
-  background: #e3ebf6;
+  border-radius: calc(3 * var(--u));
+  background: #e7eef8;
   transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.cam-blocks i.is-on {
-  background: #2f83e8;
+.cam-segments i.is-on {
+  background: linear-gradient(180deg, #3b95ee, #1e6fd9);
 }
-.cam-card-big {
-  font-family: var(--font-display-active), sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
+.cam-pill {
+  position: absolute;
+  left: calc(14.4 * var(--u));
+  right: calc(14.4 * var(--u));
+  bottom: calc(17 * var(--u));
+  height: calc(47 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: calc(8 * var(--u));
+  background: #eef4fb;
   text-align: center;
-  font-variant-numeric: tabular-nums;
 }
-.cam-suggest {
+.cam-pill b {
+  font-family: var(--font-display-active), sans-serif;
+  font-size: max(12px, calc(17 * var(--u)));
+  font-weight: 500;
+  line-height: 1.15;
+  color: #1b3e80;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cam-pill small {
+  font-size: max(10px, calc(13 * var(--u)));
+  line-height: 1.2;
+  color: #6d7f99;
+  white-space: nowrap;
+}
+.cam-pill-ends {
+  position: absolute;
+  inset: calc(7 * var(--u)) calc(12 * var(--u)) auto;
+  display: flex;
+  justify-content: space-between;
+}
+.cam-pill-ends i {
+  font-style: normal;
+  font-size: max(9px, calc(11 * var(--u)));
+  color: #8a9ab5;
+}
+
+.cam-c-people ul {
+  list-style: none;
+  margin: calc(13 * var(--u)) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(16 * var(--u));
+}
+.cam-c-people li {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: calc(8 * var(--u));
+  min-width: 0;
 }
-.cam-suggest img {
-  width: 44px;
-  height: 44px;
+/* One specialist takes the whole row, so a long branch name stays on one line. */
+.cam-c-people li:only-child {
+  grid-column: 1 / -1;
+}
+.cam-c-people img {
+  flex: none;
+  width: calc(58 * var(--u));
+  height: calc(58 * var(--u));
   border-radius: 50%;
   object-fit: cover;
-  flex: none;
+  background: #dfe8f3;
 }
-.cam-suggest b {
+.cam-c-people span {
+  min-width: 0;
+}
+.cam-c-people b {
   display: block;
-  font-size: 14.5px;
-  color: var(--ink);
+  font-size: max(12px, calc(17 * var(--u)));
+  font-weight: 600;
+  color: #1b3e80;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.cam-suggest span {
-  font-size: 12.5px;
-  color: var(--muted);
+.cam-c-people small {
+  display: block;
+  margin-top: calc(3 * var(--u));
+  font-size: max(10px, calc(14.5 * var(--u)));
+  line-height: 1.25;
+  color: #7a8ba6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.cam-steps-list {
-  margin: 0;
-  padding-left: 1.1em;
+
+.cam-c-steps ul {
+  list-style: none;
+  margin: calc(14 * var(--u)) 0 0;
+  padding: 0;
   display: grid;
-  gap: 7px;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--ink-soft);
+  gap: calc(8 * var(--u));
 }
-.cam-many {
-  margin: 0;
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: #d3f7fe;
+.cam-c-steps li {
+  position: relative;
+  padding-left: calc(15 * var(--u));
+  font-size: max(11px, calc(14.5 * var(--u)));
+  white-space: nowrap;
+  line-height: 1.3;
+  color: #33435c;
 }
-.cam-plan-cta {
-  justify-content: center;
-  font-size: 14px;
-  padding: 14px 22px;
+.cam-c-steps li::before {
+  content: "";
+  position: absolute;
+  left: calc(2 * var(--u));
+  top: 0.5em;
+  width: calc(6 * var(--u));
+  height: calc(6 * var(--u));
+  border-radius: 50%;
+  background: #1d7ce0;
 }
-.cam-note {
-  margin: 0;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 12px;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.74);
+
+.cam-c-send {
+  display: flex;
+  flex-direction: column;
+}
+.cam-send-sum {
+  margin: calc(12 * var(--u)) 0 0;
+  padding: calc(3 * var(--u)) calc(10 * var(--u));
+  border-radius: calc(5 * var(--u));
+  background: #eef4fb;
+  font-size: max(11px, calc(14 * var(--u)));
+  line-height: 1.4;
+  color: #1b3e80;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cam-send-note {
+  margin: calc(8 * var(--u)) 0 0;
+  font-size: max(9.5px, calc(12 * var(--u)));
+  line-height: 1.35;
+  color: #7a8ba6;
+}
+.cam-send {
+  order: 3;
+  margin-top: auto;
+  display: grid;
+  place-items: center;
+  height: calc(50 * var(--u));
+  min-height: 32px;
+  border-radius: calc(8 * var(--u));
+  background: linear-gradient(180deg, #3b8ff0, #1d6fe0);
+  color: #fff;
+  font-family: var(--font-body-active), sans-serif;
+  font-size: max(12px, calc(17 * var(--u)));
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 calc(6 * var(--u)) calc(16 * var(--u)) rgba(29, 111, 224, 0.28);
+  transition: filter 0.2s ease;
+}
+.cam-send:hover {
+  filter: brightness(1.06);
+}
+
+/* Narrow screens: one column, the panels content-sized, the cards two-up. */
+@media (max-width: 1099px) {
+  .cam-p-teeth .cam-stage {
+    margin-top: 8px;
+  }
+  .cam-pill {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    margin-top: 10px;
+    height: auto;
+    padding: 8px 6px;
+  }
+  .cam-pill-ends {
+    display: none;
+  }
+  .cam-gauge {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
+    display: block;
+    margin: 10px auto 0;
+    width: 70%;
+  }
+  .cam-c-people ul {
+    grid-template-columns: 1fr;
+  }
+  .cam-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+  .cam-c-steps,
+  .cam-c-send {
+    grid-column: 1 / -1;
+  }
+  .cam-send {
+    margin-top: 12px;
+  }
 }
 
 /* ---- before / after ---- */
