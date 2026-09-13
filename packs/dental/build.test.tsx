@@ -68,11 +68,13 @@ describe("what a dental site must not publish", () => {
 
   it("shows no rating, review count or five-star figure — m.5/1-e", () => {
     expect(content.sections.some((section) => section.type === "proof")).toBe(false);
-    // The numbers are in the lead and must not reach the page.
-    expect(html).not.toContain("406");
-    expect(html).not.toContain("değerlendirme");
-    expect(html).not.toContain("5,0");
-    expect(html).not.toMatch(/★/);
+    // Against the rendered text, not the markup: an SVG coordinate can carry any digits,
+    // and a bare substring match on the number found one and failed for the wrong reason.
+    const text = html.replace(/<[^>]*>/g, " ");
+    expect(text).not.toContain("406");
+    expect(text).not.toContain("değerlendirme");
+    expect(text).not.toContain("5,0");
+    expect(text).not.toMatch(/★/);
   });
 
   it("makes no superiority or comparative claim — m.5/1-c", () => {
