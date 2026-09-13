@@ -34,6 +34,7 @@ export function Planner({
   const [goalId, setGoalId] = useState(section.goals[0].id);
   const [methodId, setMethodId] = useState(section.goals[0].methods[0].id);
   const [teeth, setTeeth] = useState<number[]>([]);
+  const [view, setView] = useState<"render" | "schema">("render");
 
   const goal = section.goals.find((candidate) => candidate.id === goalId) ?? section.goals[0];
   const plan = useMemo(
@@ -112,13 +113,50 @@ export function Planner({
           </div>
 
           <div className="cam-panel cam-chart">
-            <div className="cam-panel-title">
+            <p className="cam-panel-title">
               <span className="cam-step">03.</span> Hangi bölge?
-              <button type="button" className="cam-clear" onClick={() => setTeeth([])}>
-                Temizle
+              <label className="cam-all">
+                <input
+                  type="checkbox"
+                  checked={teeth.length === ALL_FDI.length}
+                  onChange={(event) => setTeeth(event.target.checked ? [...ALL_FDI] : [])}
+                />
+                <span>Hepsi</span>
+              </label>
+            </p>
+
+            <ToothPicker view={view} selected={teeth} onToggle={toggleTooth} />
+
+            <div className="cam-arc" aria-hidden="true">
+              <svg viewBox="0 0 260 34" preserveAspectRatio="none">
+                <path d="M4 4 C 70 34, 190 34, 256 4" fill="none" strokeWidth="1" />
+              </svg>
+              <span>{ALL_FDI.length} DİŞ</span>
+            </div>
+
+            <div className="cam-views" role="group" aria-label="Görünüm">
+              <button
+                type="button"
+                className={`cam-view${view === "render" ? " is-on" : ""}`}
+                aria-pressed={view === "render"}
+                onClick={() => setView("render")}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/stock/dental/arch-front.webp" alt="" aria-hidden="true" />
+                <em>Model</em>
+              </button>
+              <button
+                type="button"
+                className={`cam-view${view === "schema" ? " is-on" : ""}`}
+                aria-pressed={view === "schema"}
+                onClick={() => setView("schema")}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/stock/dental/arch-open.webp" alt="" aria-hidden="true" />
+                <em>Şema</em>
               </button>
             </div>
-            <ToothChart selected={teeth} onToggle={toggleTooth} />
+
             <p className="cam-chart-note">
               {teeth.length === 0
                 ? "Diş seçmek isteğe bağlıdır."
@@ -248,17 +286,21 @@ function Gauge({ fraction, label }: { fraction: number; label: string }) {
 }
 
 /* --------------------------------------------------------------------------
-   The chart.
+   The picker.
 
-   Two arches, each walked outward from the midline one tooth at a time, with the
-   angular step taken from that tooth's own width divided by the local speed of the
-   ellipse. Spacing teeth at a uniform angle is what made the first version crowd and
-   overlap at the back, where the arch curves hardest and the molars are widest.
+   The reference does not draw a diagram: it shows a 3D model of both arches with a
+   360° arc under it and two thumbnails that switch the view. So this shows the render,
+   and the selectable teeth are a hit map laid over it.
 
-   The widths and depths below are average adult mesiodistal and bucco-lingual crown
-   dimensions in millimetres, FDI position 1 (central incisor) through 8 (third molar).
-   Using the real numbers is why the shape reads as a jaw: narrow flat incisors at the
-   front, a canine, then premolars and square molars fanning out behind.
+   The map is not placed by eye. It is the same arch model as the schema below, drawn in
+   front projection: a tooth at angle θ around the arch lands at cos θ across the frame,
+   and its crown is foreshortened by |sin θ| — which is why the molars at the edges are
+   slivers and the incisors at the front are full width, exactly as they are in the
+   render. One anatomy, two projections.
+
+   Widths and depths are average adult crown dimensions in millimetres, FDI position 1
+   (central incisor) through 8 (third molar). Using the real numbers is why the schema
+   reads as a jaw rather than as beads on a string.
    -------------------------------------------------------------------------- */
 const UPPER_W = [8.6, 6.6, 7.6, 7.1, 6.6, 10.4, 9.8, 9.0];
 const LOWER_W = [5.3, 5.9, 6.8, 7.0, 7.1, 11.0, 10.5, 9.5];
@@ -269,9 +311,22 @@ const MM = 2.35;
 const GAP = 0.9;
 const ARCH = { cx: 190, rx: 128, ry: 92, upperCy: 140, lowerCy: 200 };
 
-type Tooth = { fdi: number; x: number; y: number; w: number; h: number; r: number; angle: number };
+type Tooth = {
+  fdi: number;
+  /** Occlusal schema, in the 380×340 viewBox. */
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  r: number;
+  angle: number;
+  /** Front projection, as fractions of the render's box. */
+  fx: number;
+  fw: number;
+  upper: boolean;
+};
 
-/** How fast a point moves along the ellipse per radian — the spacing has to divide by it. */
+/** How fast a point moves along the ellipse per radian — the spacing divides by it. */
 function speed(theta: number) {
   return Math.hypot(ARCH.rx * Math.sin(theta), ARCH.ry * Math.cos(theta));
 }
@@ -289,20 +344,21 @@ function buildArch(lower: boolean): Tooth[] {
       const w = widths[position] * MM;
       const h = depths[position] * MM;
       const quadrant = lower ? (side < 0 ? 4 : 3) : side < 0 ? 1 : 2;
-      const x = ARCH.cx + ARCH.rx * Math.cos(theta);
-      const y = cy + ARCH.ry * Math.sin(theta) * (lower ? -1 : 1);
-      const degrees = (theta * 180) / Math.PI + 90;
+      // Angle measured from the midline, which is what the front view projects.
+      const fromFront = theta - Math.PI * 1.5;
       teeth.push({
         fdi: quadrant * 10 + position + 1,
-        x,
-        y,
+        x: ARCH.cx + ARCH.rx * Math.cos(theta),
+        y: cy + ARCH.ry * Math.sin(theta) * (lower ? -1 : 1),
         w,
         h,
         // Incisors are near-rectangular; molars are all but square.
         r: 2 + position * 0.9,
-        angle: lower ? -degrees : degrees,
+        angle: lower ? -((theta * 180) / Math.PI + 90) : (theta * 180) / Math.PI + 90,
+        fx: fromFront,
+        fw: 0,
+        upper: !lower,
       });
-      // Step on by half this tooth and half the next, so neighbours touch and no more.
       const next = widths[Math.min(position + 1, 7)] * MM;
       theta += (side * (w / 2 + next / 2 + GAP)) / speed(theta);
     }
@@ -311,51 +367,127 @@ function buildArch(lower: boolean): Tooth[] {
 }
 
 const TEETH = [...buildArch(false), ...buildArch(true)];
+export const ALL_FDI = TEETH.map((tooth) => tooth.fdi);
 
-function ToothChart({
+/**
+ * Where the crowns actually are in the render, measured off it rather than guessed:
+ * the silhouette of the tooth mass spans 0.043–0.954 across, the upper crowns run
+ * 0.289–0.429 down and the lower 0.431–0.515 at the midline, where the uppers overlap
+ * them. Every number below came from sampling the image.
+ */
+const ROW = {
+  left: 0.045,
+  right: 0.952,
+  upperY: 0.359,
+  upperH: 0.132,
+  lowerY: 0.497,
+  lowerH: 0.104,
+};
+
+/**
+ * Project one row of sixteen teeth onto the front view and tile it.
+ *
+ * A tooth at angle θ around the arch lands at sin θ across the frame. Rather than draw
+ * each crown at its own width — which leaves gaps a click can fall into, and which was
+ * landing a few pixels off anyway — the slices meet at the midpoints between
+ * neighbours, so the row is covered end to end and the nearest tooth always wins.
+ */
+function projectRow(row: Tooth[]): { fdi: number; x0: number; x1: number }[] {
+  const withX = row
+    .map((tooth) => ({ fdi: tooth.fdi, sin: Math.sin(tooth.fx) }))
+    .sort((a, b) => a.sin - b.sin);
+  const reach = Math.max(...withX.map((t) => Math.abs(t.sin)));
+  const half = (ROW.right - ROW.left) / 2;
+  const centre = (ROW.right + ROW.left) / 2;
+  const xs = withX.map((t) => centre + (t.sin / reach) * half);
+  return withX.map((t, i) => ({
+    fdi: t.fdi,
+    x0: i === 0 ? ROW.left : (xs[i - 1] + xs[i]) / 2,
+    x1: i === xs.length - 1 ? ROW.right : (xs[i] + xs[i + 1]) / 2,
+  }));
+}
+
+const FRONT = [
+  ...projectRow(TEETH.filter((t) => t.upper)).map((s) => ({ ...s, upper: true })),
+  ...projectRow(TEETH.filter((t) => !t.upper)).map((s) => ({ ...s, upper: false })),
+];
+
+function ToothPicker({
+  view,
   selected,
   onToggle,
 }: {
+  view: "render" | "schema";
   selected: number[];
   onToggle: (fdi: number) => void;
 }) {
-  return (
-    <svg className="cam-arch" viewBox="44 8 292 326" role="group" aria-label="Diş şeması">
-      {TEETH.map((tooth) => {
-        const on = selected.includes(tooth.fdi);
-        return (
+  const hit = (tooth: Tooth) => ({
+    onClick: () => onToggle(tooth.fdi),
+    onKeyDown: (event: React.KeyboardEvent) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onToggle(tooth.fdi);
+      }
+    },
+    tabIndex: 0,
+    role: "checkbox" as const,
+    "aria-checked": selected.includes(tooth.fdi),
+    "aria-label": `${tooth.fdi} — ${toothLabel(tooth.fdi)}`,
+  });
+
+  if (view === "schema") {
+    return (
+      <svg className="cam-arch" viewBox="44 8 292 326" role="group" aria-label="Diş şeması">
+        {TEETH.map((tooth) => (
           <g
             key={tooth.fdi}
             transform={`translate(${tooth.x.toFixed(1)} ${tooth.y.toFixed(1)}) rotate(${tooth.angle.toFixed(1)})`}
           >
             <rect
-              className={`cam-tooth${on ? " is-on" : ""}`}
+              className={`cam-tooth${selected.includes(tooth.fdi) ? " is-on" : ""}`}
               x={-tooth.w / 2}
               y={-tooth.h / 2}
               width={tooth.w}
               height={tooth.h}
               rx={tooth.r}
-              tabIndex={0}
-              role="checkbox"
-              aria-checked={on}
-              aria-label={`${tooth.fdi} — ${toothLabel(tooth.fdi)}`}
-              onClick={() => onToggle(tooth.fdi)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onToggle(tooth.fdi);
-                }
-              }}
+              {...hit(tooth)}
             />
           </g>
-        );
-      })}
-      <text className="cam-arch-label" x="190" y="26" textAnchor="middle">
-        ÜST
-      </text>
-      <text className="cam-arch-label" x="190" y="322" textAnchor="middle">
-        ALT
-      </text>
-    </svg>
+        ))}
+        <text className="cam-arch-label" x="190" y="26" textAnchor="middle">
+          ÜST
+        </text>
+        <text className="cam-arch-label" x="190" y="322" textAnchor="middle">
+          ALT
+        </text>
+      </svg>
+    );
+  }
+
+  return (
+    <div className="cam-model">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/stock/dental/arch-front.webp" alt="Üst ve alt çene modeli" />
+      <svg className="cam-hitmap" viewBox="0 0 100 100" preserveAspectRatio="none">
+        {FRONT.map((slice) => {
+          const tooth = TEETH.find((candidate) => candidate.fdi === slice.fdi)!;
+          const y = slice.upper ? ROW.upperY : ROW.lowerY;
+          const h = (slice.upper ? ROW.upperH : ROW.lowerH) * 100;
+          const w = (slice.x1 - slice.x0) * 100;
+          return (
+            <rect
+              key={slice.fdi}
+              className={`cam-hit${selected.includes(slice.fdi) ? " is-on" : ""}`}
+              x={slice.x0 * 100}
+              y={y * 100 - h / 2}
+              width={w}
+              height={h}
+              rx={Math.min(w * 0.3, 2.2)}
+              {...hit(tooth)}
+            />
+          );
+        })}
+      </svg>
+    </div>
   );
 }
