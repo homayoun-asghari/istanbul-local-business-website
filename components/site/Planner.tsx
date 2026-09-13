@@ -3,8 +3,6 @@
 import { useMemo, useState } from "react";
 import type { SectionOf, SiteContent } from "@/lib/content/schema";
 import {
-  FDI_LOWER,
-  FDI_UPPER,
   durationFraction,
   formatRange,
   planFor,
@@ -252,30 +250,67 @@ function Gauge({ fraction, label }: { fraction: number; label: string }) {
 /* --------------------------------------------------------------------------
    The chart.
 
-   Both arches are the same ellipse sampled at sixteen points; the lower one is the
-   upper one flipped. Tooth width grows towards the back because molars are wider than
-   incisors, and each tooth is rotated to face out of the arch, which is what stops the
-   row reading as beads on a string.
-   -------------------------------------------------------------------------- */
-const CHART = { cx: 190, cy: 132, rx: 150, ry: 96, from: 196, to: 344, mirror: 320 };
+   Two arches, each walked outward from the midline one tooth at a time, with the
+   angular step taken from that tooth's own width divided by the local speed of the
+   ellipse. Spacing teeth at a uniform angle is what made the first version crowd and
+   overlap at the back, where the arch curves hardest and the molars are widest.
 
-function toothGeometry(index: number, count: number, lower: boolean) {
-  const t = count === 1 ? 0.5 : index / (count - 1);
-  const degrees = CHART.from + (CHART.to - CHART.from) * t;
-  const radians = (degrees * Math.PI) / 180;
-  const x = CHART.cx + CHART.rx * Math.cos(radians);
-  const upper = CHART.cy + CHART.ry * Math.sin(radians);
-  // Distance from the midline, 0 at the central incisors and 1 at the wisdom teeth.
-  const fromMidline = Math.abs(t - 0.5) * 2;
-  return {
-    x,
-    // The lower arch is the upper one reflected, which is what the two jaws are.
-    y: lower ? CHART.mirror - upper : upper,
-    width: 15 + fromMidline * 10,
-    height: 20 + fromMidline * 7,
-    angle: (degrees + 90) * (lower ? -1 : 1),
-  };
+   The widths and depths below are average adult mesiodistal and bucco-lingual crown
+   dimensions in millimetres, FDI position 1 (central incisor) through 8 (third molar).
+   Using the real numbers is why the shape reads as a jaw: narrow flat incisors at the
+   front, a canine, then premolars and square molars fanning out behind.
+   -------------------------------------------------------------------------- */
+const UPPER_W = [8.6, 6.6, 7.6, 7.1, 6.6, 10.4, 9.8, 9.0];
+const LOWER_W = [5.3, 5.9, 6.8, 7.0, 7.1, 11.0, 10.5, 9.5];
+const UPPER_D = [7.1, 6.4, 8.0, 9.2, 9.2, 11.3, 11.3, 10.5];
+const LOWER_D = [5.9, 6.3, 7.9, 7.9, 8.7, 10.7, 10.5, 9.8];
+
+const MM = 2.35;
+const GAP = 0.9;
+const ARCH = { cx: 190, rx: 128, ry: 92, upperCy: 140, lowerCy: 200 };
+
+type Tooth = { fdi: number; x: number; y: number; w: number; h: number; r: number; angle: number };
+
+/** How fast a point moves along the ellipse per radian — the spacing has to divide by it. */
+function speed(theta: number) {
+  return Math.hypot(ARCH.rx * Math.sin(theta), ARCH.ry * Math.cos(theta));
 }
+
+function buildArch(lower: boolean): Tooth[] {
+  const widths = lower ? LOWER_W : UPPER_W;
+  const depths = lower ? LOWER_D : UPPER_D;
+  const cy = lower ? ARCH.lowerCy : ARCH.upperCy;
+  const teeth: Tooth[] = [];
+
+  for (const side of [-1, 1] as const) {
+    // Start half a central incisor from the midline, so the two of them straddle it.
+    let theta = Math.PI * 1.5 + ((side * (widths[0] * MM)) / 2 + GAP) / speed(Math.PI * 1.5);
+    for (let position = 0; position < 8; position++) {
+      const w = widths[position] * MM;
+      const h = depths[position] * MM;
+      const quadrant = lower ? (side < 0 ? 4 : 3) : side < 0 ? 1 : 2;
+      const x = ARCH.cx + ARCH.rx * Math.cos(theta);
+      const y = cy + ARCH.ry * Math.sin(theta) * (lower ? -1 : 1);
+      const degrees = (theta * 180) / Math.PI + 90;
+      teeth.push({
+        fdi: quadrant * 10 + position + 1,
+        x,
+        y,
+        w,
+        h,
+        // Incisors are near-rectangular; molars are all but square.
+        r: 2 + position * 0.9,
+        angle: lower ? -degrees : degrees,
+      });
+      // Step on by half this tooth and half the next, so neighbours touch and no more.
+      const next = widths[Math.min(position + 1, 7)] * MM;
+      theta += (side * (w / 2 + next / 2 + GAP)) / speed(theta);
+    }
+  }
+  return teeth;
+}
+
+const TEETH = [...buildArch(false), ...buildArch(true)];
 
 function ToothChart({
   selected,
@@ -284,49 +319,41 @@ function ToothChart({
   selected: number[];
   onToggle: (fdi: number) => void;
 }) {
-  const rows: { teeth: readonly number[]; lower: boolean }[] = [
-    { teeth: FDI_UPPER, lower: false },
-    { teeth: FDI_LOWER, lower: true },
-  ];
-
   return (
-    <svg className="cam-arch" viewBox="0 0 380 320" role="group" aria-label="Diş şeması">
-      {rows.map(({ teeth, lower }) =>
-        teeth.map((fdi, index) => {
-          const geometry = toothGeometry(index, teeth.length, lower);
-          const on = selected.includes(fdi);
-          return (
-            <g
-              key={fdi}
-              transform={`translate(${geometry.x.toFixed(1)} ${geometry.y.toFixed(1)}) rotate(${geometry.angle.toFixed(1)})`}
-            >
-              <rect
-                className={`cam-tooth${on ? " is-on" : ""}`}
-                x={-geometry.width / 2}
-                y={-geometry.height / 2}
-                width={geometry.width}
-                height={geometry.height}
-                rx={geometry.width * 0.36}
-                tabIndex={0}
-                role="checkbox"
-                aria-checked={on}
-                aria-label={`${fdi} — ${toothLabel(fdi)}`}
-                onClick={() => onToggle(fdi)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    onToggle(fdi);
-                  }
-                }}
-              />
-            </g>
-          );
-        }),
-      )}
-      <text className="cam-arch-label" x="190" y="14" textAnchor="middle">
+    <svg className="cam-arch" viewBox="44 8 292 326" role="group" aria-label="Diş şeması">
+      {TEETH.map((tooth) => {
+        const on = selected.includes(tooth.fdi);
+        return (
+          <g
+            key={tooth.fdi}
+            transform={`translate(${tooth.x.toFixed(1)} ${tooth.y.toFixed(1)}) rotate(${tooth.angle.toFixed(1)})`}
+          >
+            <rect
+              className={`cam-tooth${on ? " is-on" : ""}`}
+              x={-tooth.w / 2}
+              y={-tooth.h / 2}
+              width={tooth.w}
+              height={tooth.h}
+              rx={tooth.r}
+              tabIndex={0}
+              role="checkbox"
+              aria-checked={on}
+              aria-label={`${tooth.fdi} — ${toothLabel(tooth.fdi)}`}
+              onClick={() => onToggle(tooth.fdi)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onToggle(tooth.fdi);
+                }
+              }}
+            />
+          </g>
+        );
+      })}
+      <text className="cam-arch-label" x="190" y="26" textAnchor="middle">
         ÜST
       </text>
-      <text className="cam-arch-label" x="190" y="312" textAnchor="middle">
+      <text className="cam-arch-label" x="190" y="322" textAnchor="middle">
         ALT
       </text>
     </svg>

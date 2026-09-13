@@ -1240,8 +1240,27 @@ h3 {
   gap: clamp(10px, 1.2vw, 16px);
 }
 @media (min-width: 820px) {
+  /* An accordion, not a grid: hovering one tile has to take room from the others. */
   .cam-treat-grid {
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    height: clamp(340px, 30vw, 440px);
+  }
+  .cam-treat {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 100%;
+    transition: flex-grow 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cam-treat:hover,
+  .cam-treat:focus-within {
+    flex-grow: 2.5;
+  }
+  /* Specificity, not source order: the base rule that sets the ratio comes later in
+     the file, and a media query adds none of its own. Left as-is the ratio won the
+     cascade, forced a 330px figure inside a 210px item, and ate the gaps. */
+  .cam-treat .cam-treat-figure {
+    aspect-ratio: auto;
+    width: 100%;
   }
 }
 .cam-treat-figure {
@@ -1252,46 +1271,99 @@ h3 {
   aspect-ratio: 3 / 4;
   background: #123f7d;
   display: block;
+  height: 100%;
 }
 .cam-treat-figure img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Held left of centre so the object stays put as the tile widens. */
+  object-position: 50% center;
   display: block;
-  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    object-position 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .cam-treat-figure figcaption {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
+  z-index: 2;
+  transition: opacity 0.35s ease;
   padding: 30px 16px 16px;
   background: linear-gradient(180deg, transparent, rgba(4, 22, 52, 0.8));
   color: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
 }
-.cam-treat-figure b {
+.cam-treat-figure figcaption b {
   font-size: 14.5px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
-.cam-treat-figure span {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.4;
+/* Slides in from the right of the object as the tile opens. */
+.cam-treat-reveal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 48%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 9px;
+  padding: 22px 22px 22px 16px;
+  background: rgba(7, 33, 72, 0.82);
+  backdrop-filter: blur(12px);
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  opacity: 0;
+  translate: 14px 0;
+  transition:
+    opacity 0.45s ease,
+    translate 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.cam-treat {
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+.cam-treat-reveal b {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
 }
-.cam-treat.is-lifted {
-  transform: translateY(-16px);
+.cam-treat-reveal p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.84);
 }
-.cam-treat:hover {
-  transform: translateY(-20px);
+@media (min-width: 820px) {
+  .cam-treat:hover .cam-treat-reveal,
+  .cam-treat:focus-within .cam-treat-reveal {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .cam-treat:hover .cam-treat-figure figcaption,
+  .cam-treat:focus-within .cam-treat-figure figcaption {
+    opacity: 0;
+  }
+  /* As the tile opens the object slides left, out from under the panel. */
+  .cam-treat:hover .cam-treat-figure img,
+  .cam-treat:focus-within .cam-treat-figure img {
+    object-position: 18% center;
+    transform: scale(1.06);
+  }
 }
-.cam-treat:hover img {
-  transform: scale(1.07);
+@media (max-width: 819px) {
+  /* No hover to speak of on a phone, so the description is simply always there. */
+  .cam-treat-reveal {
+    position: static;
+    width: auto;
+    opacity: 1;
+    translate: none;
+    background: none;
+    padding: 0 16px 16px;
+  }
+  .cam-treat-reveal b {
+    display: none;
+  }
 }
 
 /* ---- specialists ---- */
@@ -1575,14 +1647,15 @@ h3 {
 .cam-arch {
   width: 100%;
   height: auto;
-  max-width: 460px;
+  max-width: 420px;
+  overflow: visible;
   margin: 6px auto 0;
   display: block;
 }
 .cam-tooth {
-  fill: rgba(255, 255, 255, 0.22);
-  stroke: rgba(255, 255, 255, 0.45);
-  stroke-width: 1.2;
+  fill: rgba(255, 255, 255, 0.24);
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1;
   cursor: pointer;
   transition:
     fill 0.22s ease,
