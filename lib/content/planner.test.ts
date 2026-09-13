@@ -107,7 +107,31 @@ describe("the treatment planner", () => {
   });
 
   it("leaves the region line out when no tooth was picked", () => {
-    const plan = planFor(planner, { goalId: "kontrol", methodId: "muayene", teeth: [] })!;
+    const plan = planFor(planner, { goalId: "renk", methodId: "beyazlatma", teeth: [] })!;
     expect(plannerMessage(content, plan)).not.toContain("Bölge:");
+  });
+
+  it("says whether this is the visitor's first visit, and only when they answered", () => {
+    const plan = planFor(planner, { goalId: "eksik", methodId: "implant", teeth: [] })!;
+    expect(plannerMessage(content, plan, { firstVisit: true })).toContain("ilk kez");
+    expect(plannerMessage(content, plan, { firstVisit: false })).toContain("Daha önce");
+    expect(plannerMessage(content, plan)).not.toMatch(/ilk kez|Daha önce/);
+  });
+
+  it("offers four goals, each with a chip row short enough to stay on one line", () => {
+    expect(planner.goals).toHaveLength(4);
+    for (const goal of planner.goals) {
+      const letters = goal.methods.reduce((sum, method) => sum + method.label.length, 0);
+      expect(letters).toBeLessThanOrEqual(26);
+    }
+  });
+
+  it("keeps every step to one line of a half-width result card", () => {
+    for (const goal of planner.goals) {
+      for (const method of goal.methods) {
+        expect(method.steps.length).toBeLessThanOrEqual(4);
+        for (const step of method.steps) expect(step.length).toBeLessThanOrEqual(24);
+      }
+    }
   });
 });

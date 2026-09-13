@@ -51,6 +51,11 @@ const TREATMENTS = [
 /**
  * The planner's data.
  *
+ * Four goals and short method labels, because the planner is laid out like the
+ * reference: one line of radios per goal and one row of chips per method. A check-up was
+ * the fifth goal and is not a treatment plan; "Lamina (yaprak porselen)" wrapped the
+ * chip row onto a second line.
+ *
  * Visit counts and durations are information about a procedure — how many times you sit
  * in the chair and over how long. They are not prices, and nothing here may become one.
  * Ranges are wide on purpose: a narrow range read as a promise would be a claim.
@@ -68,10 +73,10 @@ const GOALS = [
         perTooth: true,
         specialist: "Ağız, Diş ve Çene Cerrahisi",
         steps: [
-          "Muayene ve 3B tomografi ile planlama",
-          "İmplantın yerleştirilmesi",
-          "Kaynama süresi boyunca kontroller",
-          "Üst yapının ölçüsü ve takılması",
+          "3B tomografi ile plan",
+          "İmplant yerleştirme",
+          "Kaynama kontrolleri",
+          "Kron ve üst yapı",
         ],
       },
       {
@@ -81,11 +86,7 @@ const GOALS = [
         weeks: [2, 4] as [number, number],
         perTooth: false,
         specialist: "Protetik Diş Tedavisi",
-        steps: [
-          "Muayene ve komşu dişlerin değerlendirilmesi",
-          "Ölçü alınması ve renk seçimi",
-          "Provalar ve yapıştırma",
-        ],
+        steps: ["Komşu diş muayenesi", "Ölçü ve renk seçimi", "Prova ve yapıştırma"],
       },
       {
         id: "protez",
@@ -94,7 +95,7 @@ const GOALS = [
         weeks: [3, 6] as [number, number],
         perTooth: false,
         specialist: "Protetik Diş Tedavisi",
-        steps: ["Ağız içi ölçü ve planlama", "Prova seansları", "Teslim ve uyum kontrolleri"],
+        steps: ["Ağız içi ölçü", "Prova seansları", "Teslim ve uyum kontrolü"],
       },
     ],
   },
@@ -110,23 +111,23 @@ const GOALS = [
         perTooth: false,
         specialist: "Ortodonti",
         steps: [
-          "Ağız içi tarama ve tedavi simülasyonu",
-          "Plakların hazırlanması",
-          "Her plak değişiminde kontrol",
+          "Ağız içi tarama",
+          "Tedavi simülasyonu",
+          "Plak değişim kontrolü",
           "Pekiştirme dönemi",
         ],
       },
       {
         id: "braket",
-        label: "Braket ve tel",
+        label: "Braket",
         visits: [10, 18] as [number, number],
         weeks: [52, 104] as [number, number],
         perTooth: false,
         specialist: "Ortodonti",
         steps: [
-          "Röntgen ve ortodontik ölçüm",
-          "Braketlerin yapıştırılması",
-          "Dört-altı haftada bir tel ayarı",
+          "Röntgen ve ölçüm",
+          "Braketlerin takılması",
+          "4–6 haftada tel ayarı",
           "Pekiştirme apareyi",
         ],
       },
@@ -143,29 +144,25 @@ const GOALS = [
         weeks: [1, 2] as [number, number],
         perTooth: false,
         specialist: "Restoratif Diş Tedavisi",
-        steps: ["Diş taşı temizliği", "Ofis tipi beyazlatma seansı", "Ev tipi destek ve kontrol"],
+        steps: ["Diş taşı temizliği", "Ofiste beyazlatma", "Ev tipi destek"],
       },
       {
         id: "zirkonyum",
-        label: "Zirkonyum kaplama",
+        label: "Zirkonyum",
         visits: [2, 4] as [number, number],
         weeks: [2, 4] as [number, number],
         perTooth: true,
         specialist: "Protetik Diş Tedavisi",
-        steps: ["Muayene ve renk seçimi", "Dişlerin hazırlanması ve ölçü", "Prova ve yapıştırma"],
+        steps: ["Muayene ve renk seçimi", "Diş hazırlığı ve ölçü", "Prova ve yapıştırma"],
       },
       {
         id: "lamina",
-        label: "Lamina (yaprak porselen)",
+        label: "Lamina",
         visits: [2, 4] as [number, number],
         weeks: [2, 5] as [number, number],
         perTooth: true,
         specialist: "Restoratif Diş Tedavisi",
-        steps: [
-          "Gülüş tasarımı ve dijital önizleme",
-          "Minimum düzeyde diş hazırlığı",
-          "Laminaların yapıştırılması",
-        ],
+        steps: ["Dijital gülüş tasarımı", "Minimal diş hazırlığı", "Lamina yapıştırma"],
       },
     ],
   },
@@ -180,7 +177,7 @@ const GOALS = [
         weeks: [1, 3] as [number, number],
         perTooth: true,
         specialist: "Endodonti",
-        steps: ["Muayene ve röntgen", "Kanalların temizlenmesi ve doldurulması", "Üst dolgu"],
+        steps: ["Muayene ve röntgen", "Kanal temizliği, dolgu", "Üst dolgu"],
       },
       {
         id: "dolgu",
@@ -189,22 +186,7 @@ const GOALS = [
         weeks: [1, 1] as [number, number],
         perTooth: true,
         specialist: "Restoratif Diş Tedavisi",
-        steps: ["Çürüğün temizlenmesi", "Dolgunun yapılması ve cila"],
-      },
-    ],
-  },
-  {
-    id: "kontrol",
-    label: "Genel kontrol istiyorum",
-    methods: [
-      {
-        id: "muayene",
-        label: "Muayene ve diş taşı temizliği",
-        visits: [1, 2] as [number, number],
-        weeks: [1, 1] as [number, number],
-        perTooth: false,
-        specialist: "Periodontoloji",
-        steps: ["Ağız içi muayene", "Gerekirse röntgen", "Diş taşı temizliği ve cila"],
+        steps: ["Çürüğün temizlenmesi", "Dolgu ve cila"],
       },
     ],
   },
