@@ -7,7 +7,7 @@
 
 Vitrin is a production system for selling websites to Istanbul businesses that don't have one.
 One website kernel per industry; each business is a configuration of it, published in minutes
-as a demo at `vitrin.vercel.app/<slug>` and served from Neon. Outreach is WhatsApp, video
+as a demo at `vitrin-liart.vercel.app/<slug>` and served from Neon. Outreach is WhatsApp, video
 first. When a business buys, `npm run eject <slug>` generates a standalone repository the
 client owns — ordinary Next.js, no database, no studio, no other business in it. The whole
 system exists to drive the marginal cost of one more demo close to zero.
