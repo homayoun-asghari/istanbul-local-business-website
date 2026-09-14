@@ -121,3 +121,33 @@ export function RatingLine({ content }: { content: SiteContent }) {
     </p>
   );
 }
+
+/**
+ * The vet presets' navigation, again only for sections the site has. "Acil" leads when
+ * there is an emergency section: on a 7/24 clinic's page it is the link that matters.
+ */
+const VET_NAV: [href: string, label: string, section: SiteContent["sections"][number]["type"]][] = [
+  ["#acil", "Acil", "emergency"],
+  ["#hizmetler", "Hizmetler", "services"],
+  ["#asi-takvimi", "Aşı takvimi", "vaccines"],
+  ["#hekimler", "Hekimler", "team"],
+  ["#sss", "SSS", "faq"],
+  ["#iletisim", "İletişim", "contact"],
+];
+
+export function vetLinks(content: SiteContent) {
+  const present = new Set(content.sections.map((section) => section.type));
+  return VET_NAV.filter(([, , type]) => present.has(type)).map(([href, label]) => ({
+    href,
+    label,
+  }));
+}
+
+/** Every day open from 00:00 to 23:59 — the hours a 7/24 clinic is stored with. */
+export function isAlwaysOpenHours(content: SiteContent): boolean {
+  const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+  return days.every((day) => {
+    const slot = content.hours[day];
+    return slot !== "closed" && slot.open === "00:00" && slot.close === "23:59";
+  });
+}

@@ -76,6 +76,27 @@ export const TURKISH_SAFE_FONTS = {
     cssVariable: "--font-playfair",
     fallback: "Georgia, 'Times New Roman', serif",
   },
+  /** Bracketed book serif with weight to spare. Carries the güneş preset, after VetCare. */
+  "source-serif": {
+    family: "Source Serif 4",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-source-serif",
+    fallback: "Georgia, 'Times New Roman', serif",
+  },
+  /** Narrow sans for navigation, eyebrows and buttons beside that serif. */
+  "barlow-semi": {
+    family: "Barlow Semi Condensed",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-barlow-semi",
+    fallback: "'Arial Narrow', Arial, sans-serif",
+  },
+  /** Geometric sans whose 7 and slash make "7/24" read as a mark. The nabız preset. */
+  poppins: {
+    family: "Poppins",
+    subsets: ["latin", "latin-ext"],
+    cssVariable: "--font-poppins",
+    fallback: "'Helvetica Neue', Arial, sans-serif",
+  },
 } as const satisfies Record<
   string,
   { family: string; subsets: readonly string[]; fallback: string; cssVariable: string }

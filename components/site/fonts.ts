@@ -1,4 +1,5 @@
 import {
+  Barlow_Semi_Condensed,
   Bodoni_Moda,
   Cormorant_Garamond,
   DM_Sans,
@@ -8,6 +9,8 @@ import {
   Marcellus,
   Onest,
   Playfair_Display,
+  Poppins,
+  Source_Serif_4,
 } from "next/font/google";
 
 /**
@@ -81,3 +84,46 @@ export const playfairFont = Playfair_Display({
   weight: ["400", "600", "800"],
   display: "swap",
 });
+
+export const sourceSerifFont = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+});
+
+export const barlowSemiFont = Barlow_Semi_Condensed({
+  variable: "--font-barlow-semi",
+  subsets: ["latin", "latin-ext"],
+  weight: ["500", "600"],
+  display: "swap",
+});
+
+export const poppinsFont = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+/**
+ * Every face above, as the class list the root element needs. The demo host and an
+ * ejected client site both use this one list — an ejected site that only loaded four of
+ * them silently rendered its preset in a fallback face.
+ */
+export const fontVariables = [
+  displayFont,
+  bodyFont,
+  serifAltFont,
+  sansAltFont,
+  geometricFont,
+  marcellusFont,
+  dmSansFont,
+  scriptFont,
+  playfairFont,
+  sourceSerifFont,
+  barlowSemiFont,
+  poppinsFont,
+]
+  .map((font) => font.variable)
+  .join(" ");

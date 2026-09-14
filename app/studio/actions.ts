@@ -77,7 +77,7 @@ export async function buildDemo(_state: string | null, data: FormData): Promise<
   if (!pack) return `No industry pack for "${lead.industry}" yet.`;
 
   try {
-    const content = pack.build({
+    const input = {
       business: lead.business,
       slug: lead.slug,
       phone: lead.phone,
@@ -92,7 +92,8 @@ export async function buildDemo(_state: string | null, data: FormData): Promise<
       district: lead.district,
       lat: lead.lat,
       lng: lead.lng,
-    });
+    };
+    const content = pack.build(input, pack.pickPreset?.(input));
 
     const validated = validate(content);
     if (!validated.ok) {

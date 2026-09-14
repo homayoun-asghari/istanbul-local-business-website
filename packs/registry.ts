@@ -5,7 +5,7 @@ import { BEAUTY_PRESETS } from "./beauty/preset";
 import { VET_PRESETS } from "./vet/preset";
 import { DENTAL_PRESETS } from "./dental/preset";
 import { buildBeautySite } from "./beauty/build";
-import { buildVetSite } from "./vet/build";
+import { buildVetSite, pickVetPreset } from "./vet/build";
 import { buildDentalSite } from "./dental/build";
 
 /**
@@ -19,6 +19,12 @@ export type Pack = {
   label: string;
   presets: Record<string, Preset>;
   build: (lead: BuildInput, preset?: string) => SiteContent;
+  /**
+   * The preset a lead should get when nobody chose one. Without it a demo run spreads
+   * leads across presets by hash — right for salons, wrong for a 7/24 clinic, whose
+   * opening hours are the whole headline of one preset and nowhere in the others.
+   */
+  pickPreset?: (lead: BuildInput) => string;
 };
 
 export const PACKS: Record<PackId, Pack> = {
@@ -28,7 +34,13 @@ export const PACKS: Record<PackId, Pack> = {
     presets: BEAUTY_PRESETS,
     build: buildBeautySite,
   },
-  vet: { id: "vet", label: "Veteriner", presets: VET_PRESETS, build: buildVetSite },
+  vet: {
+    id: "vet",
+    label: "Veteriner",
+    presets: VET_PRESETS,
+    build: buildVetSite,
+    pickPreset: pickVetPreset,
+  },
   dental: {
     id: "dental",
     label: "Ağız ve Diş Sağlığı",

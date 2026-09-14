@@ -15,7 +15,18 @@ export type Preset = {
    * preset shipped with; "chrome" replaces it with a pinned, animated scene in which the
    * business photo does not appear above the fold at all.
    */
-  hero?: "classic" | "chrome" | "kesim" | "gece" | "kemer" | "makro" | "menu" | "sade" | "cam";
+  hero?:
+    | "classic"
+    | "chrome"
+    | "kesim"
+    | "gece"
+    | "kemer"
+    | "makro"
+    | "menu"
+    | "sade"
+    | "cam"
+    | "gunes"
+    | "nabiz";
   /**
    * Photography the preset owns rather than the business.
    *
@@ -24,7 +35,18 @@ export type Preset = {
    * tile strip supplies its own, and because it lives on the preset the ?preset= preview
    * shows the right pictures too instead of the lead's photo in the wrong shape.
    */
-  stock?: { hero: string; heroAlt: string; tiles?: string[]; staff?: string[] };
+  stock?: {
+    hero: string;
+    heroAlt: string;
+    tiles?: string[];
+    staff?: string[];
+    /**
+     * Named pictures a preset's own sections place around the content — the cat that
+     * peeks over the hours card, the dog in the services blob. Decoration the preset
+     * owns, so switching preset switches them too.
+     */
+    extras?: Record<string, string>;
+  };
   tokens: {
     ground: string;
     surface: string;

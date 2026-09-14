@@ -22,6 +22,13 @@ import { Contact } from "./Contact";
 import { ContactBar } from "./ContactBar";
 import { Footer } from "./Footer";
 import { Signals } from "./Signals";
+import { VetServices } from "./VetServices";
+import { VetAbout } from "./VetAbout";
+import { VetEmergency } from "./VetEmergency";
+import { VetTeam } from "./VetTeam";
+import { VetVisit } from "./VetVisit";
+import { Vaccines } from "./Vaccines";
+import { Faq } from "./Faq";
 
 /**
  * The whole render layer, entered here. It takes a validated SiteContent object and a
@@ -44,7 +51,23 @@ export function Site({
     withPresetPhotography(content.sections, preset.stock?.tiles, preset.stock?.staff),
   );
   // The chrome hero carries its own navigation, so the shared header would be a second one.
-  const SALON_HEROES = new Set(["kesim", "gece", "kemer", "makro", "menu", "sade", "cam"]);
+  const SALON_HEROES = new Set([
+    "kesim",
+    "gece",
+    "kemer",
+    "makro",
+    "menu",
+    "sade",
+    "cam",
+    "gunes",
+    "nabiz",
+  ]);
+  /**
+   * The vet presets draw their own services, clinic, team and closing section. Any other
+   * preset showing vet content (a ?preset= preview of klinik, say) falls back to the
+   * shared components, and the two sections only vet content has take the güneş skin.
+   */
+  const vet = preset.hero === "gunes" || preset.hero === "nabiz" ? preset.hero : null;
   const ownsHeader = preset.hero === "chrome" || SALON_HEROES.has(preset.hero ?? "");
   /**
    * Cam is one continuous blue page with every section floating on it as a white card —
@@ -65,7 +88,7 @@ export function Site({
   return (
     <div
       style={presetCssVars(preset) as React.CSSProperties}
-      className={`bg-ground text-ink${sheeted ? " cam-page" : ""}`}
+      className={`bg-ground text-ink${sheeted ? " cam-page" : ""}${vet ? ` vet-page ${vet}-page` : ""}`}
     >
       {ownsHeader ? null : <Header content={content} />}
       <main>
@@ -77,26 +100,56 @@ export function Site({
             case "proof":
               return sheet(<Proof key={key} content={content} />, key);
             case "emergency":
-              return sheet(<Emergency key={key} section={section} content={content} />, key);
+              return sheet(
+                vet && section.signs?.length ? (
+                  <VetEmergency key={key} section={section} content={content} skin={vet} />
+                ) : (
+                  <Emergency key={key} section={section} content={content} />
+                ),
+                key,
+              );
             case "services":
-              return sheet(<Services key={key} section={section} />, key);
+              return sheet(
+                vet ? (
+                  <VetServices key={key} section={section} content={content} skin={vet} />
+                ) : (
+                  <Services key={key} section={section} />
+                ),
+                key,
+              );
             case "about":
-              return sheet(<About key={key} section={section} />, key);
+              return sheet(
+                vet ? (
+                  <VetAbout key={key} section={section} content={content} skin={vet} />
+                ) : (
+                  <About key={key} section={section} />
+                ),
+                key,
+              );
             case "gallery":
               return sheet(<Gallery key={key} section={section} />, key);
             case "hours":
               return sheet(
-                <HoursSection key={key} section={section} content={content} now={now} />,
+                vet ? (
+                  <VetVisit key={key} section={section} content={content} now={now} skin={vet} />
+                ) : (
+                  <HoursSection key={key} section={section} content={content} now={now} />
+                ),
                 key,
               );
             case "contact":
-              return sheet(<Contact key={key} section={section} content={content} />, key);
+              // VetVisit already carries the address and the map.
+              return vet
+                ? null
+                : sheet(<Contact key={key} section={section} content={content} />, key);
             case "pricelist":
               return sheet(<PriceList key={key} section={section} />, key);
             case "team":
               // Cam runs the same people as a carousel that bleeds off the right edge.
               return sheet(
-                preset.hero === "cam" ? (
+                vet ? (
+                  <VetTeam key={key} section={section} content={content} skin={vet} />
+                ) : preset.hero === "cam" ? (
                   <Specialists section={section} />
                 ) : (
                   <Team section={section} />
@@ -115,6 +168,22 @@ export function Site({
               return sheet(<InstagramStrip key={key} section={section} content={content} />, key);
             case "booking":
               return sheet(<Booking key={key} section={section} content={content} />, key);
+            case "vaccines":
+              return sheet(
+                <Vaccines
+                  key={key}
+                  section={section}
+                  content={content}
+                  skin={vet ?? "gunes"}
+                  today={now.toISOString()}
+                />,
+                key,
+              );
+            case "faq":
+              return sheet(
+                <Faq key={key} section={section} content={content} skin={vet ?? "gunes"} />,
+                key,
+              );
           }
         })}
       </main>

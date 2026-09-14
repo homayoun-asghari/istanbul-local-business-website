@@ -25,7 +25,8 @@ async function main() {
       // layout in one week is exactly how a demo reads as a reused template.
       const presets = Object.keys(pack.presets);
       const seed = [...lead.slug].reduce((sum, character) => sum + character.charCodeAt(0), 0);
-      const content = SiteContentSchema.parse(pack.build(lead, presets[seed % presets.length]));
+      const preset = pack.pickPreset?.(lead) ?? presets[seed % presets.length];
+      const content = SiteContentSchema.parse(pack.build(lead, preset));
       await createSite(content);
       await setLeadStatus(lead.id, "published");
       built++;

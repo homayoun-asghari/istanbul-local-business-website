@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { SiteContentSchema } from "@/lib/content/schema";
 import { Site } from "@/components/site/Site";
 import { VET_PRESETS } from "./preset";
-import { buildVetSite } from "./build";
+import { VET_TITLES, buildVetSite, pickVetPreset } from "./build";
 
 /**
  * Not style tests. Law 6343 m.41, as re-enacted by Law 7584 on 11 June 2026, makes
@@ -70,5 +70,74 @@ describe.each(Object.keys(VET_PRESETS))("a vet site on the %s preset", (preset) 
     expect(content.sections.some((section) => section.type === "emergency")).toBe(true);
     expect(html).toContain('data-cta="whatsapp"');
     expect(html).toContain(LEAD.phone);
+  });
+});
+
+const DAYTIME = {
+  ...LEAD,
+  business: "Taurus Veteriner Kliniği",
+  slug: "taurus-veteriner-klinigi",
+  neighborhood: "Cihannüma",
+  district: "Beşiktaş",
+};
+
+describe("the vet templates", () => {
+  it("gives a 7/24 clinic nabız, whose headline is its opening hours", () => {
+    expect(pickVetPreset(LEAD)).toBe("nabiz");
+    expect(["gunes", "nabiz"]).toContain(pickVetPreset(DAYTIME));
+  });
+
+  it("builds every section on both new presets, and none twice", () => {
+    for (const preset of ["gunes", "nabiz"]) {
+      const content = SiteContentSchema.parse(buildVetSite(LEAD, preset));
+      const html = renderToStaticMarkup(<Site content={content} now={now} />);
+      for (const id of [
+        "acil",
+        "hizmetler",
+        "klinik",
+        "asi-takvimi",
+        "hekimler",
+        "sss",
+        "iletisim",
+      ]) {
+        expect(html.split(`id="${id}"`).length - 1, `${preset} #${id}`).toBe(1);
+      }
+    }
+  });
+
+  it("puts 7/24 behind the figure for an always-open clinic, and the district otherwise", () => {
+    const night = renderToStaticMarkup(
+      <Site content={SiteContentSchema.parse(buildVetSite(LEAD, "nabiz"))} now={now} />,
+    );
+    const day = renderToStaticMarkup(
+      <Site content={SiteContentSchema.parse(buildVetSite(DAYTIME, "nabiz"))} now={now} />,
+    );
+    expect(night).toMatch(/class="nb-word"[^>]*>7\/24</);
+    expect(day).toMatch(/class="nb-word"[^>]*>Beşiktaş</);
+  });
+
+  it("writes the district's locative the way Turkish does", () => {
+    const hero = buildVetSite(DAYTIME, "gunes").sections.find((s) => s.type === "hero")!;
+    expect(hero.headline).toBe("Beşiktaş’ta dostunuzun veteriner hekimi");
+  });
+
+  it("shows the emergency checklist only for a clinic that never closes", () => {
+    const night = buildVetSite(LEAD, "gunes").sections.find((s) => s.type === "emergency");
+    const day = buildVetSite(DAYTIME, "gunes").sections.find((s) => s.type === "emergency");
+    expect(night?.signs?.length).toBeGreaterThan(3);
+    expect(day).toBeUndefined();
+  });
+
+  it("marks the vaccine schedule as an example the vet decides", () => {
+    const vaccines = buildVetSite(LEAD, "gunes").sections.find((s) => s.type === "vaccines")!;
+    expect(vaccines.note).toMatch(/Örnek takvim/);
+    expect(vaccines.note).toMatch(/hekim belirler/);
+    expect(vaccines.species.map((s) => s.id)).toEqual(["kopek", "kedi"]);
+  });
+
+  it("titles every clinician from the fixed list — Law 6343 m.41 (ö)", () => {
+    const team = buildVetSite(LEAD, "gunes").sections.find((s) => s.type === "team")!;
+    for (const member of team.members)
+      expect(VET_TITLES as readonly string[]).toContain(member.role);
   });
 });
