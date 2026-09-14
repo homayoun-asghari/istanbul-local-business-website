@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getSite } from "@/lib/db/sites";
 import { DAY_NAMES_TR } from "@/lib/content/hours";
 import { DAY_KEYS } from "@/lib/content/schema";
-import { BEAUTY_PRESETS } from "@/packs/beauty/preset";
+import { PACKS } from "@/packs/registry";
 import { EditorForm } from "./EditorForm";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +27,12 @@ export default async function EditSite({ params }: PageProps<"/studio/[slug]">) 
       slug={slug}
       dayKeys={[...DAY_KEYS]}
       dayNames={DAY_NAMES_TR}
-      presets={Object.values(BEAUTY_PRESETS).map((p) => ({ id: p.id, label: p.label }))}
+      // The site's own pack's templates. Listing the beauty ones for every site showed a
+      // vet or dental page as "Kesim" and would have published it as a salon.
+      presets={Object.values(PACKS[site.content.pack].presets).map((p) => ({
+        id: p.id,
+        label: p.label,
+      }))}
       backLink={<Link href="/studio">← Tüm işletmeler</Link>}
     />
   );
