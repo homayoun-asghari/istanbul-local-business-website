@@ -196,6 +196,21 @@ function sectionFromFields(section: Section, index: number, fields: Fields): Sec
         intro: at("intro", section.intro ?? "") || undefined,
         disclaimer: at("disclaimer", section.disclaimer),
       };
+    // The same for the vaccine timeline's steps and the questions: the studio edits the
+    // words around them, and the shapes come from the pack.
+    case "vaccines":
+      return {
+        ...section,
+        title: at("title", section.title),
+        intro: at("intro", section.intro ?? "") || undefined,
+        note: at("note", section.note),
+      };
+    case "faq":
+      return {
+        ...section,
+        title: at("title", section.title),
+        intro: at("intro", section.intro ?? "") || undefined,
+      };
     case "hours":
     case "contact":
       return { ...section, title: at("title", section.title) };

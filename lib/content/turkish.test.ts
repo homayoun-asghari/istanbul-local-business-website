@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { inflectTime, lastSpokenWord, timeSuffix } from "./turkish";
+import {
+  brandParts,
+  displayName,
+  inflectTime,
+  lastSpokenWord,
+  locative,
+  timeSuffix,
+} from "./turkish";
 
 describe("the last word actually spoken", () => {
   it("reads a single digit", () => {
@@ -60,5 +67,46 @@ describe("vowel harmony on clock times", () => {
         expect(inflectTime(time, "locative")).toMatch(/’(da|de|ta|te)$/);
       }
     }
+  });
+});
+
+describe("locative of a place name", () => {
+  it("harmonises with the last vowel and hardens after a voiceless consonant", () => {
+    expect(locative("Beşiktaş")).toBe("Beşiktaş’ta");
+    expect(locative("Kadıköy")).toBe("Kadıköy’de");
+    expect(locative("Ataşehir")).toBe("Ataşehir’de");
+    expect(locative("Şişli")).toBe("Şişli’de");
+    expect(locative("Bakırköy")).toBe("Bakırköy’de");
+    expect(locative("Esenyurt")).toBe("Esenyurt’ta");
+    expect(locative("Üsküdar")).toBe("Üsküdar’da");
+    expect(locative("Suadiye")).toBe("Suadiye’de");
+    expect(locative("Sarıyer")).toBe("Sarıyer’de");
+  });
+});
+
+describe("compound place names and clinic names", () => {
+  it("buffers the locative of a compound that already carries the possessive", () => {
+    expect(locative("Sakızağacı")).toBe("Sakızağacı’nda");
+    expect(locative("Nişantaşı")).toBe("Nişantaşı’nda");
+    expect(locative("Feneryolu")).toBe("Feneryolu’nda");
+  });
+
+  it("title-cases a name written in capitals, the Turkish way", () => {
+    expect(displayName("KADIKÖY RIHTIM 7/24 VETERİNER")).toBe("Kadıköy Rıhtım 7/24 Veteriner");
+    expect(displayName("KADIKÖY A.T.G VETERİNER KLİNİĞİ")).toBe("Kadıköy A.T.G Veteriner Kliniği");
+    expect(displayName("Vetwise Veteriner Kliniği")).toBe("Vetwise Veteriner Kliniği");
+  });
+
+  it("splits the name people say from the words that say what it is", () => {
+    expect(brandParts("Taurus Veteriner Kliniği")).toEqual(["Taurus", "Veteriner Kliniği"]);
+    expect(brandParts("ESATPAŞA VETERİNER KLİNİĞİ 7/24")).toEqual([
+      "Esatpaşa",
+      "Veteriner Kliniği 7/24",
+    ]);
+    expect(brandParts("Capitol Veteriner Kliniği Bakırköy 7/24")).toEqual([
+      "Capitol",
+      "Veteriner Kliniği Bakırköy 7/24",
+    ]);
+    expect(brandParts("Pettention")).toEqual(["Pettention", ""]);
   });
 });

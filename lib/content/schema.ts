@@ -43,6 +43,20 @@ const ImageSrc = z
     message: "image src must be an http(s) URL or a root-relative path",
   });
 
+/** The vet pack's line icons, drawn in components/site/VetIcons.tsx. */
+export const SERVICE_ICONS = [
+  "muayene",
+  "asi",
+  "laboratuvar",
+  "cerrahi",
+  "dis",
+  "bakim",
+  "cip",
+  "parazit",
+  "kontrol",
+  "acil",
+] as const;
+
 export const ImageSchema = z.object({
   src: ImageSrc,
   alt: z.string().min(1),
@@ -98,7 +112,16 @@ export const SectionSchema = z.discriminatedUnion("type", [
     title: z.string().min(1),
     intro: z.string().optional(),
     items: z
-      .array(z.object({ name: z.string().min(1), description: z.string().optional() }))
+      .array(
+        z.object({
+          name: z.string().min(1),
+          description: z.string().optional(),
+          /** A line icon from the vet pack's own set. Presets without icons ignore it. */
+          icon: z.enum(SERVICE_ICONS).optional(),
+          /** A cut-out photograph for presets that set services on image panels. */
+          image: ImageSchema.optional(),
+        }),
+      )
       .min(1),
     placeholder,
   }),
@@ -106,6 +129,14 @@ export const SectionSchema = z.discriminatedUnion("type", [
     type: z.literal("about"),
     title: z.string().min(1),
     body: z.array(z.string().min(1)).min(1),
+    /**
+     * Plain, checkable facts — the district, the hours, the species seen. Never a figure
+     * that reads as a result: a vet may not advertise (Law 6343 m.41), and "250+ mutlu
+     * dost" is advertising.
+     */
+    facts: z.array(z.string().min(1)).max(6).optional(),
+    /** A second photograph beside the business's own, for presets that pair them. */
+    image: ImageSchema.optional(),
     placeholder,
   }),
   z.object({
@@ -180,6 +211,11 @@ export const SectionSchema = z.discriminatedUnion("type", [
     /** "7/24 Acil" — the whole reason a pet owner opens a vet's site at 3am. */
     title: z.string().min(1),
     note: z.string().min(1),
+    /**
+     * Signs that mean "call now". They exist to get a frightened owner on the phone, not
+     * to diagnose, so every one ends in the same instruction rather than an explanation.
+     */
+    signs: z.array(z.string().min(1)).max(10).optional(),
     placeholder,
   }),
   /**
@@ -287,6 +323,46 @@ export const SectionSchema = z.discriminatedUnion("type", [
         }),
       )
       .min(1),
+    placeholder,
+  }),
+  /**
+   * The vaccine and care timeline — the vet pack's counterpart to the dental planner.
+   *
+   * A visitor picks the species and the month their animal was born, and the steps come
+   * back as dates. The steps are the clinic's own schedule; the pack ships an example and
+   * says so. Like the planner it ends in a WhatsApp message, and it never shows a price.
+   */
+  z.object({
+    type: z.literal("vaccines"),
+    title: z.string().min(1),
+    intro: z.string().optional(),
+    species: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          label: z.string().min(1),
+          steps: z
+            .array(
+              z.object({
+                label: z.string().min(1),
+                /** Weeks after birth. The timeline turns this into a date. */
+                week: z.number().int().nonnegative(),
+                icon: z.enum(SERVICE_ICONS).optional(),
+              }),
+            )
+            .min(1),
+        }),
+      )
+      .min(1),
+    note: z.string().min(1),
+    placeholder,
+  }),
+  z.object({
+    type: z.literal("faq"),
+    title: z.string().min(1),
+    intro: z.string().optional(),
+    items: z.array(z.object({ q: z.string().min(1), a: z.string().min(1) })).min(1),
+    image: ImageSchema.optional(),
     placeholder,
   }),
   z.object({ type: z.literal("hours"), title: z.string().min(1), placeholder }),

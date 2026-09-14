@@ -185,7 +185,7 @@ export default function Page() {
   await writeFile(
     path.join(outDir, "app/layout.tsx"),
     `import type { Metadata } from "next";
-import { bodyFont, displayFont, sansAltFont, serifAltFont } from "@/components/site/fonts";
+import { fontVariables } from "@/components/site/fonts";
 import content from "../site.content.json";
 import "./globals.css";
 
@@ -198,7 +198,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="tr"
-      className={\`\${displayFont.variable} \${bodyFont.variable} \${serifAltFont.variable} \${sansAltFont.variable}\`}
+      className={fontVariables}
     >
       <body>{children}</body>
     </html>
