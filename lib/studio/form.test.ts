@@ -43,6 +43,14 @@ describe("editing a business", () => {
     }
   });
 
+  it("keeps a site on a template from its own pack", () => {
+    const vet = { ...melike, pack: "vet" as const, preset: "gunes" };
+    expect(contentFromFields(vet, { preset: "nabiz" }).preset).toBe("nabiz");
+    // A salon template on a vet site is refused, not saved.
+    expect(contentFromFields(vet, { preset: "kesim" }).preset).toBe("gunes");
+    expect(edit({ preset: "gunes" }).preset).toBe(melike.preset);
+  });
+
   it("drops an emptied Instagram rather than storing an empty string", () => {
     expect(edit({ "business.instagram": "  " }).business.instagram).toBeUndefined();
   });

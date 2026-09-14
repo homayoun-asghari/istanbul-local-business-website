@@ -5,6 +5,7 @@ import {
   type Section,
   type SiteContent,
 } from "@/lib/content/schema";
+import { PACKS } from "@/packs/registry";
 
 /**
  * Turns the studio's flat form fields back into a SiteContent object.
@@ -244,7 +245,11 @@ export function contentFromFields(base: SiteContent, fields: Fields): SiteConten
 
   return {
     ...base,
-    preset: text(fields, "preset", base.preset),
+    // Only a template from the site's own pack. A stale form or a hand-edited request
+    // must not turn a clinic into a salon.
+    preset: ((id) => (id in PACKS[base.pack].presets ? id : base.preset))(
+      text(fields, "preset", base.preset),
+    ),
     business: {
       ...base.business,
       name: text(fields, "business.name", base.business.name),
