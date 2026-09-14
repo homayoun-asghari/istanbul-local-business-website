@@ -51,17 +51,25 @@ export function EditorForm({
           label="Instagram (optional)"
           value={business.instagram ?? ""}
         />
-        <Field name="business.rating" label="Google rating" value={String(business.rating ?? "")} />
-        <Field
-          name="business.reviewCount"
-          label="Review count"
-          value={String(business.reviewCount ?? "")}
-        />
-        <Field
-          name="business.fiveStarPct"
-          label="Five-star %"
-          value={String(business.fiveStarPct ?? "")}
-        />
+        {content.pack === "beauty" ? (
+          <>
+            <Field
+              name="business.rating"
+              label="Google rating"
+              value={String(business.rating ?? "")}
+            />
+            <Field
+              name="business.reviewCount"
+              label="Review count"
+              value={String(business.reviewCount ?? "")}
+            />
+            <Field
+              name="business.fiveStarPct"
+              label="Five-star %"
+              value={String(business.fiveStarPct ?? "")}
+            />
+          </>
+        ) : null}
         <Field name="business.lat" label="Latitude" value={String(business.lat)} />
         <Field name="business.lng" label="Longitude" value={String(business.lng)} />
         <Field name="business.mapsUrl" label="Google Maps link" value={business.mapsUrl} />

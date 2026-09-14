@@ -220,6 +220,12 @@ export function contentFromFields(base: SiteContent, fields: Fields): SiteConten
   ) as Record<DayKey, SiteContent["hours"][DayKey]>;
 
   const instagram = text(fields, "business.instagram", base.business.instagram ?? "");
+  /**
+   * Only the beauty pack may carry a Google standing. A clinic — dental under the health
+   * advertising regulation, vet under TVHB m.98 and Law 6343 m.41 — may not publish its
+   * rating, and saving from the studio must not write a zero back into its content.
+   */
+  const ratings = base.pack === "beauty";
 
   return {
     ...base,
@@ -231,13 +237,13 @@ export function contentFromFields(base: SiteContent, fields: Fields): SiteConten
       neighborhood: text(fields, "business.neighborhood", base.business.neighborhood),
       phone: text(fields, "business.phone", base.business.phone),
       whatsapp: text(fields, "business.whatsapp", base.business.whatsapp),
-      rating: number(fields, "business.rating", base.business.rating ?? 0),
-      reviewCount: Math.round(
-        number(fields, "business.reviewCount", base.business.reviewCount ?? 0),
-      ),
-      fiveStarPct: Math.round(
-        number(fields, "business.fiveStarPct", base.business.fiveStarPct ?? 0),
-      ),
+      rating: ratings ? number(fields, "business.rating", base.business.rating ?? 0) : undefined,
+      reviewCount: ratings
+        ? Math.round(number(fields, "business.reviewCount", base.business.reviewCount ?? 0))
+        : undefined,
+      fiveStarPct: ratings
+        ? Math.round(number(fields, "business.fiveStarPct", base.business.fiveStarPct ?? 0))
+        : undefined,
       lat: number(fields, "business.lat", base.business.lat),
       lng: number(fields, "business.lng", base.business.lng),
       mapsUrl: text(fields, "business.mapsUrl", base.business.mapsUrl),

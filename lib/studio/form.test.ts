@@ -21,6 +21,28 @@ describe("editing a business", () => {
     expect(edit({ "business.rating": "4,9" }).business.rating).toBe(4.9);
   });
 
+  it("never writes a Google standing into a clinic's content", () => {
+    // A vet or dental site may not publish its rating; the studio must not put a zero back.
+    for (const pack of ["vet", "dental"] as const) {
+      const clinic = contentFromFields(
+        {
+          ...melike,
+          pack,
+          business: {
+            ...melike.business,
+            rating: undefined,
+            reviewCount: undefined,
+            fiveStarPct: undefined,
+          },
+        },
+        { "business.rating": "4,9", "business.reviewCount": "250" },
+      );
+      expect(clinic.business.rating, pack).toBeUndefined();
+      expect(clinic.business.reviewCount, pack).toBeUndefined();
+      expect(clinic.business.fiveStarPct, pack).toBeUndefined();
+    }
+  });
+
   it("drops an emptied Instagram rather than storing an empty string", () => {
     expect(edit({ "business.instagram": "  " }).business.instagram).toBeUndefined();
   });

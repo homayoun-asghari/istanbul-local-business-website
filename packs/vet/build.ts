@@ -1,15 +1,15 @@
 import type { SiteContent } from "@/lib/content/schema";
-import {
-  ALWAYS_OPEN,
-  WEEKDAYS_9_TO_7,
-  baseBusiness,
-  reviewSentence,
-  type BuildInput,
-} from "../build";
+import { ALWAYS_OPEN, WEEKDAYS_9_TO_7, baseBusiness, type BuildInput } from "../build";
 
 /**
  * Veteriner services. Deliberately no treatment promises and no drug names — a clinic
  * owner reading an invented clinical claim about their own practice stops replying.
+ *
+ * And no Google standing anywhere. TVHB Uygulama Yönetmeliği m.98 bars a veterinarian from
+ * publishing thank-you notices or advertising aimed at clients, and Law 6343 m.41 — as
+ * re-enacted by Law 7584 on 11 June 2026 — names advertising content "on the internet,
+ * media and social media" as a disciplinary offence. A clinic's own site repeating its
+ * star rating, review count and five-star share is exactly that content.
  */
 const SERVICES = [
   { name: "Muayene ve Kontrol", description: "Genel sağlık kontrolü ve rutin takip." },
@@ -26,12 +26,18 @@ export function isAlwaysOpen(businessName: string): boolean {
 }
 
 export function buildVetSite(lead: BuildInput, preset = "klinik"): SiteContent {
-  const business = baseBusiness(lead);
+  const business = {
+    ...baseBusiness(lead),
+    // Not just unrendered: content is serialised into the page's hydration payload, so a
+    // rating that is merely not shown is still published. The fields have to be absent.
+    rating: undefined,
+    reviewCount: undefined,
+    fiveStarPct: undefined,
+  };
   const alwaysOpen = isAlwaysOpen(lead.business);
 
   const about = [
     `${business.neighborhood} Mahallesi’ndeki kliniğimizde, ${business.district} ve çevresindeki dostlarımıza bakıyoruz.`,
-    reviewSentence(lead),
     alwaysOpen
       ? "Acil durumlar için gece gündüz açığız; gelmeden önce arayarak bilgi verebilirsiniz."
       : "Muayene randevu ile yapılır; acil durumlarda önce telefonla ulaşmanızı rica ederiz.",
@@ -77,7 +83,6 @@ export function buildVetSite(lead: BuildInput, preset = "klinik"): SiteContent {
         placeholder: true,
       },
       ...emergency,
-      { type: "proof", placeholder: false },
       {
         type: "services",
         title: "Hizmetlerimiz",
